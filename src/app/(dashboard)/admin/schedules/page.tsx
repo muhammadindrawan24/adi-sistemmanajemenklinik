@@ -239,81 +239,88 @@ export default function ScheduleManagement() {
 
       {/* Weekly Calendar Grid */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { delay: 0.15 } } }}>
-        <div className="grid grid-cols-7 gap-2">
-          {days.map((dayName, dayIdx) => {
-            const isToday = dayIdx === todayDayOfWeek && weekOffset === 0;
-            const daySchedules = schedulesByDay[dayIdx] || [];
+        {/* Mobile: horizontal scroll */}
+        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-2 sm:grid sm:grid-cols-7 min-w-[700px] sm:min-w-0">
+            {days.map((dayName, dayIdx) => {
+              const isToday = dayIdx === todayDayOfWeek && weekOffset === 0;
+              const daySchedules = schedulesByDay[dayIdx] || [];
 
-            return (
-              <div key={dayIdx} className="flex flex-col">
-                {/* Day Header */}
-                <div className={`rounded-t-xl px-3 py-2.5 text-center border-b-2 transition-colors ${
-                  isToday
-                    ? 'bg-teal-600 text-white border-teal-700'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600'
-                }`}>
-                  <p className="text-xs font-medium uppercase tracking-wide opacity-80">{dayShort[dayIdx]}</p>
-                  <p className={`text-lg font-bold ${isToday ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>{dayName}</p>
-                </div>
+              return (
+                <div key={dayIdx} className="flex flex-col min-w-[90px] sm:min-w-0 flex-1">
+                  {/* Day Header */}
+                  <div className={`rounded-t-xl px-2 py-2 text-center border-b-2 transition-colors ${
+                    isToday
+                      ? 'bg-teal-600 text-white border-teal-700'
+                      : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600'
+                  }`}>
+                    <p className="text-[10px] font-medium uppercase tracking-wide opacity-80">{dayShort[dayIdx]}</p>
+                    <p className={`text-sm sm:text-lg font-bold ${isToday ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>{dayName}</p>
+                  </div>
 
-                {/* Day Content */}
-                <div className={`flex-1 min-h-[300px] rounded-b-xl border border-t-0 p-2 space-y-2 ${
-                  isToday
-                    ? 'bg-teal-50/50 border-teal-200'
-                    : 'bg-white dark:bg-slate-800 border-slate-200'
-                }`}>
-                  {loading ? (
-                    Array.from({ length: 2 }).map((_, i) => (
-                      <div key={i} className="h-16 rounded-lg bg-slate-100 dark:bg-slate-700 animate-pulse" />
-                    ))
-                  ) : daySchedules.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[80px] text-slate-400">
-                      <Calendar className="h-5 w-5 mb-1 opacity-50" />
-                      <p className="text-xs">Kosong</p>
-                    </div>
-                  ) : (
-                    daySchedules.map((s) => {
-                      const color = getPoliColor(s.poli?.name || '', poliColorMap);
-                      return (
-                        <motion.div
-                          key={s.id}
-                          layout
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className={`relative rounded-lg border p-2.5 cursor-pointer transition-all hover:shadow-md hover:scale-[1.02] ${color.bg} ${color.border}`}
-                          onClick={() => setSelectedCard(s)}
-                        >
-                          <div className="flex items-start justify-between gap-1">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1.5 mb-1">
-                                <span className={`h-2 w-2 rounded-full flex-shrink-0 ${color.dot}`} />
-                                <p className={`text-xs font-bold truncate ${color.text}`}>{s.poli?.name || '-'}</p>
-                              </div>
-                              <p className="text-xs text-slate-600 dark:text-slate-400 truncate font-medium">{s.doctor?.full_name || '-'}</p>
-                              <div className="flex items-center gap-1 mt-1">
-                                <Clock className="h-3 w-3 text-slate-400" />
-                                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">{s.start_time} - {s.end_time}</p>
+                  {/* Day Content */}
+                  <div className={`flex-1 min-h-[200px] sm:min-h-[300px] rounded-b-xl border border-t-0 p-1.5 sm:p-2 space-y-1.5 sm:space-y-2 ${
+                    isToday
+                      ? 'bg-teal-50/50 border-teal-200'
+                      : 'bg-white dark:bg-slate-800 border-slate-200'
+                  }`}>
+                    {loading ? (
+                      Array.from({ length: 2 }).map((_, i) => (
+                        <div key={i} className="h-12 sm:h-16 rounded-lg bg-slate-100 dark:bg-slate-700 animate-pulse" />
+                      ))
+                    ) : daySchedules.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-full min-h-[60px] sm:min-h-[80px] text-slate-400">
+                        <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mb-1 opacity-50" />
+                        <p className="text-[10px] sm:text-xs">Kosong</p>
+                      </div>
+                    ) : (
+                      daySchedules.map((s) => {
+                        const color = getPoliColor(s.poli?.name || '', poliColorMap);
+                        return (
+                          <motion.div
+                            key={s.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={`relative rounded-lg border p-2 sm:p-2.5 cursor-pointer transition-all hover:shadow-md ${color.bg} ${color.border}`}
+                            onClick={() => setSelectedCard(s)}
+                          >
+                            <div className="flex items-start justify-between gap-1">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1 sm:gap-1.5 mb-0.5 sm:mb-1">
+                                  <span className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full flex-shrink-0 ${color.dot}`} />
+                                  <p className={`text-[10px] sm:text-xs font-bold truncate ${color.text}`}>{s.poli?.name || '-'}</p>
+                                </div>
+                                <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 truncate font-medium">{s.doctor?.full_name || '-'}</p>
+                                <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
+                                  <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-slate-400" />
+                                  <p className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-medium">{s.start_time} - {s.end_time}</p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })
-                  )}
+                          </motion.div>
+                        );
+                      })
+                    )}
 
-                  {/* Add button at bottom */}
-                  {!loading && (
-                    <button
-                      onClick={() => openAdd(dayIdx)}
-                      className="w-full rounded-lg border-2 border-dashed border-slate-200 py-2 text-xs font-medium text-slate-400 hover:border-teal-300 hover:text-teal-600 hover:bg-teal-50/50 transition-all"
-                    >
-                      + Tambah
-                    </button>
-                  )}
+                    {/* Add button at bottom */}
+                    {!loading && (
+                      <button
+                        onClick={() => openAdd(dayIdx)}
+                        className="w-full rounded-lg border-2 border-dashed border-slate-200 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium text-slate-400 hover:border-teal-300 hover:text-teal-600 hover:bg-teal-50/50 transition-all"
+                      >
+                        + Tambah
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+        {/* Scroll hint for mobile */}
+        <div className="sm:hidden text-center mt-2">
+          <p className="text-[10px] text-slate-400">Geser ke samping untuk lihat semua hari</p>
         </div>
       </motion.div>
 

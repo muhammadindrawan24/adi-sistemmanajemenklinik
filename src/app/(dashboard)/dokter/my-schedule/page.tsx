@@ -107,47 +107,54 @@ export default function DoctorSchedule() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-teal-600" />
-              Minggu {format(weekStart, 'dd MMM yyyy', { locale: id })} - {format(addDays(weekStart, 6), 'dd MMM yyyy', { locale: id })}
+              <span className="text-sm sm:text-base">Minggu {format(weekStart, 'dd MMM yyyy', { locale: id })} - {format(addDays(weekStart, 6), 'dd MMM yyyy', { locale: id })}</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-7 gap-2">
-              {weekDays.map((day) => {
-                const dayNameEn = format(day, 'EEEE');
-                const dayNameId = dayMap[dayNameEn.toLowerCase()] || dayNameEn;
-                const isToday = format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
-                const daySchedules = getScheduleForDay(dayNameEn);
+          <CardContent className="p-3 sm:p-6">
+            {/* Mobile: horizontal scroll */}
+            <div className="overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+              <div className="flex gap-2 sm:grid sm:grid-cols-7 min-w-[700px] sm:min-w-0">
+                {weekDays.map((day) => {
+                  const dayNameEn = format(day, 'EEEE');
+                  const dayNameId = dayMap[dayNameEn.toLowerCase()] || dayNameEn;
+                  const isToday = format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+                  const daySchedules = getScheduleForDay(dayNameEn);
 
-                return (
-                  <div
-                    key={day.toISOString()}
-                    className={`rounded-xl border p-3 min-h-[120px] ${
-                      isToday ? 'border-teal-300 bg-teal-50' : 'border-slate-200 bg-white'
-                    }`}
-                  >
-                    <div className="text-center mb-2">
-                      <p className="text-xs font-medium text-slate-500">{dayNameId}</p>
-                      <p className={`text-lg font-bold ${isToday ? 'text-teal-700' : 'text-slate-900'}`}>
-                        {format(day, 'd')}
-                      </p>
-                    </div>
-                    {loading ? (
-                      <Skeleton className="h-8 w-full" />
-                    ) : daySchedules.length === 0 ? (
-                      <p className="text-center text-xs text-slate-400 py-2">Libur</p>
-                    ) : (
-                      <div className="space-y-1">
-                        {daySchedules.map((s) => (
-                          <div key={s.id} className="rounded-lg bg-teal-100 p-1.5 text-center">
-                            <p className="text-[10px] font-medium text-teal-800">{s.poli?.name}</p>
-                            <p className="text-[10px] text-teal-600">{s.start_time}-{s.end_time}</p>
-                          </div>
-                        ))}
+                  return (
+                    <div
+                      key={day.toISOString()}
+                      className={`rounded-xl border p-2 sm:p-3 min-h-[100px] sm:min-h-[120px] min-w-[90px] sm:min-w-0 flex-1 ${
+                        isToday ? 'border-teal-300 bg-teal-50' : 'border-slate-200 bg-white'
+                      }`}
+                    >
+                      <div className="text-center mb-1.5 sm:mb-2">
+                        <p className="text-[10px] sm:text-xs font-medium text-slate-500">{dayNameId}</p>
+                        <p className={`text-base sm:text-lg font-bold ${isToday ? 'text-teal-700' : 'text-slate-900'}`}>
+                          {format(day, 'd')}
+                        </p>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                      {loading ? (
+                        <Skeleton className="h-6 sm:h-8 w-full" />
+                      ) : daySchedules.length === 0 ? (
+                        <p className="text-center text-[10px] sm:text-xs text-slate-400 py-1 sm:py-2">Libur</p>
+                      ) : (
+                        <div className="space-y-1">
+                          {daySchedules.map((s) => (
+                            <div key={s.id} className="rounded-lg bg-teal-100 p-1 sm:p-1.5 text-center">
+                              <p className="text-[9px] sm:text-[10px] font-medium text-teal-800 truncate">{s.poli?.name}</p>
+                              <p className="text-[9px] sm:text-[10px] text-teal-600">{s.start_time}-{s.end_time}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Scroll hint for mobile */}
+            <div className="sm:hidden text-center mt-3">
+              <p className="text-[10px] text-slate-400">Geser ke samping untuk lihat semua hari</p>
             </div>
           </CardContent>
         </Card>
