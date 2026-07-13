@@ -178,6 +178,7 @@ export default function RegisterPage() {
           options: {
             data: {
               full_name: allData.fullName,
+              role: 'pasien',
             },
           },
         });
@@ -201,25 +202,26 @@ export default function RegisterPage() {
 
       const userId = authData.user.id;
 
-      // 2. Insert into users table
-      const { error: userError } = await supabase.from("users").insert({
+      // 2. Upsert into users table (trigger may have created it)
+      const { error: userError } = await supabase.from("users").upsert({
         id: userId,
         email: allData.email!,
         role: "pasien",
-      });
+        is_active: true,
+      }, { onConflict: 'id' });
 
       if (userError) {
         showToast("error", "Gagal menyimpan data pengguna.");
         return;
       }
 
-      // 3. Insert into profiles table
-      const { error: profileError } = await supabase.from("profiles").insert({
+      // 3. Upsert profiles (trigger handle_new_user may have created it)
+      const { error: profileError } = await supabase.from("profiles").upsert({
         user_id: userId,
         full_name: allData.fullName!,
         phone: allData.phone!,
         address: allData.address!,
-      });
+      }, { onConflict: 'user_id' });
 
       if (profileError) {
         showToast("error", "Gagal menyimpan profil pengguna.");
@@ -230,6 +232,7 @@ export default function RegisterPage() {
       const { error: patientError } = await supabase.from("patients").insert({
         user_id: userId,
         medical_record_number: generateRMNumber(),
+        nik: allData.nik || null,
         date_of_birth: allData.birthDate!,
         gender: allData.gender!,
         blood_type: allData.bloodType!,
@@ -239,8 +242,6 @@ export default function RegisterPage() {
         showToast("error", "Gagal menyimpan data pasien.");
         return;
       }
-
-      await logAudit('register', 'users', userId, null, { email: allData.email, role: 'pasien' });
 
       showToast(
         "success",
