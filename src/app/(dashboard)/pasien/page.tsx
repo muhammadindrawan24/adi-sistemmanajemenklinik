@@ -10,8 +10,10 @@ import {
   History,
   ClipboardCheck,
   Clock,
+  ArrowRight,
+  Stethoscope,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +27,7 @@ const fadeIn = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.3 },
+    transition: { delay: i * 0.06, duration: 0.4, ease: 'easeOut' as const },
   }),
 };
 
@@ -41,7 +43,6 @@ export default function PasienDashboard() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      // Fetch profile name
       const { data: profileData } = await supabase
         .from('profiles')
         .select('full_name, phone')
@@ -86,89 +87,66 @@ export default function PasienDashboard() {
     fetchData();
   }, [supabase]);
 
-  const statusVariant = (status: string) => {
-    const map: Record<string, 'warning' | 'info' | 'default' | 'success' | 'destructive' | 'secondary'> = {
-      menunggu: 'warning',
-      dipanggil: 'info',
-      sedang_diperiksa: 'default',
-      selesai: 'success',
-      dibatalkan: 'destructive',
-    };
-    return map[status] || 'secondary';
-  };
-
-  const statusLabel = (status: string) => {
-    const map: Record<string, string> = {
-      menunggu: 'Menunggu',
-      dipanggil: 'Dipanggil',
-      sedang_diperiksa: 'Sedang Diperiksa',
-      selesai: 'Selesai',
-      dibatalkan: 'Dibatalkan',
-    };
-    return map[status] || status;
+  const statusConfig: Record<string, { label: string; class: string }> = {
+    menunggu: { label: 'Menunggu', class: 'bg-amber-50 text-amber-700 border border-amber-200' },
+    dipanggil: { label: 'Dipanggil!', class: 'bg-blue-50 text-blue-700 border border-blue-200 animate-pulse' },
+    sedang_diperiksa: { label: 'Diperiksa', class: 'bg-teal-50 text-teal-700 border border-teal-200' },
+    selesai: { label: 'Selesai', class: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+    dibatalkan: { label: 'Dibatalkan', class: 'bg-red-50 text-red-700 border border-red-200' },
   };
 
   return (
     <div className="space-y-6">
+      {/* Welcome Banner */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard Pasien</h1>
-        <p className="text-slate-500 mt-1">Selamat datang! Kelola antrian dan lihat riwayat Anda.</p>
-      </motion.div>
-
-      {/* Profile Summary */}
-      <motion.div custom={0} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white border-0">
-          <CardContent className="p-6">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-40 bg-white/20" />
-                <Skeleton className="h-4 w-60 bg-white/20" />
-              </div>
-            ) : (
-              <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20">
-                  <User className="h-8 w-8 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">{profile?.name || 'Pasien'}</h2>
-                  <p className="text-teal-100 flex items-center gap-1.5 mt-0.5">
-                    <Hash className="h-3.5 w-3.5" />
-                    {profile?.rm_number || '-'}
-                  </p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+              <User className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <p className="text-white/60 text-xs font-medium">Selamat datang,</p>
+              {loading ? (
+                <Skeleton className="h-6 w-40 bg-white/20 mt-1" />
+              ) : (
+                <h1 className="text-xl font-bold">{profile?.name || 'Pasien'}</h1>
+              )}
+              <p className="text-white/50 text-xs mt-0.5 flex items-center gap-1">
+                <Hash className="h-3 w-3" /> {profile?.rm_number || '-'}
+              </p>
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500">Total Kunjungan</p>
-                  {loading ? <Skeleton className="mt-2 h-8 w-16" /> : <p className="text-3xl font-bold text-slate-900 mt-1">{stats.totalKunjungan}</p>}
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
+                  <History className="h-5 w-5 text-white" />
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
-                  <History className="h-6 w-6 text-white" />
+                <div>
+                  {loading ? <Skeleton className="h-7 w-12" /> : <p className="text-2xl font-bold text-slate-900">{stats.totalKunjungan}</p>}
+                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">Kunjungan</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
         <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-          <Card>
-            <CardContent className="p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-500">Antrian Aktif</p>
-                  {loading ? <Skeleton className="mt-2 h-8 w-16" /> : <p className="text-3xl font-bold text-slate-900 mt-1">{stats.antrianAktif}</p>}
+          <Card className="border-0 shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-200">
+                  <ListOrdered className="h-5 w-5 text-white" />
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
-                  <ListOrdered className="h-6 w-6 text-white" />
+                <div>
+                  {loading ? <Skeleton className="h-7 w-12" /> : <p className="text-2xl font-bold text-slate-900">{stats.antrianAktif}</p>}
+                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">Antrian Aktif</p>
                 </div>
               </div>
             </CardContent>
@@ -178,45 +156,52 @@ export default function PasienDashboard() {
 
       {/* Current Queue Status */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-teal-600" />
-              Status Antrian Saat Ini
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-0 shadow-sm overflow-hidden">
+          <CardContent className="p-0">
             {loading ? (
-              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-32 w-full" />
             ) : !currentQueue ? (
-              <div className="text-center py-6">
-                <p className="text-slate-400 mb-3">Tidak ada antrian aktif</p>
+              <div className="text-center py-8 px-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-3">
+                  <ListOrdered className="h-6 w-6 text-slate-400" />
+                </div>
+                <p className="text-sm font-medium text-slate-500 mb-3">Tidak ada antrian aktif</p>
                 <Link href="/pasien/take-queue">
-                  <Button className="gap-2">
-                    <ListOrdered className="h-4 w-4" />
-                    Ambil Antrian Sekarang
+                  <Button className="gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200">
+                    <ListOrdered className="h-4 w-4" /> Ambil Antrian Sekarang
                   </Button>
                 </Link>
               </div>
             ) : (
-              <div className="rounded-2xl border-2 border-teal-200 bg-teal-50 p-5">
+              <div className={`p-5 ${
+                currentQueue.status === 'dipanggil' ? 'bg-gradient-to-r from-blue-50 to-blue-100/50' :
+                currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-r from-teal-50 to-emerald-50' :
+                'bg-gradient-to-r from-amber-50 to-orange-50/50'
+              }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg">
-                      <span className="text-2xl font-bold text-white">{currentQueue.queue_number}</span>
+                    <div className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-lg ${
+                      currentQueue.status === 'dipanggil' ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                      currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-br from-teal-500 to-emerald-600' :
+                      'bg-gradient-to-br from-amber-500 to-orange-600'
+                    }`}>
+                      <span className="text-xl font-bold text-white">{currentQueue.queue_number}</span>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600">Antrian Anda</p>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Antrian Anda</p>
                       <p className="text-lg font-bold text-slate-900">{currentQueue.poli?.name || '-'}</p>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        {format(new Date(currentQueue.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {format(new Date(currentQueue.created_at), 'dd MMM, HH:mm', { locale: id })}
                       </p>
                     </div>
                   </div>
-                  <Badge variant={statusVariant(currentQueue.status)} className="text-sm px-3 py-1">
-                    {statusLabel(currentQueue.status)}
-                  </Badge>
+                  <span className={`rounded-full px-3 py-1.5 text-[11px] font-semibold ${statusConfig[currentQueue.status]?.class || ''}`}>
+                    {statusConfig[currentQueue.status]?.label || currentQueue.status}
+                  </span>
                 </div>
+                {currentQueue.status === 'dipanggil' && (
+                  <p className="mt-3 text-sm font-bold text-blue-700 text-center">Silakan menuju ruang periksa!</p>
+                )}
               </div>
             )}
           </CardContent>
@@ -225,25 +210,26 @@ export default function PasienDashboard() {
 
       {/* Quick Actions */}
       <motion.div custom={4} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/pasien/take-queue">
-            <Button className="gap-2">
-              <ListOrdered className="h-4 w-4" />
-              Ambil Antrian
-            </Button>
-          </Link>
-          <Link href="/pasien/my-queue">
-            <Button variant="outline" className="gap-2">
-              <Clock className="h-4 w-4" />
-              Cek Antrian
-            </Button>
-          </Link>
-          <Link href="/pasien/history">
-            <Button variant="outline" className="gap-2">
-              <ClipboardCheck className="h-4 w-4" />
-              Riwayat Pemeriksaan
-            </Button>
-          </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { href: '/pasien/take-queue', label: 'Ambil Antrian', icon: ListOrdered, gradient: 'from-blue-500 to-indigo-600' },
+            { href: '/pasien/my-queue', label: 'Cek Antrian', icon: Clock, gradient: 'from-amber-500 to-orange-600' },
+            { href: '/pasien/history', label: 'Riwayat', icon: ClipboardCheck, gradient: 'from-emerald-500 to-teal-600' },
+          ].map((action) => (
+            <Link key={action.href} href={action.href}>
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 transition-all duration-300 hover:shadow-md hover:border-slate-200 hover:-translate-y-0.5">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${action.gradient} shadow-md`}>
+                    <action.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-sm font-semibold text-slate-900">{action.label}</span>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </motion.div>
     </div>
