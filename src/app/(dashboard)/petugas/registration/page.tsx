@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   UserPlus, Search, User, Phone, MapPin, Calendar, Droplets,
   Stethoscope, ClipboardList, CheckCircle, AlertCircle, ArrowRight,
-  FileText, UserCircle2, CreditCard, Heart, Clock, ChevronDown,
+  FileText, UserCircle2, CreditCard, Heart, Clock, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,6 +53,7 @@ export default function PatientRegistration() {
   const [saving, setSaving] = React.useState(false);
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [todaySchedules, setTodaySchedules] = React.useState<any[]>([]);
+  const [showSchedule, setShowSchedule] = React.useState(false);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PatientForm>();
   const { register: registerQueue, handleSubmit: handleSubmitQueue, reset: resetQueue, formState: { errors: queueErrors }, watch } = useForm<QueueForm>();
 
@@ -454,29 +455,73 @@ export default function PatientRegistration() {
         </div>
       </motion.div>
 
-      {/* Today's Schedule */}
+      {/* Today's Schedule - Collapsible */}
       {todaySchedules.length > 0 && (
         <motion.div custom={1.5} initial="hidden" animate="visible" variants={fadeIn}>
-          <div className="rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/80 to-teal-50/50 p-5">
-            <div className="flex items-center gap-2.5 mb-3">
+          <button
+            onClick={() => setShowSchedule(!showSchedule)}
+            className="w-full rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50/80 to-teal-50/50 p-4 flex items-center justify-between hover:shadow-sm transition-all"
+          >
+            <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 shadow-sm shadow-emerald-200">
                 <Stethoscope className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-sm font-bold text-emerald-800">Jadwal Dokter Hari Ini</h3>
+              <div className="text-left">
+                <h3 className="text-sm font-bold text-emerald-800">Jadwal Dokter Hari Ini</h3>
+                <p className="text-[10px] text-emerald-600 mt-0.5">{todaySchedules.length} dokter aktif</p>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {todaySchedules.slice(0, 8).map((s) => (
-                <div key={s.id} className="flex items-center gap-2 rounded-xl bg-white/80 backdrop-blur-sm border border-emerald-100 px-3.5 py-2 text-xs shadow-sm">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-[10px] font-bold text-emerald-700">{s.poli_initial}</span>
-                  <span className="font-semibold text-slate-700">{s.doctor_name}</span>
-                  <span className="text-slate-400 flex items-center gap-1"><Clock className="h-3 w-3" />{s.start_time?.slice(0, 5)}</span>
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100">
+              {showSchedule ? <ChevronUp className="h-4 w-4 text-emerald-700" /> : <ChevronDown className="h-4 w-4 text-emerald-700" />}
+            </div>
+          </button>
+
+          <AnimatePresence>
+            {showSchedule && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.entries(
+                    todaySchedules.reduce((acc: Record<string, any[]>, s) => {
+                      if (!acc[s.poli_name]) acc[s.poli_name] = [];
+                      acc[s.poli_name].push(s);
+                      return acc;
+                    }, {})
+                  ).map(([poliName, schedules]) => (
+                    <div key={poliName} className="rounded-xl bg-white border border-slate-100 p-3.5 shadow-sm">
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-[10px] font-bold text-emerald-700">
+                          {schedules[0]?.poli_initial}
+                        </span>
+                        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">{poliName}</h4>
+                      </div>
+                      <div className="space-y-1.5">
+                        {schedules.map((s: any) => (
+                          <div key={s.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[9px] font-bold text-white">
+                                {s.doctor_name?.split(' ').pop()?.charAt(0) || '?'}
+                              </div>
+                              <span className="text-xs font-medium text-slate-700 truncate max-w-[120px]">{s.doctor_name}</span>
+                            </div>
+                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <Clock className="h-2.5 w-2.5" />
+                              {s.start_time?.slice(0, 5)}-{s.end_time?.slice(0, 5)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              {todaySchedules.length > 8 && (
-                <span className="flex items-center text-xs text-emerald-600 font-medium">+{todaySchedules.length - 8} lainnya</span>
-              )}
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
 
