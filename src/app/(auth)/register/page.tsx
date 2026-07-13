@@ -211,7 +211,7 @@ export default function RegisterPage() {
       }, { onConflict: 'id' });
 
       if (userError) {
-        showToast("error", "Gagal menyimpan data pengguna.");
+        showToast("error", `Gagal menyimpan data pengguna: ${userError.message}`);
         return;
       }
 
@@ -224,7 +224,7 @@ export default function RegisterPage() {
       }, { onConflict: 'user_id' });
 
       if (profileError) {
-        showToast("error", "Gagal menyimpan profil pengguna.");
+        showToast("error", `Gagal menyimpan profil: ${profileError.message}`);
         return;
       }
 
@@ -239,7 +239,7 @@ export default function RegisterPage() {
       });
 
       if (patientError) {
-        showToast("error", "Gagal menyimpan data pasien.");
+        showToast("error", `Gagal menyimpan data pasien: ${patientError.message}`);
         return;
       }
 
