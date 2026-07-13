@@ -1,0 +1,13 @@
+⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\D:\Pemograman Web-adi\klinik-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\D:\Pemograman Web-adi\klinik-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (106kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (253kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+⚠ Server is approaching the used memory threshold, restarting...
+⚠ Attempted to load @next/swc-win32-x64-msvc, but an error occurred: \\?\D:\Pemograman Web-adi\klinik-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node is not a valid Win32 application.
+\\?\D:\Pemograman Web-adi\klinik-app\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[browser] "⨯ unhandledRejection:" [object Event] 
+
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (106kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (253kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
