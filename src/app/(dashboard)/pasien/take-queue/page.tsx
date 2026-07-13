@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useForm } from 'react-hook-form';
 
 interface QueueForm { poli_id: string; complaint: string; }
+interface QueueResult { queueNumber: string; position: number; poliName: string; }
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -27,7 +28,7 @@ export default function TakeQueuePage() {
   const [todaySchedules, setTodaySchedules] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
-  const [result, setResult] = React.useState<{ queueNumber: number; position: number; poliName: string } | null>(null);
+  const [result, setResult] = React.useState<QueueResult | null>(null);
   const [showSchedule, setShowSchedule] = React.useState(false);
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const { register, handleSubmit, formState: { errors }, watch } = useForm<QueueForm>();
@@ -144,7 +145,7 @@ export default function TakeQueuePage() {
       if (error) throw error;
 
       const poliName = poli.find((p) => p.id === data.poli_id)?.name || '-';
-      setResult({ queueNumber: queueNum, position: queueNum, poliName });
+      setResult({ queueNumber: queueNumber, position: queueNum, poliName });
       showToast('Antrian berhasil diambil!');
     } catch (err: any) {
       showToast(err.message || 'Terjadi kesalahan', 'error');
