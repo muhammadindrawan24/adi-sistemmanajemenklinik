@@ -202,7 +202,18 @@ export default function RegisterPage() {
 
       const userId = authData.user.id;
 
-      // 2. Upsert into users table (trigger may have created it)
+      // 2. Login first so auth.uid() works for RLS
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: allData.email!,
+        password: allData.password!,
+      });
+
+      if (signInError) {
+        showToast("error", `Gagal login: ${signInError.message}`);
+        return;
+      }
+
+      // 3. Upsert into users table
       const { error: userError } = await supabase.from("users").upsert({
         id: userId,
         email: allData.email!,
@@ -215,7 +226,7 @@ export default function RegisterPage() {
         return;
       }
 
-      // 3. Upsert profiles (trigger handle_new_user may have created it)
+      // 4. Upsert profiles
       const { error: profileError } = await supabase.from("profiles").upsert({
         user_id: userId,
         full_name: allData.fullName!,
@@ -228,7 +239,7 @@ export default function RegisterPage() {
         return;
       }
 
-      // 4. Insert into patients table
+      // 5. Insert into patients table
       const { error: patientError } = await supabase.from("patients").insert({
         user_id: userId,
         medical_record_number: generateRMNumber(),
@@ -245,11 +256,11 @@ export default function RegisterPage() {
 
       showToast(
         "success",
-        "Pendaftaran berhasil! Mengarahkan ke halaman login..."
+        "Pendaftaran berhasil! Mengarahkan ke dashboard..."
       );
 
       setTimeout(() => {
-        router.push("/login");
+        router.push("/pasien");
       }, 1500);
     } catch {
       showToast("error", "Terjadi kesalahan. Silakan coba lagi nanti.");

@@ -41,6 +41,13 @@ export default function PasienDashboard() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
+      // Fetch profile name
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('full_name, phone')
+        .eq('user_id', session.user.id)
+        .single();
+
       const { data: patient } = await supabase
         .from('patients')
         .select('*')
@@ -48,7 +55,12 @@ export default function PasienDashboard() {
         .single();
 
       if (patient) {
-        setProfile(patient);
+        setProfile({
+          ...patient,
+          name: profileData?.full_name || 'Pasien',
+          phone: profileData?.phone,
+          rm_number: patient.medical_record_number,
+        });
 
         const [{ count: totalKunjungan }, { count: antrianAktif }] = await Promise.all([
           supabase.from('queues').select('*', { count: 'exact', head: true }).eq('patient_id', patient.id).eq('status', 'selesai'),
@@ -57,7 +69,6 @@ export default function PasienDashboard() {
 
         setStats({ totalKunjungan: totalKunjungan || 0, antrianAktif: antrianAktif || 0 });
 
-        // Current active queue
         const { data: activeQueue } = await supabase
           .from('queues')
           .select('*, poli:poli(name)')
