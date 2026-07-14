@@ -147,7 +147,7 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
 
         {/* Logo */}
         <div className="relative flex items-center gap-3 px-5 py-6 border-b border-white/[0.08]">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 via-emerald-400 to-teal-500 shadow-lg shadow-teal-500/30 backdrop-blur-sm">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 via-emerald-400 to-teal-500 shadow-lg shadow-teal-500/30 backdrop-blur-sm animate-pulse">
             <HeartPulse className="h-6 w-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">

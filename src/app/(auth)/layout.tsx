@@ -42,11 +42,53 @@ export default function AuthLayout({
 
           {/* Center — Hero text + illustration */}
           <div className="flex-1 flex flex-col justify-center max-w-md">
-            {/* Heartbeat line SVG */}
-            <div className="mb-8">
-              <svg viewBox="0 0 400 80" className="w-full h-20 text-white/20" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M0,40 L80,40 L100,40 L110,10 L120,70 L130,20 L140,60 L150,40 L170,40 L400,40" strokeLinecap="round" strokeLinejoin="round"/>
+            {/* Heartbeat line SVG with animation */}
+            <div className="mb-8 relative">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-400/20 to-transparent blur-xl animate-pulse" />
+              {/* Main ECG line */}
+              <svg viewBox="0 0 400 80" className="w-full h-20 text-white/30 relative" fill="none" strokeWidth="2.5">
+                <defs>
+                  <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
+                    <stop offset="40%" stopColor="rgba(255,255,255,0.4)" />
+                    <stop offset="50%" stopColor="rgba(45,212,191,0.9)" />
+                    <stop offset="60%" stopColor="rgba(255,255,255,0.4)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                {/* Background line (static) */}
+                <path d="M0,40 L80,40 L100,40 L110,10 L120,70 L130,20 L140,60 L150,40 L170,40 L400,40" 
+                  stroke="rgba(255,255,255,0.1)" strokeLinecap="round" strokeLinejoin="round"/>
+                {/* Animated line */}
+                <path d="M0,40 L80,40 L100,40 L110,10 L120,70 L130,20 L140,60 L150,40 L170,40 L400,40" 
+                  stroke="url(#ecgGradient)" strokeLinecap="round" strokeLinejoin="round"
+                  filter="url(#glow)"
+                  style={{
+                    strokeDasharray: '600',
+                    strokeDashoffset: '600',
+                    animation: 'ecgDraw 3s ease-in-out infinite'
+                  }}/>
+                {/* Pulse dot */}
+                <circle cx="125" cy="40" r="4" fill="#2dd4bf" opacity="0.9">
+                  <animate attributeName="r" values="3;5;3" dur="1s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.9;0.5;0.9" dur="1s" repeatCount="indefinite"/>
+                </circle>
               </svg>
+              <style jsx>{`
+                @keyframes ecgDraw {
+                  0% { stroke-dashoffset: 600; }
+                  50% { stroke-dashoffset: 0; }
+                  100% { stroke-dashoffset: -600; }
+                }
+              `}</style>
             </div>
 
             <h2 className="text-3xl font-bold text-white leading-tight mb-4">
