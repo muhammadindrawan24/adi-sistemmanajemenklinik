@@ -467,6 +467,10 @@ CREATE POLICY "Petugas can insert patients"
     )
   );
 
+CREATE POLICY "Patients can insert own record"
+  ON patients FOR INSERT
+  WITH CHECK (user_id = auth.uid());
+
 CREATE POLICY "Admin can update patients"
   ON patients FOR UPDATE
   USING (
