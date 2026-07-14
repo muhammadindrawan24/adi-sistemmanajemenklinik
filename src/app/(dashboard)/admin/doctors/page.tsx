@@ -350,60 +350,58 @@ export default function DoctorManagement() {
                         </td>
                       </tr>
                     ) : (
-                      <AnimatePresence>
-                        filteredDoctors.map((doctor, index) => (
-                          <motion.tr
-                            key={doctor.id}
-                            custom={index}
-                            initial="hidden"
-                            animate="visible"
-                            variants={tableRow}
-                            className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-all duration-200"
-                          >
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 text-sm font-bold text-white shadow-md">
-                                  {doctor.profiles?.full_name?.charAt(0)?.toUpperCase() || '?'}
-                                </div>
-                                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{doctor.profiles?.full_name}</span>
+                      filteredDoctors.map((doctor, index) => (
+                        <motion.tr
+                          key={doctor.id}
+                          custom={index}
+                          initial="hidden"
+                          animate="visible"
+                          variants={tableRow}
+                          className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition-all duration-200"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 text-sm font-bold text-white shadow-md">
+                                {doctor.profiles?.full_name?.charAt(0)?.toUpperCase() || '?'}
                               </div>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{doctor.profiles?.gender === 'laki_laki' ? 'Laki-laki' : doctor.profiles?.gender === 'perempuan' ? 'Perempuan' : '-'}</td>
-                            <td className="px-6 py-4">
-                              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">
-                                {doctor.specialty || '-'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 font-mono">{doctor.license_number || '-'}</td>
-                            <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{doctor.poli_name || '-'}</td>
-                            <td className="px-6 py-4">
-                              <Badge
-                                variant={doctor.is_available ? 'success' : 'destructive'}
-                                className="rounded-full px-3 py-1 font-semibold"
+                              <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{doctor.profiles?.full_name}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{doctor.profiles?.gender === 'laki_laki' ? 'Laki-laki' : doctor.profiles?.gender === 'perempuan' ? 'Perempuan' : '-'}</td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">
+                              {doctor.specialty || '-'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 font-mono">{doctor.license_number || '-'}</td>
+                          <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{doctor.poli_name || '-'}</td>
+                          <td className="px-6 py-4">
+                            <Badge
+                              variant={doctor.is_available ? 'success' : 'destructive'}
+                              className="rounded-full px-3 py-1 font-semibold"
+                            >
+                              {doctor.is_available ? <CheckCircle className="h-3.5 w-3.5 mr-1" /> : <XCircle className="h-3.5 w-3.5 mr-1" />}
+                              {doctor.is_available ? 'Aktif' : 'Nonaktif'}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => openEditDialog(doctor)}
+                                className="rounded-xl p-2.5 text-slate-400 dark:text-slate-500 hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:text-teal-600 dark:hover:text-teal-400 transition-all duration-200 shadow-sm hover:shadow-md"
                               >
-                                {doctor.is_available ? <CheckCircle className="h-3.5 w-3.5 mr-1" /> : <XCircle className="h-3.5 w-3.5 mr-1" />}
-                                {doctor.is_available ? 'Aktif' : 'Nonaktif'}
-                              </Badge>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <button
-                                  onClick={() => openEditDialog(doctor)}
-                                  className="rounded-xl p-2.5 text-slate-400 dark:text-slate-500 hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:text-teal-600 dark:hover:text-teal-400 transition-all duration-200 shadow-sm hover:shadow-md"
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </button>
-                                <button
-                                  onClick={() => setDeleteConfirm(doctor.id)}
-                                  className="rounded-xl p-2.5 text-slate-400 dark:text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 shadow-sm hover:shadow-md"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </td>
-                          </motion.tr>
-                        ))}
-                      </AnimatePresence>
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => setDeleteConfirm(doctor.id)}
+                                className="rounded-xl p-2.5 text-slate-400 dark:text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 shadow-sm hover:shadow-md"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      ))
                     )}
                   </tbody>
                 </table>
