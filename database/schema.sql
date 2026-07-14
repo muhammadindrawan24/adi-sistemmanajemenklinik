@@ -400,6 +400,10 @@ CREATE POLICY "Dokter can view all profiles"
     )
   );
 
+CREATE POLICY "Users can insert own profile"
+  ON profiles FOR INSERT
+  WITH CHECK (user_id = auth.uid());
+
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
   USING (user_id = auth.uid());
