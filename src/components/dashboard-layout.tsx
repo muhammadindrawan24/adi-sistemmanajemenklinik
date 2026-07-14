@@ -81,7 +81,7 @@ const roleBadgeColors: Record<UserRole, string> = {
   admin: 'bg-purple-500/20 text-purple-200 ring-1 ring-purple-400/30',
   petugas: 'bg-blue-500/20 text-blue-200 ring-1 ring-blue-400/30',
   dokter: 'bg-emerald-500/20 text-emerald-200 ring-1 ring-emerald-400/30',
-  pasien: 'bg-sky-500/20 text-sky-200 ring-1 ring-sky-400/30',
+  pasien: 'bg-teal-400/25 text-teal-100 ring-1 ring-teal-300/30',
 };
 
 interface DashboardLayoutProps {
@@ -133,29 +133,37 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col bg-gradient-to-b from-[#0c3b33] via-[#0f4a3f] to-[#0a2e28] text-white transition-transform duration-300 lg:translate-x-0 lg:static shadow-2xl shadow-teal-900/30',
+          'fixed inset-y-0 left-0 z-50 w-[260px] flex flex-col text-white transition-transform duration-300 lg:translate-x-0 lg:static overflow-hidden',
+          'bg-gradient-to-br from-[#0a2e28] via-[#0c3b33] to-[#0f4a3f]',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
+        {/* Decorative background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-400/5 rounded-full blur-3xl" />
+        </div>
+
         {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.06]">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-emerald-500 shadow-lg shadow-teal-500/30">
-            <HeartPulse className="h-5 w-5 text-white" />
+        <div className="relative flex items-center gap-3 px-5 py-6 border-b border-white/[0.08]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 via-emerald-400 to-teal-500 shadow-lg shadow-teal-500/30 backdrop-blur-sm">
+            <HeartPulse className="h-6 w-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-[15px] font-bold tracking-tight">KlinikSehat</h1>
-            <p className="text-[10px] text-teal-300/60 font-medium uppercase tracking-wider">Sistem Manajemen Klinik</p>
+            <h1 className="text-base font-bold tracking-tight bg-gradient-to-r from-white to-teal-100 bg-clip-text text-transparent">KlinikSehat</h1>
+            <p className="text-[10px] text-teal-300/70 font-semibold uppercase tracking-widest">Sistem Klinik</p>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="rounded-lg p-1.5 hover:bg-white/10 lg:hidden transition-colors"
+            className="rounded-xl p-2 hover:bg-white/10 lg:hidden transition-all duration-200"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="relative flex-1 overflow-y-auto px-3 py-5 space-y-1.5">
           {navItems.map((item) => {
             const isActive = item.href === '/admin' || item.href === '/petugas' || item.href === '/dokter' || item.href === '/pasien'
               ? pathname === item.href
@@ -166,64 +174,65 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-200 relative',
+                  'group flex items-center gap-3 px-3.5 py-3 text-[13px] font-medium transition-all duration-200 relative rounded-xl',
                   isActive
-                    ? 'bg-white/[0.12] text-white shadow-sm shadow-black/10'
-                    : 'text-teal-200/70 hover:bg-white/[0.06] hover:text-white'
+                    ? 'bg-white/[0.15] text-white shadow-lg shadow-black/10 backdrop-blur-sm'
+                    : 'text-teal-100/60 hover:bg-white/[0.08] hover:text-white'
                 )}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-emerald-400 rounded-r-full" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-teal-300 to-emerald-400 rounded-r-full shadow-lg shadow-teal-400/50" />
                 )}
                 <div className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200',
+                  'flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200',
                   isActive
-                    ? 'bg-gradient-to-br from-teal-400 to-emerald-500 shadow-md shadow-teal-500/20'
-                    : 'bg-white/[0.06] group-hover:bg-white/[0.1]'
+                    ? 'bg-gradient-to-br from-teal-400 to-emerald-500 shadow-md shadow-teal-500/30'
+                    : 'bg-white/[0.08] group-hover:bg-white/[0.12]'
                 )}>
-                  <item.icon className={cn('h-4 w-4', isActive ? 'text-white' : 'text-teal-300/70 group-hover:text-white')} />
+                  <item.icon className={cn('h-4 w-4', isActive ? 'text-white' : 'text-teal-200/70 group-hover:text-white')} />
                 </div>
                 <span className="flex-1">{item.label}</span>
-                {isActive && <ChevronRight className="h-3.5 w-3.5 text-teal-300/50" />}
+                {isActive && (
+                  <div className="h-1.5 w-1.5 rounded-full bg-teal-300 animate-pulse" />
+                )}
               </Link>
             );
           })}
         </nav>
 
         {/* Monitor link */}
-        <div className="px-3 pb-2">
+        <div className="relative px-3 pb-3">
           <Link
             href="/monitor"
             target="_blank"
-            className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-teal-300/50 hover:bg-white/[0.06] hover:text-white transition-all duration-200"
+            className="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-[13px] font-medium text-teal-200/50 hover:bg-white/[0.08] hover:text-white transition-all duration-200"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.06] group-hover:bg-white/[0.1] transition-all">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.08] group-hover:bg-white/[0.12] transition-all">
               <Monitor className="h-4 w-4" />
             </div>
             <span>Monitor Antrian</span>
           </Link>
         </div>
 
-        {/* Dark Mode Toggle removed from sidebar */}
         {/* User section */}
-        <div className="border-t border-white/[0.06] p-3">
-          <Link href="/profile" className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-white/[0.06] transition-all duration-200 group">
+        <div className="relative border-t border-white/[0.08] p-3 bg-black/10">
+          <Link href="/profile" className="flex items-center gap-3 rounded-xl p-3 hover:bg-white/[0.08] transition-all duration-200 group">
             <div className="relative">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 text-xs font-bold text-white shadow-md shadow-teal-500/20">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 via-emerald-400 to-teal-500 text-sm font-bold text-white shadow-lg shadow-teal-500/25">
                 {getInitials(userName)}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-400 border-2 border-[#0f4a3f]" />
+              <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-emerald-400 border-2 border-[#0a2e28] shadow-sm" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold truncate text-white/90">{userName}</p>
-              <span className={cn('inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider mt-0.5', roleBadgeColors[role])}>
+              <p className="text-[13px] font-semibold truncate text-white/95">{userName}</p>
+              <span className={cn('inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider mt-1', roleBadgeColors[role])}>
                 {roleLabels[role]}
               </span>
             </div>
           </Link>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 mt-1 rounded-xl px-3 py-2 text-[13px] font-medium text-teal-300/50 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200"
+            className="w-full flex items-center gap-2.5 mt-2 rounded-xl px-3.5 py-2.5 text-[13px] font-medium text-teal-200/50 hover:bg-red-500/15 hover:text-red-300 transition-all duration-200"
           >
             <LogOut className="h-4 w-4" />
             <span>Keluar</span>
