@@ -31,6 +31,31 @@ interface QueueForm {
   complaint: string;
 }
 
+// Jam operasional klinik
+const CLINIC_OPEN_HOUR = 7;   // Pendaftaran antrian dibuka
+const CLINIC_CLOSE_HOUR = 20; // Pendaftaran antrian ditutup
+const CLINIC_CLOSE_MINUTE = 30; // Menit tutup (20:30)
+
+function getQueueStatus(): { canQueue: boolean; message: string } {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const currentMinutes = hours * 60 + minutes;
+
+  const openTime = CLINIC_OPEN_HOUR * 60; // 07:00 = 420
+  const closeTime = CLINIC_CLOSE_HOUR * 60 + CLINIC_CLOSE_MINUTE; // 20:30 = 1230
+
+  if (currentMinutes < openTime) {
+    return { canQueue: false, message: `Pendaftaran antrian dibuka pukul ${CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 WIB` };
+  }
+
+  if (currentMinutes >= closeTime) {
+    return { canQueue: false, message: `Pendaftaran antrian ditutup pukul ${CLINIC_CLOSE_HOUR.toString().padStart(2, '0')}:${CLINIC_CLOSE_MINUTE.toString().padStart(2, '0')} WIB` };
+  }
+
+  return { canQueue: true, message: '' };
+}
+
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
@@ -54,6 +79,7 @@ export default function PatientRegistration() {
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [todaySchedules, setTodaySchedules] = React.useState<any[]>([]);
   const [showSchedule, setShowSchedule] = React.useState(false);
+  const [queueStatus, setQueueStatus] = React.useState(getQueueStatus());
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PatientForm>();
   const { register: registerQueue, handleSubmit: handleSubmitQueue, reset: resetQueue, formState: { errors: queueErrors }, watch } = useForm<QueueForm>();
 
@@ -97,6 +123,12 @@ export default function PatientRegistration() {
       setTodaySchedules(enriched);
     };
     fetchTodaySchedules();
+
+    // Update queue status setiap menit
+    const interval = setInterval(() => {
+      setQueueStatus(getQueueStatus());
+    }, 60000);
+    return () => clearInterval(interval);
   }, [supabase]);
 
   React.useEffect(() => {
@@ -253,6 +285,14 @@ export default function PatientRegistration() {
 
   const onSubmitQueue = async (data: QueueForm) => {
     if (!selectedPatient) return;
+
+    // Cek jam pendaftaran
+    const status = getQueueStatus();
+    if (!status.canQueue) {
+      showToast(status.message, 'error');
+      return;
+    }
+
     setSaving(true);
     try {
       const today = new Date().toISOString().split('T')[0];
@@ -744,6 +784,17 @@ export default function PatientRegistration() {
           </div>
 
           <div className="p-6">
+            {/* Warning jika di luar jam pendaftaran */}
+            {!queueStatus.canQueue && (
+              <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-amber-800">{queueStatus.message}</p>
+                  <p className="text-xs text-amber-600 mt-0.5">Jam operasional klinik: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00 WIB</p>
+                </div>
+              </div>
+            )}
+
             {/* Patient Info */}
             {selectedPatient && (
               <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 mb-5">
@@ -817,7 +868,7 @@ export default function PatientRegistration() {
                 <Button type="button" variant="outline" onClick={() => setShowQueueForm(false)} className="flex-1 border-slate-200 hover:bg-slate-50">
                   Batal
                 </Button>
-                <Button type="submit" disabled={saving} className="flex-1 gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200">
+                <Button type="submit" disabled={saving || !queueStatus.canQueue} className="flex-1 gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200 disabled:opacity-50 disabled:cursor-not-allowed">
                   {saving ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
