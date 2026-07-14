@@ -127,6 +127,15 @@ export default function WaitingRoomMonitor() {
     }
   };
 
+  // Listen for ESC key to exit fullscreen
+  React.useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   // Running text announcements
   const announcements = [
     'Selamat datang di KlinikSehat! Silakan tunggu nomor antrian Anda dipanggil.',
