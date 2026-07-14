@@ -223,19 +223,21 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
           })}
         </nav>
 
-        {/* Monitor link */}
-        <div className="relative px-3 pb-3">
-          <Link
-            href="/monitor"
-            target="_blank"
-            className="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-[13px] font-medium text-teal-200/50 hover:bg-white/[0.08] hover:text-white transition-all duration-200"
-          >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.08] group-hover:bg-white/[0.12] transition-all">
-              <Monitor className="h-4 w-4" />
-            </div>
-            <span>Monitor Antrian</span>
-          </Link>
-        </div>
+        {/* Monitor link - not for patients */}
+        {role !== 'pasien' && (
+          <div className="relative px-3 pb-3">
+            <Link
+              href="/monitor"
+              target="_blank"
+              className="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-[13px] font-medium text-teal-200/50 hover:bg-white/[0.08] hover:text-white transition-all duration-200"
+            >
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/[0.08] group-hover:bg-white/[0.12] transition-all">
+                <Monitor className="h-4 w-4" />
+              </div>
+              <span>Monitor Antrian</span>
+            </Link>
+          </div>
+        )}
 
         {/* User section */}
         <div className="relative border-t border-white/[0.08] p-3 bg-black/10">
@@ -311,14 +313,16 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
                 {theme === 'dark' ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-slate-500" />}
               </button>
             )}
-            <Link
-              href="/monitor"
-              target="_blank"
-              className="hidden md:flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all shadow-sm"
-            >
-              <Monitor className="h-4 w-4" />
-              Monitor
-            </Link>
+            {role !== 'pasien' && (
+              <Link
+                href="/monitor"
+                target="_blank"
+                className="hidden md:flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all shadow-sm"
+              >
+                <Monitor className="h-4 w-4" />
+                Monitor
+              </Link>
+            )}
           </div>
         </header>
 
