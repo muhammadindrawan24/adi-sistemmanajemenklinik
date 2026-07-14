@@ -30,7 +30,7 @@ const fadeIn = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.4, ease: "easeOut" },
+    transition: { delay: i * 0.05, duration: 0.4, ease: "easeOut" as const },
   }),
 };
 
@@ -39,7 +39,7 @@ const slideUp = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
+    transition: { duration: 0.5, ease: "easeOut" as const },
   },
 };
 
@@ -48,7 +48,7 @@ const tableRow = {
   visible: (i: number) => ({
     opacity: 1,
     x: 0,
-    transition: { delay: i * 0.03, duration: 0.3, ease: 'easeOut' },
+    transition: { delay: i * 0.03, duration: 0.3, ease: 'easeOut' as const },
   }),
 };
 
