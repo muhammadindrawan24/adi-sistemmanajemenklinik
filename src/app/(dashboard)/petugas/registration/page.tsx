@@ -383,26 +383,43 @@ export default function PatientRegistration() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
+      {/* Header Banner */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Registrasi Pasien</h1>
-            <p className="text-slate-500 mt-1 text-sm">Cari pasien atau daftarkan pasien baru, lalu buat antrian.</p>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-teal-400/10 to-emerald-400/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                <UserPlus className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Registrasi Pasien</h1>
+                <p className="text-white/60 text-xs mt-0.5">Cari pasien atau daftarkan pasien baru, lalu buat antrian</p>
+              </div>
+            </div>
+            {!selectedPatient && (
+              <button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="hidden sm:flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg">
+                <UserPlus className="h-4 w-4" />
+                Pasien Baru
+              </button>
+            )}
           </div>
-          {!selectedPatient && (
-            <Button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="gap-2 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] shadow-lg shadow-teal-900/20">
-              <UserPlus className="h-4 w-4" />
-              Pasien Baru
-            </Button>
-          )}
         </div>
       </motion.div>
 
-      {/* Search Section */}
+      {/* Mobile Pasien Baru Button */}
+      {!selectedPatient && (
+        <div className="sm:hidden">
+          <button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] hover:from-[#0a2e28] hover:via-[#0c3b33] hover:to-[#0f4a3f] text-white text-sm font-semibold rounded-xl shadow-lg shadow-teal-900/20 transition-all duration-200">
+            <UserPlus className="h-4 w-4" />
+            Pasien Baru
+          </button>
+        </div>
+      )}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
@@ -421,17 +438,17 @@ export default function PatientRegistration() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && searchPatient()}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                 />
               </div>
-              <Button onClick={searchPatient} disabled={searching} className="px-6 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-md shadow-blue-200">
+              <button onClick={searchPatient} disabled={searching} className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-blue-200 transition-all duration-200 disabled:opacity-60">
                 {searching ? (
-                  <div className="flex items-center gap-2">
+                  <>
                     <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Cari
-                  </div>
+                  </>
                 ) : 'Cari'}
-              </Button>
+              </button>
             </div>
 
             {/* Search Results */}
@@ -449,10 +466,10 @@ export default function PatientRegistration() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       onClick={() => { setSelectedPatient(p); setSearchResults([]); setSearchQuery(''); }}
-                      className="flex items-center justify-between rounded-xl border border-slate-100 p-4 cursor-pointer transition-all duration-200 hover:bg-teal-50/50 hover:border-teal-200 hover:shadow-sm"
+                      className="flex items-center justify-between rounded-xl border border-slate-100 p-4 cursor-pointer transition-all duration-200 hover:bg-blue-50/50 hover:border-blue-200 hover:shadow-sm"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white font-bold shadow-md shadow-teal-200">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-md shadow-blue-200">
                           {p.full_name?.charAt(0)?.toUpperCase()}
                         </div>
                         <div>
@@ -489,7 +506,7 @@ export default function PatientRegistration() {
               >
                 <UserCircle2 className="h-10 w-10 text-slate-300 mx-auto mb-2" />
                 <p className="text-sm text-slate-500">Tidak ditemukan</p>
-                <button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="mt-2 text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+                <button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
                   Daftarkan pasien baru &rarr;
                 </button>
               </motion.div>
@@ -506,15 +523,15 @@ export default function PatientRegistration() {
             className="w-full rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50/80 to-teal-50/50 p-4 flex items-center justify-between hover:shadow-sm transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 shadow-sm shadow-emerald-200">
-                <Stethoscope className="h-4 w-4 text-white" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200">
+                <Stethoscope className="h-5 w-5 text-white" />
               </div>
               <div className="text-left">
                 <h3 className="text-sm font-bold text-emerald-800">Jadwal Dokter Hari Ini</h3>
-                <p className="text-[10px] text-emerald-600 mt-0.5">{todaySchedules.length} dokter aktif</p>
+                <p className="text-[11px] text-emerald-600 mt-0.5">{todaySchedules.length} dokter aktif</p>
               </div>
             </div>
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100">
               {showSchedule ? <ChevronUp className="h-4 w-4 text-emerald-700" /> : <ChevronDown className="h-4 w-4 text-emerald-700" />}
             </div>
           </button>
@@ -536,23 +553,23 @@ export default function PatientRegistration() {
                       return acc;
                     }, {})
                   ).map(([poliName, schedules]) => (
-                    <div key={poliName} className="rounded-xl bg-white border border-slate-100 p-3.5 shadow-sm">
-                      <div className="flex items-center gap-2 mb-2.5">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-[10px] font-bold text-emerald-700">
+                    <div key={poliName} className="rounded-xl bg-white border border-slate-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-[10px] font-bold text-white shadow-sm">
                           {schedules[0]?.poli_initial}
                         </span>
                         <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">{poliName}</h4>
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         {schedules.map((s: any) => (
-                          <div key={s.id} className="flex items-center justify-between">
+                          <div key={s.id} className="flex items-center justify-between py-1">
                             <div className="flex items-center gap-2">
-                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[9px] font-bold text-white">
+                              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[10px] font-bold text-white shadow-sm">
                                 {s.doctor_name?.split(' ').pop()?.charAt(0) || '?'}
                               </div>
                               <span className="text-xs font-medium text-slate-700 truncate max-w-[120px]">{s.doctor_name}</span>
                             </div>
-                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full flex items-center gap-1">
                               <Clock className="h-2.5 w-2.5" />
                               {s.start_time?.slice(0, 5)}-{s.end_time?.slice(0, 5)}
                             </span>
@@ -577,12 +594,12 @@ export default function PatientRegistration() {
             exit={{ opacity: 0, scale: 0.95 }}
             custom={2}
           >
-            <div className="relative overflow-hidden rounded-2xl border border-teal-100 bg-white shadow-lg shadow-teal-100/50">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-500 to-emerald-500" />
+            <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-lg shadow-blue-100/50">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
               <div className="p-6">
                 <div className="flex items-start justify-between mb-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-xl font-bold text-white shadow-lg shadow-teal-200">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-xl font-bold text-white shadow-lg shadow-blue-200">
                       {selectedPatient.full_name?.charAt(0)}
                     </div>
                     <div>
@@ -609,18 +626,18 @@ export default function PatientRegistration() {
                         <item.icon className="h-3 w-3 text-slate-400" />
                         <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{item.label}</span>
                       </div>
-                      <p className={`text-sm font-semibold ${item.highlight ? 'text-teal-600' : 'text-slate-900'}`}>{item.value}</p>
+                      <p className={`text-sm font-semibold ${item.highlight ? 'text-blue-600' : 'text-slate-900'}`}>{item.value}</p>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex gap-3">
-                  <Button onClick={() => { setShowNewForm(false); setShowQueueForm(true); }} className="flex-1 gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200">
+                  <button onClick={() => { setShowNewForm(false); setShowQueueForm(true); }} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200">
                     <ClipboardList className="h-4 w-4" /> Buat Antrian
-                  </Button>
-                  <Button variant="outline" onClick={() => setSelectedPatient(null)} className="border-slate-200 hover:bg-slate-50">
+                  </button>
+                  <button onClick={() => setSelectedPatient(null)} className="px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200">
                     Batal
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -632,9 +649,9 @@ export default function PatientRegistration() {
       <Dialog open={showNewForm} onOpenChange={setShowNewForm}>
         <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto p-0">
           {/* Dialog Header with gradient */}
-          <div className="sticky top-0 z-10 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] px-6 py-5 rounded-t-xl">
+          <div className="sticky top-0 z-10 bg-gradient-to-r from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] px-6 py-5 rounded-t-xl">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
                 <UserPlus className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -752,10 +769,10 @@ export default function PatientRegistration() {
 
             {/* Actions */}
             <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowNewForm(false)} className="flex-1 border-slate-200 hover:bg-slate-50">
+              <button type="button" onClick={() => setShowNewForm(false)} className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200">
                 Batal
-              </Button>
-              <Button type="submit" disabled={saving} className="flex-1 gap-2 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] shadow-lg shadow-teal-900/20">
+              </button>
+              <button type="submit" disabled={saving} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] hover:from-[#0a2e28] hover:via-[#0c3b33] hover:to-[#0f4a3f] text-white text-sm font-semibold rounded-xl shadow-lg shadow-teal-900/20 transition-all duration-200 disabled:opacity-60">
                 {saving ? (
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -764,7 +781,7 @@ export default function PatientRegistration() {
                 ) : (
                   <><CheckCircle className="h-4 w-4" /> Daftarkan Pasien</>
                 )}
-              </Button>
+              </button>
             </div>
           </form>
         </DialogContent>
@@ -774,9 +791,9 @@ export default function PatientRegistration() {
       <Dialog open={showQueueForm} onOpenChange={setShowQueueForm}>
         <DialogContent className="max-w-lg p-0">
           {/* Dialog Header */}
-          <div className="bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] px-6 py-5 rounded-t-xl">
+          <div className="bg-gradient-to-r from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] px-6 py-5 rounded-t-xl">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
                 <ClipboardList className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -801,7 +818,7 @@ export default function PatientRegistration() {
             {/* Patient Info */}
             {selectedPatient && (
               <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 mb-5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white font-bold shadow-sm">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-sm">
                   {selectedPatient.full_name?.charAt(0)}
                 </div>
                 <div>
@@ -815,7 +832,7 @@ export default function PatientRegistration() {
               {/* Poli */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pilih Poli</label>
-                <Select {...registerQueue('poli_id', { required: 'Poli wajib dipilih' })} className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20">
+                <Select {...registerQueue('poli_id', { required: 'Poli wajib dipilih' })} className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
                   <option value="">Pilih Poli</option>
                   {poliList.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </Select>
@@ -861,7 +878,7 @@ export default function PatientRegistration() {
                   {...registerQueue('complaint', { required: 'Keluhan wajib diisi' })}
                   placeholder="Tuliskan keluhan pasien..."
                   rows={3}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none resize-none"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none resize-none"
                 />
                 {queueErrors.complaint && <p className="text-xs text-red-500">{queueErrors.complaint.message}</p>}
               </div>
@@ -886,10 +903,10 @@ export default function PatientRegistration() {
 
               {/* Actions */}
               <div className="flex gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={() => { setShowQueueForm(false); setOverrideTime(false); }} className="flex-1 border-slate-200 hover:bg-slate-50">
+                <button type="button" onClick={() => { setShowQueueForm(false); setOverrideTime(false); }} className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200">
                   Batal
-                </Button>
-                <Button type="submit" disabled={saving || (!queueStatus.canQueue && !overrideTime)} className="flex-1 gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                </button>
+                <button type="submit" disabled={saving || (!queueStatus.canQueue && !overrideTime)} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                   {saving ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -898,7 +915,7 @@ export default function PatientRegistration() {
                   ) : (
                     <><CheckCircle className="h-4 w-4" /> Buat Antrian</>
                   )}
-                </Button>
+                </button>
               </div>
             </form>
           </div>
