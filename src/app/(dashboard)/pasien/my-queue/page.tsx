@@ -1,12 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
-import { Activity, Clock, XCircle, RefreshCw, MapPin } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Activity, Clock, XCircle, RefreshCw, MapPin, AlertCircle, CheckCircle, ListOrdered, Stethoscope } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -24,7 +20,7 @@ export default function MyQueuePage() {
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type }); setTimeout(() => setToast(null), 3000);
+    setToast({ message, type }); setTimeout(() => setToast(null), 4000);
   };
 
   const fetchQueue = async () => {
@@ -54,7 +50,6 @@ export default function MyQueuePage() {
 
   React.useEffect(() => { fetchQueue(); }, []);
 
-  // Realtime
   React.useEffect(() => {
     if (!currentQueue) return;
     const channel = supabase
@@ -72,123 +67,166 @@ export default function MyQueuePage() {
     setCancelling(true);
     const { error } = await supabase
       .from('queues')
-      .update({ status: 'dibatalkan' })
+      .update({ status: 'dibatalkan', cancelled_at: new Date().toISOString() })
       .eq('id', currentQueue.id);
     if (error) showToast('Gagal membatalkan antrian', 'error');
     else { showToast('Antrian berhasil dibatalkan'); setCurrentQueue(null); }
     setCancelling(false);
   };
 
-  const statusVariant = (status: string) => {
-    const map: Record<string, 'warning' | 'info' | 'default' | 'success' | 'destructive'> = {
-      menunggu: 'warning', dipanggil: 'info', sedang_diperiksa: 'warning',
-    };
-    return map[status] || 'secondary';
+  const statusConfig: Record<string, { label: string; bg: string; text: string; dot: string; gradient: string }> = {
+    menunggu: { label: 'Menunggu', bg: 'bg-amber-50 border-amber-200', text: 'text-amber-700', dot: 'bg-amber-400', gradient: 'from-amber-500 to-orange-600' },
+    dipanggil: { label: 'Dipanggil!', bg: 'bg-blue-50 border-blue-200', text: 'text-blue-700', dot: 'bg-blue-400 animate-pulse', gradient: 'from-blue-500 to-indigo-600' },
+    sedang_diperiksa: { label: 'Sedang Diperiksa', bg: 'bg-teal-50 border-teal-200', text: 'text-teal-700', dot: 'bg-teal-400', gradient: 'from-teal-500 to-emerald-600' },
   };
 
-  const statusLabel = (status: string) => {
-    const map: Record<string, string> = {
-      menunggu: 'Menunggu', dipanggil: 'Dipanggil!', sedang_diperiksa: 'Sedang Diperiksa',
-    };
-    return map[status] || status;
-  };
-
+  const sc = statusConfig[currentQueue?.status] || statusConfig.menunggu;
   const isDipanggil = currentQueue?.status === 'dipanggil';
-  const isDiperiksa = currentQueue?.status === 'sedang_diperiksa';
 
   return (
     <div className="space-y-6">
-      {toast && (
-        <div className={`fixed top-4 right-4 z-[100] rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg ${toast.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
-          {toast.message}
-        </div>
-      )}
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-4 right-4 z-[100] rounded-2xl px-5 py-3.5 text-sm font-medium text-white shadow-xl backdrop-blur-sm ${toast.type === 'success' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}
+          >
+            <div className="flex items-center gap-2">
+              {toast.type === 'success' ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+              {toast.message}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Antrian Saya</h1>
-          <p className="text-slate-500 mt-1">Status antrian Anda secara real-time.</p>
+      {/* Header Banner */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-teal-400/10 to-emerald-400/5 rounded-full translate-y-1/2 -translate-x-1/3" />
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                <ListOrdered className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Antrian Saya</h1>
+                <p className="text-white/60 text-xs mt-0.5">Status antrian Anda secara real-time</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { setLoading(true); fetchQueue(); }}
+              className="hidden sm:flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Refresh
+            </button>
+          </div>
         </div>
-        <Button variant="outline" onClick={() => { setLoading(true); fetchQueue(); }} className="gap-2">
-          <RefreshCw className="h-4 w-4" /> Refresh
-        </Button>
       </motion.div>
 
+      {/* Mobile Refresh */}
+      <div className="sm:hidden">
+        <button
+          onClick={() => { setLoading(true); fetchQueue(); }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Refresh
+        </button>
+      </div>
+
+      {/* Queue Status */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         {loading ? (
-          <Skeleton className="h-64 w-full" />
+          <div className="bg-white rounded-2xl border border-slate-100 p-12 shadow-sm">
+            <div className="flex flex-col items-center">
+              <div className="h-28 w-28 bg-slate-100 rounded-3xl animate-pulse mb-4" />
+              <div className="h-6 w-32 bg-slate-100 rounded animate-pulse mb-2" />
+              <div className="h-4 w-48 bg-slate-100 rounded animate-pulse" />
+            </div>
+          </div>
         ) : !currentQueue ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Activity className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-lg font-medium text-slate-600">Tidak ada antrian aktif</p>
-              <p className="text-sm text-slate-400 mt-1">Ambil antrian baru untuk memulai.</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center shadow-sm">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-4">
+              <Activity className="h-8 w-8 text-slate-300" />
+            </div>
+            <p className="text-lg font-semibold text-slate-600">Tidak ada antrian aktif</p>
+            <p className="text-sm text-slate-400 mt-1">Ambil antrian baru untuk memulai</p>
+          </div>
         ) : (
-          <Card className={`border-2 ${isDipanggil ? 'border-blue-400 bg-blue-50 animate-pulse' : isDiperiksa ? 'border-teal-400 bg-teal-50' : 'border-amber-200 bg-amber-50'}`}>
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center text-center">
-                {/* Status Badge */}
-                <Badge variant={statusVariant(currentQueue.status)} className="text-sm px-4 py-1.5 mb-4">
-                  <Clock className="h-4 w-4 mr-1.5" />
-                  {statusLabel(currentQueue.status)}
-                </Badge>
+          <div className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden ${isDipanggil ? 'ring-2 ring-blue-400 ring-offset-2' : ''}`}>
+            {/* Status Header */}
+            <div className={`p-4 ${isDipanggil ? 'bg-gradient-to-r from-blue-50 to-indigo-50' : currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-r from-teal-50 to-emerald-50' : 'bg-gradient-to-r from-amber-50 to-orange-50'}`}>
+              <div className="flex items-center justify-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${sc.dot}`} />
+                <span className={`text-sm font-bold ${sc.text}`}>{sc.label}</span>
+              </div>
+            </div>
 
-                {/* Queue Number */}
-                <div className={`flex h-28 w-28 items-center justify-center rounded-3xl shadow-lg mb-4 ${
-                  isDipanggil ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
-                  isDiperiksa ? 'bg-gradient-to-br from-teal-500 to-emerald-600' :
-                  'bg-gradient-to-br from-amber-500 to-orange-600'
-                }`}>
-                  <span className="text-5xl font-bold text-white">{currentQueue.queue_number}</span>
-                </div>
+            {/* Queue Number */}
+            <div className="p-8 text-center">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                className={`inline-flex h-28 w-28 items-center justify-center rounded-3xl shadow-xl mb-5 bg-gradient-to-br ${sc.gradient} ${isDipanggil ? 'animate-pulse' : ''}`}
+              >
+                <span className="text-4xl font-bold text-white">{currentQueue.queue_number}</span>
+              </motion.div>
 
-                {isDipanggil && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-4 text-blue-700 font-bold text-lg"
-                  >
-                    Silakan menuju ruang periksa!
-                  </motion.div>
-                )}
+              {isDipanggil && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-5 p-3 rounded-xl bg-blue-50 border border-blue-100"
+                >
+                  <p className="text-sm font-bold text-blue-700">Silakan menuju ruang periksa!</p>
+                </motion.div>
+              )}
 
-                {/* Info */}
-                <div className="space-y-2 w-full max-w-sm">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Poli</span>
-                    <span className="font-medium text-slate-900">{currentQueue.poli?.name || '-'}</span>
+              {/* Info Grid */}
+              <div className="max-w-sm mx-auto space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <Stethoscope className="h-4 w-4 text-slate-400" />
+                    <span className="text-xs font-semibold text-slate-500">Poli</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Waktu Ambil</span>
-                    <span className="font-medium text-slate-900">
-                      {format(new Date(currentQueue.created_at), 'HH:mm', { locale: id })}
-                    </span>
-                  </div>
-                  {currentQueue.complaint && (
-                    <div className="text-left mt-2">
-                      <p className="text-xs text-slate-500">Keluhan</p>
-                      <p className="text-sm text-slate-700">{currentQueue.complaint}</p>
-                    </div>
-                  )}
+                  <span className="text-sm font-bold text-slate-900">{currentQueue.poli?.name || '-'}</span>
                 </div>
-
-                {/* Cancel Button */}
-                {currentQueue.status === 'menunggu' && (
-                  <Button
-                    variant="destructive"
-                    onClick={cancelQueue}
-                    disabled={cancelling}
-                    className="mt-6 gap-2"
-                  >
-                    <XCircle className="h-4 w-4" />
-                    {cancelling ? 'Membatalkan...' : 'Batalkan Antrian'}
-                  </Button>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-slate-400" />
+                    <span className="text-xs font-semibold text-slate-500">Waktu Ambil</span>
+                  </div>
+                  <span className="text-sm font-bold text-slate-900">
+                    {format(new Date(currentQueue.created_at), 'HH:mm', { locale: id })} WIB
+                  </span>
+                </div>
+                {currentQueue.complaint && (
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-left">
+                    <p className="text-xs font-semibold text-slate-500 mb-1">Keluhan</p>
+                    <p className="text-sm text-slate-700">{currentQueue.complaint}</p>
+                  </div>
                 )}
               </div>
-            </CardContent>
-          </Card>
+
+              {/* Cancel Button */}
+              {currentQueue.status === 'menunggu' && (
+                <button
+                  onClick={cancelQueue}
+                  disabled={cancelling}
+                  className="mt-6 flex items-center justify-center gap-2 px-6 py-3 border border-red-200 text-red-600 text-sm font-semibold rounded-xl hover:bg-red-50 transition-all duration-200 disabled:opacity-50 mx-auto"
+                >
+                  <XCircle className="h-4 w-4" />
+                  {cancelling ? 'Membatalkan...' : 'Batalkan Antrian'}
+                </button>
+              )}
+            </div>
+          </div>
         )}
       </motion.div>
     </div>
