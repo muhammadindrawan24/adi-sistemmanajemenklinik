@@ -190,7 +190,7 @@ export default function DoctorManagement() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Manajemen Dokter</h1>
-          <p className="text-slate-500 mt-1">Kelola data dokter klinik.</p>
+          <p className="text-slate-500 dark:text-slate-300 mt-1">Kelola data dokter klinik.</p>
         </div>
         <Button onClick={openAddDialog} className="gap-2">
           <Plus className="h-4 w-4" />
@@ -200,53 +200,53 @@ export default function DoctorManagement() {
 
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
           <Input placeholder="Cari nama, spesialisasi, atau SIP..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
         </div>
       </motion.div>
 
       <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
+        <Card className="dark:bg-slate-800">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 dark:bg-slate-900">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Nama</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Jenis Kelamin</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Spesialisasi</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">SIP</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Poli</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Aksi</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Nama</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Jenis Kelamin</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Spesialisasi</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">SIP</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Poli</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Status</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-100">
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
                         {Array.from({ length: 7 }).map((_, j) => (
                           <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
                         ))}
                       </tr>
                     ))
                   ) : filteredDoctors.length === 0 ? (
-                    <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400">Tidak ada data dokter</td></tr>
+                    <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400 dark:text-slate-500">Tidak ada data dokter</td></tr>
                   ) : (
                     filteredDoctors.map((doctor) => (
-                      <tr key={doctor.id} className="border-b border-slate-100 hover:bg-slate-50 dark:bg-slate-900 transition-colors">
+                      <tr key={doctor.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-sm font-bold text-teal-700">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 dark:bg-teal-900 text-sm font-bold text-teal-700 dark:text-teal-300">
                               {doctor.profiles?.full_name?.charAt(0)?.toUpperCase() || '?'}
                             </div>
                             <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{doctor.profiles?.full_name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{doctor.profiles?.gender === 'laki_laki' ? 'Laki-laki' : doctor.profiles?.gender === 'perempuan' ? 'Perempuan' : '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{doctor.specialty || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{doctor.license_number || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{doctor.poli_name || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{doctor.profiles?.gender === 'laki_laki' ? 'Laki-laki' : doctor.profiles?.gender === 'perempuan' ? 'Perempuan' : '-'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{doctor.specialty || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{doctor.license_number || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{doctor.poli_name || '-'}</td>
                         <td className="px-4 py-3">
                           <Badge variant={doctor.is_available ? 'success' : 'destructive'}>
                             {doctor.is_available ? <CheckCircle className="h-3 w-3 mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
@@ -255,10 +255,10 @@ export default function DoctorManagement() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-1">
-                            <button onClick={() => openEditDialog(doctor)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                            <button onClick={() => openEditDialog(doctor)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-100 transition-colors">
                               <Pencil className="h-4 w-4" />
                             </button>
-                            <button onClick={() => setDeleteConfirm(doctor.id)} className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
+                            <button onClick={() => setDeleteConfirm(doctor.id)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-red-50 dark:hover:bg-red-900 hover:text-red-600 dark:hover:text-red-300 transition-colors">
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
@@ -275,7 +275,7 @@ export default function DoctorManagement() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[420px]">
+        <DialogContent className="sm:max-w-[420px] dark:bg-slate-800 dark:border-slate-700">
           <DialogHeader>
             <DialogTitle>{editDoctor ? 'Edit Dokter' : 'Tambah Dokter Baru'}</DialogTitle>
           </DialogHeader>
@@ -283,22 +283,22 @@ export default function DoctorManagement() {
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Nama Dokter</label>
               <Input {...register('name', { required: 'Nama wajib diisi' })} placeholder="Dr. Nama Lengkap" className="mt-1" />
-              {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+              {errors.name && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errors.name.message}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Spesialisasi</label>
               <Input {...register('specialty', { required: 'Spesialisasi wajib diisi' })} placeholder="Contoh: Umum, Anak" className="mt-1" />
-              {errors.specialty && <p className="text-xs text-red-500 mt-1">{errors.specialty.message}</p>}
+              {errors.specialty && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errors.specialty.message}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">No. SIP</label>
               <Input {...register('license_number', { required: 'SIP wajib diisi' })} placeholder="Nomor Surat Izin Praktik" className="mt-1" />
-              {errors.license_number && <p className="text-xs text-red-500 mt-1">{errors.license_number.message}</p>}
+              {errors.license_number && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errors.license_number.message}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">NIP</label>
               <Input {...register('nip', { required: 'NIP wajib diisi' })} placeholder="Nomor Induk Pegawai" className="mt-1" />
-              {errors.nip && <p className="text-xs text-red-500 mt-1">{errors.nip.message}</p>}
+              {errors.nip && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errors.nip.message}</p>}
             </div>
             <div>
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Jenis Kelamin</label>
@@ -327,11 +327,11 @@ export default function DoctorManagement() {
 
       {/* Delete Confirmation */}
       <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent>
+        <DialogContent className="dark:bg-slate-800 dark:border-slate-700">
           <DialogHeader>
             <DialogTitle>Hapus Dokter</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-slate-600 mt-2">Apakah Anda yakin ingin menghapus data dokter ini?</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">Apakah Anda yakin ingin menghapus data dokter ini?</p>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Batal</Button>
             <Button variant="destructive" onClick={() => deleteConfirm && handleDelete(deleteConfirm)}>Hapus</Button>

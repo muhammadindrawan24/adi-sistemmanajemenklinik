@@ -76,8 +76,8 @@ export default function AuditLogPage() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900">Audit Log</h1>
-        <p className="text-slate-500 mt-1">Riwayat semua aktivitas sistem.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Audit Log</h1>
+        <p className="text-slate-500 dark:text-slate-300 mt-1">Riwayat semua aktivitas sistem.</p>
       </motion.div>
 
       {/* Filters */}
@@ -86,7 +86,7 @@ export default function AuditLogPage() {
           <CardContent className="p-4">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-300" />
                 <Input placeholder="Cari aktivitas..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
               </div>
               <Select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)} className="w-full sm:w-44">
@@ -109,38 +109,38 @@ export default function AuditLogPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Waktu</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">User</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Aksi</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Detail</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Waktu</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">User</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Aksi</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Detail</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     Array.from({ length: 8 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-100">{Array.from({ length: 4 }).map((_, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>)}</tr>
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700">{Array.from({ length: 4 }).map((_, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>)}</tr>
                     ))
                   ) : filtered.length === 0 ? (
-                    <tr><td colSpan={4} className="px-4 py-12 text-center text-slate-400">Tidak ada data audit log</td></tr>
+                    <tr><td colSpan={4} className="px-4 py-12 text-center text-slate-400 dark:text-slate-300">Tidak ada data audit log</td></tr>
                   ) : (
                     filtered.map((log) => (
-                      <tr key={log.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
+                      <tr key={log.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-300 whitespace-nowrap">
                           {format(new Date(log.created_at), 'dd MMM yyyy, HH:mm:ss', { locale: id })}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100">
-                              <User className="h-3.5 w-3.5 text-slate-500" />
+                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+                              <User className="h-3.5 w-3.5 text-slate-500 dark:text-slate-300" />
                             </div>
-                            <span className="text-sm font-medium text-slate-700">{log.user_name || 'Sistem'}</span>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-100">{log.user_name || 'Sistem'}</span>
                           </div>
                         </td>
                         <td className="px-4 py-3">
                           <Badge variant={actionVariant(log.action) as any}>{log.action}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-600 max-w-xs truncate">{log.details || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 max-w-xs truncate">{log.details || '-'}</td>
                       </tr>
                     ))
                   )}

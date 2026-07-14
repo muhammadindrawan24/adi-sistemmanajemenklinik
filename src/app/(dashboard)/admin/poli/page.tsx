@@ -116,7 +116,7 @@ export default function PoliManagement() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Manajemen Poli</h1>
-          <p className="text-slate-500 mt-1">Kelola poli klinik.</p>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Kelola poli klinik.</p>
         </div>
         <Button onClick={openAdd} className="gap-2">
           <Plus className="h-4 w-4" /> Tambah Poli
@@ -125,7 +125,7 @@ export default function PoliManagement() {
 
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
           <Input placeholder="Cari poli..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
         </div>
       </motion.div>
@@ -137,40 +137,40 @@ export default function PoliManagement() {
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-32 w-full" />)}
           </div>
         ) : filtered.length === 0 ? (
-          <Card><CardContent className="py-12 text-center text-slate-400">Tidak ada data poli</CardContent></Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700"><CardContent className="py-12 text-center text-slate-400 dark:text-slate-500">Tidak ada data poli</CardContent></Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((item, i) => (
-              <Card key={item.id} className="overflow-hidden hover:shadow-md transition-shadow">
+              <Card key={item.id} className="overflow-hidden hover:shadow-md transition-shadow dark:bg-slate-800 dark:border-slate-700">
                 <div className={`h-2 bg-gradient-to-r ${colors[i % colors.length]}`} />
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{item.name}</h3>
-                      <p className="text-sm text-slate-500 mt-1">{item.description || 'Tidak ada deskripsi'}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{item.description || 'Tidak ada deskripsi'}</p>
                       <div className="mt-3">
-                        <p className="text-xs font-semibold text-slate-400 uppercase mb-1.5">Dokter</p>
+                        <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase mb-1.5">Dokter</p>
                         {item.doctors.length === 0 ? (
-                          <p className="text-xs text-slate-400 italic">Belum ada dokter</p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500 italic">Belum ada dokter</p>
                         ) : (
                           <div className="flex flex-wrap gap-1">
                             {item.doctors.map((name: string, j: number) => (
-                              <span key={j} className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+                              <span key={j} className="inline-flex items-center gap-1 rounded-full bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 text-xs font-medium text-teal-700 dark:text-teal-300">
                                 {name}
                               </span>
                             ))}
                           </div>
                         )}
                       </div>
-                      <p className="text-xs text-slate-400 mt-3">
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">
                         Dibuat {format(new Date(item.created_at), 'dd MMM yyyy', { locale: id })}
                       </p>
                     </div>
                     <div className="flex gap-1">
-                      <button onClick={() => openEdit(item)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                      <button onClick={() => openEdit(item)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-200">
                         <Pencil className="h-4 w-4" />
                       </button>
-                      <button onClick={() => setDeleteConfirm(item.id)} className="rounded-lg p-2 text-slate-400 hover:bg-red-50 hover:text-red-600">
+                      <button onClick={() => setDeleteConfirm(item.id)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -184,7 +184,7 @@ export default function PoliManagement() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="dark:bg-slate-800 dark:border-slate-700">
           <DialogHeader>
             <DialogTitle>{editItem ? 'Edit Poli' : 'Tambah Poli Baru'}</DialogTitle>
           </DialogHeader>
@@ -212,9 +212,9 @@ export default function PoliManagement() {
       </Dialog>
 
       <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent>
+        <DialogContent className="dark:bg-slate-800 dark:border-slate-700">
           <DialogHeader><DialogTitle>Hapus Poli</DialogTitle></DialogHeader>
-          <p className="text-sm text-slate-600 mt-2">Apakah Anda yakin ingin menghapus poli ini?</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">Apakah Anda yakin ingin menghapus poli ini?</p>
           <div className="flex justify-end gap-2 mt-4">
             <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Batal</Button>
             <Button variant="destructive" onClick={() => deleteConfirm && handleDelete(deleteConfirm)}>Hapus</Button>

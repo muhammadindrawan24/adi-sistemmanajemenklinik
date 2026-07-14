@@ -180,7 +180,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 dark:bg-slate-900 min-h-screen">
       {/* Welcome Banner */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 p-6 sm:p-8 text-white">
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         {statCards.map((card, i) => (
           <motion.div key={card.label} custom={i} initial="hidden" animate="visible" variants={fadeIn}>
-            <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-100">
+            <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-100 dark:border-slate-700 dark:bg-slate-800">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${card.color} shadow-md`}>
@@ -222,11 +222,11 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{card.label}</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wide">{card.label}</p>
                   {loading ? (
                     <Skeleton className="mt-1.5 h-7 w-12" />
                   ) : (
-                    <p className="text-2xl font-bold text-slate-900 mt-0.5">{card.value}</p>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">{card.value}</p>
                   )}
                 </div>
               </CardContent>
@@ -238,14 +238,14 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart */}
         <motion.div custom={6} initial="hidden" animate="visible" variants={fadeIn} className="lg:col-span-2">
-          <Card className="border-slate-100">
+          <Card className="border-slate-100 dark:border-slate-700 dark:bg-slate-800">
             <div className="px-6 pt-5 pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50">
-                    <TrendingUp className="h-4 w-4 text-teal-600" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/20">
+                    <TrendingUp className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                   </div>
-                  <h3 className="text-sm font-semibold text-slate-900">Kunjungan 7 Hari Terakhir</h3>
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Kunjungan 7 Hari Terakhir</h3>
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
               ) : (
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <CartesianGrid strokeDasharray="3 3" className="dark:stroke-slate-700" stroke="#f1f5f9" />
                     <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                     <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                     <Tooltip
@@ -282,13 +282,13 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <motion.div custom={7} initial="hidden" animate="visible" variants={fadeIn}>
-          <Card className="h-full border-slate-100">
+          <Card className="h-full border-slate-100 dark:border-slate-700 dark:bg-slate-800">
             <div className="px-6 pt-5 pb-2">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50">
-                  <Sparkles className="h-4 w-4 text-teal-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/20">
+                  <Sparkles className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                 </div>
-                <h3 className="text-sm font-semibold text-slate-900">Aksi Cepat</h3>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Aksi Cepat</h3>
               </div>
             </div>
             <CardContent className="pt-2">
@@ -309,17 +309,17 @@ export default function AdminDashboard() {
 
       {/* Recent Activity */}
       <motion.div custom={8} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card className="border-slate-100">
+        <Card className="border-slate-100 dark:border-slate-700 dark:bg-slate-800">
           <div className="px-6 pt-5 pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50">
-                  <Activity className="h-4 w-4 text-teal-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/20">
+                  <Activity className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                 </div>
-                <h3 className="text-sm font-semibold text-slate-900">Aktivitas Terbaru</h3>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Aktivitas Terbaru</h3>
               </div>
               {recentActivity.length > 0 && (
-                <Link href="/admin/audit-log" className="flex items-center gap-1 text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors">
+                <Link href="/admin/audit-log" className="flex items-center gap-1 text-xs font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors">
                   Lihat semua <ArrowUpRight className="h-3 w-3" />
                 </Link>
               )}
@@ -334,27 +334,27 @@ export default function AdminDashboard() {
               </div>
             ) : recentActivity.length === 0 ? (
               <div className="text-center py-10">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 mx-auto mb-3">
-                  <ListOrdered className="h-5 w-5 text-slate-400" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 mx-auto mb-3">
+                  <ListOrdered className="h-5 w-5 text-slate-400 dark:text-slate-300" />
                 </div>
-                <p className="text-sm text-slate-400">Belum ada aktivitas hari ini</p>
+                <p className="text-sm text-slate-400 dark:text-slate-300">Belum ada aktivitas hari ini</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {recentActivity.map((item: any) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-100 p-3.5 hover:bg-slate-50/80 transition-all duration-200"
+                    className="flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-700 p-3.5 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 ring-1 ring-teal-100">
-                        <ListOrdered className="h-4 w-4 text-teal-600" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 ring-1 ring-teal-100 dark:ring-teal-700/30">
+                        <ListOrdered className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-900">
-                          {item.patient?.full_name || 'Pasien'} — <span className="text-slate-500">{item.poli?.name || 'Poli'}</span>
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                          {item.patient?.full_name || 'Pasien'} — <span className="text-slate-500 dark:text-slate-300">{item.poli?.name || 'Poli'}</span>
                         </p>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="text-xs text-slate-400 dark:text-slate-300 mt-0.5">
                           No. {item.queue_number} &middot; {format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}
                         </p>
                       </div>

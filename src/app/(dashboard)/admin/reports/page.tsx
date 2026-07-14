@@ -177,7 +177,7 @@ export default function ReportsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-teal-600" />
+              <Filter className="h-5 w-5 text-teal-600 dark:text-teal-400" />
               Filter Laporan
             </CardTitle>
           </CardHeader>
@@ -263,7 +263,7 @@ export default function ReportsPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 dark:bg-slate-900">
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">No</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Tanggal</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Pasien</th>
@@ -275,20 +275,20 @@ export default function ReportsPage() {
                 <tbody>
                   {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-100">{Array.from({ length: 6 }).map((_, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>)}</tr>
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700">{Array.from({ length: 6 }).map((_, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>)}</tr>
                     ))
                   ) : reportData.length === 0 ? (
-                    <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400">Klik &quot;Generate Laporan&quot; untuk melihat data</td></tr>
+                    <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400 dark:text-slate-500">Klik &quot;Generate Laporan&quot; untuk melihat data</td></tr>
                   ) : (
                     reportData.map((row, i) => (
-                      <tr key={row.id} className="border-b border-slate-100 hover:bg-slate-50 dark:bg-slate-900">
+                      <tr key={row.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900">
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{i + 1}</td>
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{format(new Date(row.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}</td>
                         <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">{row.patient_name || '-'}</td>
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{row.poli?.name || '-'}</td>
                         <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{row.doctor_name || '-'}</td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${row.status === 'selesai' ? 'bg-green-100 text-green-700' : row.status === 'dibatalkan' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}`}>
+                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${row.status === 'selesai' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : row.status === 'dibatalkan' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
                             {row.status}
                           </span>
                         </td>

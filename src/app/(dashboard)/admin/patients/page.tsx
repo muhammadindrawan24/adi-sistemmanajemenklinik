@@ -265,48 +265,48 @@ export default function PatientManagement() {
       )}
 
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900">Manajemen Pasien</h1>
-        <p className="text-slate-500 mt-1">Lihat data pasien, riwayat kunjungan, dan rekam medis.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Manajemen Pasien</h1>
+        <p className="text-slate-500 dark:text-slate-300 mt-1">Lihat data pasien, riwayat kunjungan, dan rekam medis.</p>
       </motion.div>
 
       {/* Stats */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
-                  <Users className="h-5 w-5 text-blue-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">{totalPatients}</p>
-                  <p className="text-xs text-slate-500">Total Pasien</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{totalPatients}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-300">Total Pasien</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50">
-                  <Activity className="h-5 w-5 text-emerald-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-900/30">
+                  <Activity className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">{activePatients}</p>
-                  <p className="text-xs text-slate-500">Pernah Berobat</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activePatients}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-300">Pernah Berobat</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-slate-800 dark:border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50">
-                  <Calendar className="h-5 w-5 text-amber-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-900/30">
+                  <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">{todayPatients}</p>
-                  <p className="text-xs text-slate-500">Kunjungan Hari Ini</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{todayPatients}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-300">Kunjungan Hari Ini</p>
                 </div>
               </div>
             </CardContent>
@@ -317,83 +317,83 @@ export default function PatientManagement() {
       {/* Search */}
       <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
           <Input placeholder="Cari nama, No. RM, NIK, atau telepon..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
         </div>
       </motion.div>
 
       {/* Patient Table */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
+        <Card className="dark:bg-slate-800 dark:border-slate-700">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Pasien</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">No. RM</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">NIK</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Usia</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">JK</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Gol. Darah</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Kunjungan</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Terakhir</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase">Aksi</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Pasien</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">No. RM</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">NIK</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Usia</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">JK</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Gol. Darah</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Kunjungan</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Terakhir</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-100">
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
                         {Array.from({ length: 9 }).map((_, j) => (
                           <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
                         ))}
                       </tr>
                     ))
                   ) : filteredPatients.length === 0 ? (
-                    <tr><td colSpan={9} className="px-4 py-12 text-center text-slate-400">Tidak ada data pasien</td></tr>
+                    <tr><td colSpan={9} className="px-4 py-12 text-center text-slate-400 dark:text-slate-500">Tidak ada data pasien</td></tr>
                   ) : (
                     filteredPatients.map((patient) => (
-                      <tr key={patient.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                      <tr key={patient.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-sm font-bold text-teal-700">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 dark:bg-teal-900/30 text-sm font-bold text-teal-700 dark:text-teal-300">
                               {patient.full_name?.charAt(0)?.toUpperCase() || '?'}
                             </div>
-                            <span className="text-sm font-medium text-slate-900">{patient.full_name}</span>
+                            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{patient.full_name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-600 font-mono">{patient.medical_record_number}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 font-mono">{patient.nik || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{calculateAge(patient.date_of_birth)}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 font-mono">{patient.medical_record_number}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 font-mono">{patient.nik || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{calculateAge(patient.date_of_birth)}</td>
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                           {patient.gender === 'laki_laki' ? 'Laki-laki' : patient.gender === 'perempuan' ? 'Perempuan' : '-'}
                         </td>
                         <td className="px-4 py-3">
                           {patient.blood_type ? (
                             <Badge variant="info">{patient.blood_type}</Badge>
                           ) : (
-                            <span className="text-sm text-slate-400">-</span>
+                            <span className="text-sm text-slate-400 dark:text-slate-500">-</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-center">
                           <span className={`inline-flex items-center justify-center h-6 min-w-[24px] rounded-full px-2 text-xs font-bold ${
-                            patient.visit_count > 0 ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-400'
+                            patient.visit_count > 0 ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500'
                           }`}>
                             {patient.visit_count}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-600">
+                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                           {patient.last_visit
                             ? format(new Date(patient.last_visit), 'dd MMM yyyy', { locale: id })
                             : '-'}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-1">
-                            <button onClick={() => openEdit(patient)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Edit Pasien">
+                            <button onClick={() => openEdit(patient)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" title="Edit Pasien">
                               <Pencil className="h-4 w-4" />
                             </button>
-                            <button onClick={() => openDetail(patient)} className="rounded-lg p-2 text-slate-400 hover:bg-teal-50 hover:text-teal-600 transition-colors" title="Lihat Detail">
+                            <button onClick={() => openDetail(patient)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:text-teal-600 dark:hover:text-teal-400 transition-colors" title="Lihat Detail">
                               <Eye className="h-4 w-4" />
                             </button>
                           </div>
@@ -410,47 +410,47 @@ export default function PatientManagement() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editPatient} onOpenChange={() => setEditPatient(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto dark:bg-slate-800 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle>Edit Data Pasien</DialogTitle>
+            <DialogTitle className="dark:text-slate-100">Edit Data Pasien</DialogTitle>
           </DialogHeader>
           {editPatient && (
             <form key={editPatient.id} onSubmit={handleSubmit(onSubmitEdit)} className="space-y-4 mt-4">
-              <div className="rounded-xl bg-slate-50 p-3 mb-2">
-                <p className="text-sm font-medium text-slate-900">No. RM: {editPatient.medical_record_number}</p>
-                <p className="text-xs text-slate-500">Nomor rekam medis tidak dapat diubah.</p>
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-700 p-3 mb-2">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No. RM: {editPatient.medical_record_number}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-300">Nomor rekam medis tidak dapat diubah.</p>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-700">Nama Lengkap</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap</label>
                 <Input {...register('full_name', { required: 'Nama wajib diisi' })} className="mt-1" />
                 {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name.message}</p>}
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-700">NIK</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">NIK</label>
                 <Input {...register('nik')} placeholder="Nomor Induk Kependudukan" className="mt-1" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Telepon</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Telepon</label>
                   <Input {...register('phone')} placeholder="08xxxxxxxxxx" className="mt-1" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Tanggal Lahir</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Tanggal Lahir</label>
                   <Input {...register('date_of_birth')} type="date" className="mt-1" />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-700">Alamat</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Alamat</label>
                 <Input {...register('address')} placeholder="Alamat lengkap" className="mt-1" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Jenis Kelamin</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Jenis Kelamin</label>
                   <Select {...register('gender')} className="mt-1">
                     <option value="">Pilih</option>
                     <option value="laki_laki">Laki-laki</option>
@@ -458,7 +458,7 @@ export default function PatientManagement() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Golongan Darah</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Golongan Darah</label>
                   <Select {...register('blood_type')} className="mt-1">
                     <option value="">Pilih</option>
                     <option value="A">A</option>
@@ -470,12 +470,12 @@ export default function PatientManagement() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-700">Alergi</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Alergi</label>
                 <Input {...register('allergies')} placeholder="Contoh: Makanan laut, Debu" className="mt-1" />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-700">Kontak Darurat</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Kontak Darurat</label>
                 <Input {...register('emergency_contact')} placeholder="Nama - Nomor HP" className="mt-1" />
               </div>
 
@@ -492,9 +492,9 @@ export default function PatientManagement() {
 
       {/* Detail Dialog */}
       <Dialog open={!!selectedPatient} onOpenChange={() => { setSelectedPatient(null); setPatientHistory([]); }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto dark:bg-slate-800 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle>Detail Pasien</DialogTitle>
+            <DialogTitle className="dark:text-slate-100">Detail Pasien</DialogTitle>
           </DialogHeader>
           {selectedPatient && (
             <div className="space-y-4 mt-4">
@@ -513,99 +513,99 @@ export default function PatientManagement() {
 
               {/* Identity */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-                  <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <Users className="h-4 w-4 text-teal-600" /> Identitas
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <Users className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Identitas
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">NIK</span>
-                      <span className="font-medium text-slate-900 font-mono">{selectedPatient.nik || '-'}</span>
+                      <span className="text-slate-500 dark:text-slate-300">NIK</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100 font-mono">{selectedPatient.nik || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Telepon</span>
-                      <span className="font-medium text-slate-900">{selectedPatient.phone || '-'}</span>
+                      <span className="text-slate-500 dark:text-slate-300">Telepon</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">{selectedPatient.phone || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Alamat</span>
-                      <span className="font-medium text-slate-900 text-right max-w-[180px]">{selectedPatient.address || '-'}</span>
+                      <span className="text-slate-500 dark:text-slate-300">Alamat</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100 text-right max-w-[180px]">{selectedPatient.address || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Tgl Lahir</span>
-                      <span className="font-medium text-slate-900">
+                      <span className="text-slate-500 dark:text-slate-300">Tgl Lahir</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">
                         {selectedPatient.date_of_birth
                           ? format(new Date(selectedPatient.date_of_birth), 'dd MMMM yyyy', { locale: id })
                           : '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Usia</span>
-                      <span className="font-medium text-slate-900">{calculateAge(selectedPatient.date_of_birth)}</span>
+                      <span className="text-slate-500 dark:text-slate-300">Usia</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">{calculateAge(selectedPatient.date_of_birth)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-                  <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-teal-600" /> Data Medis
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Data Medis
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Gol. Darah</span>
+                      <span className="text-slate-500 dark:text-slate-300">Gol. Darah</span>
                       <Badge variant="info">{selectedPatient.blood_type || '-'}</Badge>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Jenis Kelamin</span>
-                      <span className="font-medium text-slate-900">
+                      <span className="text-slate-500 dark:text-slate-300">Jenis Kelamin</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">
                         {selectedPatient.gender === 'laki_laki' ? 'Laki-laki' : selectedPatient.gender === 'perempuan' ? 'Perempuan' : '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Alergi</span>
-                      <span className="font-medium text-slate-900">{selectedPatient.allergies || '-'}</span>
+                      <span className="text-slate-500 dark:text-slate-300">Alergi</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">{selectedPatient.allergies || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Kontak Darurat</span>
-                      <span className="font-medium text-slate-900">{selectedPatient.emergency_contact || '-'}</span>
+                      <span className="text-slate-500 dark:text-slate-300">Kontak Darurat</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">{selectedPatient.emergency_contact || '-'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Total Kunjungan</span>
-                      <span className="font-bold text-teal-600">{selectedPatient.visit_count}x</span>
+                      <span className="text-slate-500 dark:text-slate-300">Total Kunjungan</span>
+                      <span className="font-bold text-teal-600 dark:text-teal-400">{selectedPatient.visit_count}x</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Medical History */}
-              <div className="rounded-xl border border-slate-200 p-4">
-                <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-3">
-                  <FileText className="h-4 w-4 text-teal-600" /> Riwayat Pemeriksaan
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-3">
+                  <FileText className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Riwayat Pemeriksaan
                 </h4>
                 {loadingHistory ? (
                   <div className="space-y-2">
                     {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
                   </div>
                 ) : patientHistory.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-4">Belum ada riwayat pemeriksaan</p>
+                  <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">Belum ada riwayat pemeriksaan</p>
                 ) : (
                   <div className="space-y-2 max-h-[300px] overflow-y-auto">
                     {patientHistory.map((record) => (
-                      <div key={record.id} className="flex items-start gap-3 rounded-lg border border-slate-100 p-3 hover:bg-slate-50 transition-colors">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 shrink-0">
-                          <Stethoscope className="h-4 w-4 text-teal-600" />
+                      <div key={record.id} className="flex items-start gap-3 rounded-lg border border-slate-100 dark:border-slate-700 p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/30 shrink-0">
+                          <Stethoscope className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm font-medium text-slate-900">{record.diagnosis || 'Tanpa diagnosa'}</p>
-                            <span className="text-xs text-slate-400 shrink-0">
+                            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{record.diagnosis || 'Tanpa diagnosa'}</p>
+                            <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
                               {format(new Date(record.created_at), 'dd MMM yyyy', { locale: id })}
                             </span>
                           </div>
-                          <p className="text-xs text-slate-500 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-300 mt-0.5">
                             {record.doctor_name} &middot; {record.poli_name}
                           </p>
                           {record.symptoms && (
-                            <p className="text-xs text-slate-400 mt-1 truncate">Keluhan: {record.symptoms}</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">Keluhan: {record.symptoms}</p>
                           )}
                         </div>
                       </div>

@@ -19,14 +19,14 @@ const dayShort = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 // Color palette for poli
 const poliColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {};
 const colorPalette = [
-  { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-800', dot: 'bg-teal-500' },
-  { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', dot: 'bg-blue-500' },
-  { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-800', dot: 'bg-violet-500' },
-  { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-800', dot: 'bg-amber-500' },
-  { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', dot: 'bg-rose-500' },
-  { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', dot: 'bg-emerald-500' },
-  { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-800', dot: 'bg-cyan-500' },
-  { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', dot: 'bg-orange-500' },
+  { bg: 'bg-teal-50 dark:bg-teal-900/30', border: 'border-teal-200 dark:border-teal-700', text: 'text-teal-800 dark:text-teal-300', dot: 'bg-teal-500' },
+  { bg: 'bg-blue-50 dark:bg-blue-900/30', border: 'border-blue-200 dark:border-blue-700', text: 'text-blue-800 dark:text-blue-300', dot: 'bg-blue-500' },
+  { bg: 'bg-violet-50 dark:bg-violet-900/30', border: 'border-violet-200 dark:border-violet-700', text: 'text-violet-800 dark:text-violet-300', dot: 'bg-violet-500' },
+  { bg: 'bg-amber-50 dark:bg-amber-900/30', border: 'border-amber-200 dark:border-amber-700', text: 'text-amber-800 dark:text-amber-300', dot: 'bg-amber-500' },
+  { bg: 'bg-rose-50 dark:bg-rose-900/30', border: 'border-rose-200 dark:border-rose-700', text: 'text-rose-800 dark:text-rose-300', dot: 'bg-rose-500' },
+  { bg: 'bg-emerald-50 dark:bg-emerald-900/30', border: 'border-emerald-200 dark:border-emerald-700', text: 'text-emerald-800 dark:text-emerald-300', dot: 'bg-emerald-500' },
+  { bg: 'bg-cyan-50 dark:bg-cyan-900/30', border: 'border-cyan-200 dark:border-cyan-700', text: 'text-cyan-800 dark:text-cyan-300', dot: 'bg-cyan-500' },
+  { bg: 'bg-orange-50 dark:bg-orange-900/30', border: 'border-orange-200 dark:border-orange-700', text: 'text-orange-800 dark:text-orange-300', dot: 'bg-orange-500' },
 ];
 
 function getPoliColor(poliName: string, poliIdMap: Record<string, number>) {
@@ -198,7 +198,7 @@ export default function ScheduleManagement() {
         <div className="flex items-center gap-3 mb-4">
           <button
             onClick={() => setWeekOffset(w => w - 1)}
-            className="rounded-xl p-2 bg-white dark:bg-slate-800 border border-slate-200 hover:bg-slate-50 dark:bg-slate-900 transition-colors"
+            className="rounded-xl p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           >
             <ChevronLeft className="h-5 w-5 text-slate-600 dark:text-slate-400" />
           </button>
@@ -207,14 +207,14 @@ export default function ScheduleManagement() {
           </span>
           <button
             onClick={() => setWeekOffset(w => w + 1)}
-            className="rounded-xl p-2 bg-white dark:bg-slate-800 border border-slate-200 hover:bg-slate-50 dark:bg-slate-900 transition-colors"
+            className="rounded-xl p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
           >
             <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-400" />
           </button>
           {weekOffset !== 0 && (
             <button
               onClick={() => setWeekOffset(0)}
-              className="rounded-xl px-3 py-1.5 text-xs font-medium bg-teal-50 text-teal-700 hover:bg-teal-100 transition-colors"
+              className="rounded-xl px-3 py-1.5 text-xs font-medium bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors"
             >
               Kembali ke Hari Ini
             </button>
@@ -254,22 +254,22 @@ export default function ScheduleManagement() {
                       ? 'bg-teal-600 text-white border-teal-700'
                       : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600'
                   }`}>
-                    <p className="text-[10px] font-medium uppercase tracking-wide opacity-80">{dayShort[dayIdx]}</p>
+                    <p className="text-[10px] font-medium uppercase tracking-wide opacity-80 dark:text-slate-300">{dayShort[dayIdx]}</p>
                     <p className={`text-sm sm:text-lg font-bold ${isToday ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>{dayName}</p>
                   </div>
 
                   {/* Day Content */}
                   <div className={`flex-1 min-h-[200px] sm:min-h-[300px] rounded-b-xl border border-t-0 p-1.5 sm:p-2 space-y-1.5 sm:space-y-2 ${
                     isToday
-                      ? 'bg-teal-50/50 border-teal-200'
-                      : 'bg-white dark:bg-slate-800 border-slate-200'
+                      ? 'bg-teal-50/50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-700'
+                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
                   }`}>
                     {loading ? (
                       Array.from({ length: 2 }).map((_, i) => (
                         <div key={i} className="h-12 sm:h-16 rounded-lg bg-slate-100 dark:bg-slate-700 animate-pulse" />
                       ))
                     ) : daySchedules.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-full min-h-[60px] sm:min-h-[80px] text-slate-400">
+                      <div className="flex flex-col items-center justify-center h-full min-h-[60px] sm:min-h-[80px] text-slate-400 dark:text-slate-500">
                         <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mb-1 opacity-50" />
                         <p className="text-[10px] sm:text-xs">Kosong</p>
                       </div>
@@ -293,7 +293,7 @@ export default function ScheduleManagement() {
                                 </div>
                                 <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 truncate font-medium">{s.doctor?.full_name || '-'}</p>
                                 <div className="flex items-center gap-1 mt-0.5 sm:mt-1">
-                                  <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-slate-400" />
+                                  <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-slate-400 dark:text-slate-500" />
                                   <p className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-medium">{s.start_time} - {s.end_time}</p>
                                 </div>
                               </div>
@@ -307,7 +307,7 @@ export default function ScheduleManagement() {
                     {!loading && (
                       <button
                         onClick={() => openAdd(dayIdx)}
-                        className="w-full rounded-lg border-2 border-dashed border-slate-200 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium text-slate-400 hover:border-teal-300 hover:text-teal-600 hover:bg-teal-50/50 transition-all"
+                        className="w-full rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-600 py-1.5 sm:py-2 text-[10px] sm:text-xs font-medium text-slate-400 dark:text-slate-500 hover:border-teal-300 dark:hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-teal-50/50 dark:hover:bg-teal-900/20 transition-all"
                       >
                         + Tambah
                       </button>
@@ -320,7 +320,7 @@ export default function ScheduleManagement() {
         </div>
         {/* Scroll hint for mobile */}
         <div className="sm:hidden text-center mt-2">
-          <p className="text-[10px] text-slate-400">Geser ke samping untuk lihat semua hari</p>
+          <p className="text-[10px] text-slate-400 dark:text-slate-500">Geser ke samping untuk lihat semua hari</p>
         </div>
       </motion.div>
 
@@ -331,7 +331,7 @@ export default function ScheduleManagement() {
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <span>Detail Jadwal</span>
-                <button onClick={() => setSelectedCard(null)} className="rounded-lg p-1 hover:bg-slate-100 dark:bg-slate-700">
+                <button onClick={() => setSelectedCard(null)} className="rounded-lg p-1 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                   <X className="h-4 w-4" />
                 </button>
               </DialogTitle>
