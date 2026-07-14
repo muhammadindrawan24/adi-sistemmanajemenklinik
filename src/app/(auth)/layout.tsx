@@ -31,8 +31,11 @@ export default function AuthLayout({
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           {/* Top — Logo */}
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/20">
-              <HeartPulse className="h-6 w-6 text-white" />
+            <div className="relative">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/20">
+                <HeartPulse className="h-6 w-6 text-white relative z-10" />
+              </div>
+              <div className="absolute inset-0 rounded-xl bg-white/10 animate-ping" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight">KlinikSehat</h1>
@@ -42,51 +45,80 @@ export default function AuthLayout({
 
           {/* Center — Hero text + illustration */}
           <div className="flex-1 flex flex-col justify-center max-w-md">
-            {/* Heartbeat line SVG with animation */}
-            <div className="mb-8 relative">
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-400/20 to-transparent blur-xl animate-pulse" />
-              {/* Main ECG line */}
-              <svg viewBox="0 0 400 80" className="w-full h-20 text-white/30 relative" fill="none" strokeWidth="2.5">
+            {/* Animated ECG Monitor */}
+            <div className="mb-8 relative h-24">
+              {/* Glow background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-400/0 via-teal-400/20 to-teal-400/0 blur-2xl animate-pulse" />
+              
+              {/* ECG SVG */}
+              <svg viewBox="0 0 400 80" className="w-full h-full relative" fill="none">
                 <defs>
-                  <linearGradient id="ecgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="rgba(255,255,255,0.1)" />
-                    <stop offset="40%" stopColor="rgba(255,255,255,0.4)" />
-                    <stop offset="50%" stopColor="rgba(45,212,191,0.9)" />
-                    <stop offset="60%" stopColor="rgba(255,255,255,0.4)" />
-                    <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+                  {/* Main gradient */}
+                  <linearGradient id="ecgMain" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+                    <stop offset="35%" stopColor="rgba(255,255,255,0.3)" />
+                    <stop offset="50%" stopColor="rgba(45,212,191,1)" />
+                    <stop offset="65%" stopColor="rgba(255,255,255,0.3)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0)" />
                   </linearGradient>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  {/* Glow filter */}
+                  <filter id="ecgGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
                     <feMerge>
-                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="blur"/>
                       <feMergeNode in="SourceGraphic"/>
                     </feMerge>
                   </filter>
                 </defs>
-                {/* Background line (static) */}
-                <path d="M0,40 L80,40 L100,40 L110,10 L120,70 L130,20 L140,60 L150,40 L170,40 L400,40" 
-                  stroke="rgba(255,255,255,0.1)" strokeLinecap="round" strokeLinejoin="round"/>
-                {/* Animated line */}
-                <path d="M0,40 L80,40 L100,40 L110,10 L120,70 L130,20 L140,60 L150,40 L170,40 L400,40" 
-                  stroke="url(#ecgGradient)" strokeLinecap="round" strokeLinejoin="round"
-                  filter="url(#glow)"
-                  style={{
-                    strokeDasharray: '600',
-                    strokeDashoffset: '600',
-                    animation: 'ecgDraw 3s ease-in-out infinite'
-                  }}/>
-                {/* Pulse dot */}
-                <circle cx="125" cy="40" r="4" fill="#2dd4bf" opacity="0.9">
-                  <animate attributeName="r" values="3;5;3" dur="1s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.9;0.5;0.9" dur="1s" repeatCount="indefinite"/>
+                
+                {/* Static background line */}
+                <path 
+                  d="M0,40 L60,40 L80,40 L95,15 L110,65 L120,25 L130,55 L145,40 L170,40 L220,40 L240,40 L255,15 L270,65 L280,25 L290,55 L305,40 L330,40 L400,40" 
+                  stroke="rgba(255,255,255,0.15)" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+                
+                {/* Animated ECG line */}
+                <path 
+                  d="M0,40 L60,40 L80,40 L95,15 L110,65 L120,25 L130,55 L145,40 L170,40 L220,40 L240,40 L255,15 L270,65 L280,25 L290,55 L305,40 L330,40 L400,40" 
+                  stroke="url(#ecgMain)" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  filter="url(#ecgGlow)"
+                  strokeDasharray="800"
+                  strokeDashoffset="800"
+                  style={{animation: 'ecgPulse 4s linear infinite'}}
+                />
+                
+                {/* Moving pulse dot */}
+                <circle r="4" fill="#2dd4bf" filter="url(#ecgGlow)">
+                  <animateMotion 
+                    dur="4s" 
+                    repeatCount="indefinite"
+                    path="M0,40 L60,40 L80,40 L95,15 L110,65 L120,25 L130,55 L145,40 L170,40 L220,40 L240,40 L255,15 L270,65 L280,25 L290,55 L305,40 L330,40 L400,40"
+                  />
+                  <animate attributeName="r" values="3;5;3" dur="0.5s" repeatCount="indefinite"/>
+                </circle>
+                
+                {/* Trail effect */}
+                <circle r="6" fill="none" stroke="#2dd4bf" strokeWidth="1" opacity="0.3">
+                  <animateMotion 
+                    dur="4s" 
+                    repeatCount="indefinite"
+                    path="M0,40 L60,40 L80,40 L95,15 L110,65 L120,25 L130,55 L145,40 L170,40 L220,40 L240,40 L255,15 L270,65 L280,25 L290,55 L305,40 L330,40 L400,40"
+                  />
+                  <animate attributeName="r" values="6;10;6" dur="0.5s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.3;0;0.3" dur="0.5s" repeatCount="indefinite"/>
                 </circle>
               </svg>
-              <style jsx>{`
-                @keyframes ecgDraw {
-                  0% { stroke-dashoffset: 600; }
-                  50% { stroke-dashoffset: 0; }
-                  100% { stroke-dashoffset: -600; }
+              
+              <style>{`
+                @keyframes ecgPulse {
+                  0% { stroke-dashoffset: 800; }
+                  100% { stroke-dashoffset: 0; }
                 }
               `}</style>
             </div>

@@ -143,12 +143,35 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-400/5 rounded-full blur-3xl" />
+          {/* Animated ECG background */}
+          <svg className="absolute top-1/3 left-0 w-full h-16 opacity-10" viewBox="0 0 260 40" fill="none">
+            <path d="M0,20 L40,20 L50,20 L55,5 L60,35 L65,10 L70,30 L75,20 L100,20 L130,20 L140,20 L145,5 L150,35 L155,10 L160,30 L165,20 L260,20" 
+              stroke="url(#sidebarEcg)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+              strokeDasharray="400" strokeDashoffset="400" style={{animation: 'sidebarEcg 4s linear infinite'}}/>
+            <defs>
+              <linearGradient id="sidebarEcg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="rgba(45,212,191,0)"/>
+                <stop offset="50%" stopColor="rgba(45,212,191,1)"/>
+                <stop offset="100%" stopColor="rgba(45,212,191,0)"/>
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
+        <style>{`
+          @keyframes sidebarEcg {
+            0% { stroke-dashoffset: 400; }
+            100% { stroke-dashoffset: -400; }
+          }
+        `}</style>
 
         {/* Logo */}
         <div className="relative flex items-center gap-3 px-5 py-6 border-b border-white/[0.08]">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 via-emerald-400 to-teal-500 shadow-lg shadow-teal-500/30 backdrop-blur-sm animate-pulse">
-            <HeartPulse className="h-6 w-6 text-white" />
+          <div className="relative">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 via-emerald-400 to-teal-500 shadow-lg shadow-teal-500/30 backdrop-blur-sm">
+              <HeartPulse className="h-6 w-6 text-white relative z-10" />
+            </div>
+            {/* Pulse ring */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 animate-ping opacity-20" />
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold tracking-tight bg-gradient-to-r from-white to-teal-100 bg-clip-text text-transparent">KlinikSehat</h1>
