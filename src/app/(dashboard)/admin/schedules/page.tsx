@@ -40,13 +40,13 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
 const scaleIn = {
   hidden: { opacity: 0, scale: 0.92 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export default function ScheduleManagement() {
@@ -338,7 +338,7 @@ export default function ScheduleManagement() {
                             layout
                             initial={{ opacity: 0, scale: 0.92, y: 8 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] as const }}
                             whileHover={{ scale: 1.03, y: -2 }}
                             className={`relative rounded-xl border p-2 sm:p-2.5 cursor-pointer transition-shadow hover:shadow-lg ${color.bg} ${color.border}`}
                             onClick={() => setSelectedCard(s)}
