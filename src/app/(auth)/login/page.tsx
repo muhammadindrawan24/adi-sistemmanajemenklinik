@@ -8,6 +8,7 @@ import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/lib/supabase/client";
 import { logAudit } from "@/lib/audit";
+import { motion } from "framer-motion";
 import {
   Mail,
   Lock,
@@ -17,6 +18,10 @@ import {
   AlertCircle,
   CheckCircle,
   ArrowRight,
+  UserPlus,
+  Shield,
+  Clock,
+  Stethoscope,
 } from "lucide-react";
 
 const loginSchema = z.object({
@@ -27,6 +32,21 @@ const loginSchema = z.object({
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" as const },
+  }),
+};
+
+const features = [
+  { icon: Clock, label: "Ambil Antrian Online", desc: "Daftar antrian dari rumah" },
+  { icon: Stethoscope, label: "Jadwal Dokter", desc: "Cek jadwal praktek" },
+  { icon: Shield, label: "Rekam Medis", desc: "Akses riwayat kesehatan" },
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -65,7 +85,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Fetch user profile to determine role
       const { data: profile } = await supabase
         .from("users")
         .select("role")
@@ -104,37 +123,54 @@ export default function LoginPage() {
     <>
       {/* Toast Notification */}
       {toast && (
-        <div className="toast-container">
-          <div className={`toast toast-${toast.type}`}>
+        <motion.div
+          initial={{ opacity: 0, y: -20, x: 20 }}
+          animate={{ opacity: 1, y: 0, x: 0 }}
+          className="fixed top-4 right-4 z-[100]"
+        >
+          <div className={`flex items-center gap-2 rounded-xl px-5 py-3.5 text-sm font-medium text-white shadow-xl ${toast.type === "success" ? "bg-gradient-to-r from-emerald-500 to-teal-500" : "bg-gradient-to-r from-red-500 to-rose-500"}`}>
             {toast.type === "success" ? (
-              <CheckCircle className="toast-icon text-success" />
+              <CheckCircle className="h-4 w-4" />
             ) : (
-              <AlertCircle className="toast-icon text-danger" />
+              <AlertCircle className="h-4 w-4" />
             )}
-            <span className="toast-message">{toast.message}</span>
+            <span>{toast.message}</span>
             <button
               onClick={() => setToast(null)}
-              className="toast-close text-foreground/50 hover:text-foreground"
+              className="ml-2 text-white/70 hover:text-white"
             >
               ×
             </button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       <div className="p-8 sm:p-10">
         {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-slate-900">Selamat Datang</h2>
-          <p className="text-sm text-slate-500 mt-1.5">
-            Masuk ke akun Anda untuk melanjutkan
-          </p>
-        </div>
+        <motion.div 
+          initial="hidden" 
+          animate="visible" 
+          variants={fadeIn} 
+          custom={0}
+          className="mb-8"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/25">
+              <LogIn className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Selamat Datang</h2>
+              <p className="text-sm text-slate-500">
+                Masuk ke akun Anda untuk melanjutkan
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Email */}
-          <div>
+          <motion.div initial="hidden" animate="visible" variants={fadeIn} custom={1}>
             <label
               htmlFor="email"
               className="block text-sm font-medium text-slate-700 mb-1.5"
@@ -150,19 +186,23 @@ export default function LoginPage() {
                 type="email"
                 placeholder="nama@email.com"
                 {...register("email")}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
               />
             </div>
             {errors.email && (
-              <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <motion.p 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-1.5 text-xs text-red-500 flex items-center gap-1"
+              >
                 <AlertCircle className="w-3 h-3" />
                 {errors.email.message}
-              </p>
+              </motion.p>
             )}
-          </div>
+          </motion.div>
 
           {/* Password */}
-          <div>
+          <motion.div initial="hidden" animate="visible" variants={fadeIn} custom={2}>
             <label
               htmlFor="password"
               className="block text-sm font-medium text-slate-700 mb-1.5"
@@ -178,7 +218,7 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Masukkan password"
                 {...register("password")}
-                className="w-full pl-10 pr-11 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="w-full pl-10 pr-11 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
               />
               <button
                 type="button"
@@ -193,55 +233,79 @@ export default function LoginPage() {
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
+              <motion.p 
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-1.5 text-xs text-red-500 flex items-center gap-1"
+              >
                 <AlertCircle className="w-3 h-3" />
                 {errors.password.message}
-              </p>
+              </motion.p>
             )}
-          </div>
+          </motion.div>
 
           {/* Forgot Password */}
-          <div className="flex justify-end">
+          <motion.div 
+            initial="hidden" 
+            animate="visible" 
+            variants={fadeIn} 
+            custom={3}
+            className="flex justify-end"
+          >
             <Link
               href="/forgot-password"
               className="text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"
             >
               Lupa password?
             </Link>
-          </div>
+          </motion.div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/25 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {isLoading ? (
-              <>
-                <div className="spinner spinner-sm" />
-                <span>Memproses...</span>
-              </>
-            ) : (
-              <>
-                <LogIn className="h-4 w-4" />
-                <span>Masuk</span>
-              </>
-            )}
-          </button>
+          <motion.div initial="hidden" animate="visible" variants={fadeIn} custom={4}>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/25 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {isLoading ? (
+                <>
+                  <div className="spinner spinner-sm" />
+                  <span>Memproses...</span>
+                </>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4" />
+                  <span>Masuk</span>
+                </>
+              )}
+            </button>
+          </motion.div>
         </form>
 
         {/* Divider */}
-        <div className="relative my-6">
+        <motion.div 
+          initial="hidden" 
+          animate="visible" 
+          variants={fadeIn} 
+          custom={5}
+          className="relative my-6"
+        >
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200" />
           </div>
           <div className="relative flex justify-center text-xs">
             <span className="px-3 bg-white text-slate-400">atau</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Register Link */}
-        <div className="text-center">
+        <motion.div 
+          initial="hidden" 
+          animate="visible" 
+          variants={fadeIn} 
+          custom={6}
+          className="text-center"
+        >
           <p className="text-sm text-slate-500">
             Belum punya akun?{" "}
             <Link
@@ -252,7 +316,53 @@ export default function LoginPage() {
               <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </p>
-        </div>
+        </motion.div>
+
+        {/* Info untuk Pasien */}
+        <motion.div 
+          initial="hidden" 
+          animate="visible" 
+          variants={fadeIn} 
+          custom={7}
+          className="mt-8 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 p-5"
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-md shadow-teal-500/20 shrink-0">
+              <UserPlus className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-teal-800 mb-1">Pasien Baru?</h4>
+              <p className="text-xs text-teal-600 leading-relaxed">
+                Daftar akun untuk mengambil antrian online, cek jadwal dokter, dan akses rekam medis Anda.
+              </p>
+              <Link 
+                href="/register" 
+                className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-teal-700 hover:text-teal-800 transition-colors"
+              >
+                Daftar sekarang
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Fitur Utama */}
+        <motion.div 
+          initial="hidden" 
+          animate="visible" 
+          variants={fadeIn} 
+          custom={8}
+          className="mt-6 grid grid-cols-3 gap-3"
+        >
+          {features.map((feature, i) => (
+            <div key={i} className="text-center">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 mx-auto mb-2">
+                <feature.icon className="h-4 w-4 text-slate-500" />
+              </div>
+              <p className="text-[10px] font-semibold text-slate-600 leading-tight">{feature.label}</p>
+            </div>
+          ))}
+        </motion.div>
       </div>
     </>
   );
