@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Monitor, Volume2, Clock, Users, ChevronRight, Maximize, Minimize } from 'lucide-react';
+import { Monitor, Volume2, Clock, Users, ChevronRight, Maximize, Minimize, ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -159,6 +159,13 @@ export default function WaitingRoomMonitor() {
       {/* Top Bar */}
       <div className="flex items-center justify-between px-8 py-4 border-b border-white/10">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => window.history.back()}
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+            title="Kembali"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600">
             <Monitor className="h-5 w-5 text-white" />
           </div>
