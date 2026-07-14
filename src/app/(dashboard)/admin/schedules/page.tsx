@@ -222,35 +222,26 @@ export default function ScheduleManagement() {
         custom={0}
         initial="hidden"
         animate="visible"
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-500 p-6 sm:p-8 text-white shadow-xl"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20"
       >
-        {/* Decorative circles */}
-        <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-white/10 blur-sm" />
-        <div className="absolute -bottom-10 -left-6 h-28 w-28 rounded-full bg-white/10 blur-sm" />
-        <div className="absolute top-1/2 right-1/4 h-4 w-4 rounded-full bg-white/20" />
-        <div className="absolute top-4 right-1/3 h-2.5 w-2.5 rounded-full bg-white/25" />
-
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="rounded-xl bg-white/20 p-2.5 backdrop-blur-sm">
-                <Calendar className="h-6 w-6" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Jadwal Dokter</h1>
+        <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+              <Calendar className="h-7 w-7 text-white" />
             </div>
-            <p className="text-teal-100 text-sm sm:text-base ml-14">
-              {totalSchedules} jadwal aktif minggu ini
-            </p>
+            <div>
+              <h1 className="text-xl font-bold">Jadwal Dokter</h1>
+              <p className="text-white/60 text-xs mt-0.5">{totalSchedules} jadwal aktif minggu ini</p>
+            </div>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
+          <Button
             onClick={() => openAdd()}
-            className="inline-flex items-center gap-2 rounded-xl bg-white/20 backdrop-blur-sm px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/30 transition-colors border border-white/20 shadow-lg cursor-pointer"
+            className="gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-white rounded-xl"
           >
             <Plus className="h-4 w-4" />
-            Tambah Jadwal
-          </motion.button>
+            <span className="hidden sm:inline">Tambah Jadwal</span>
+          </Button>
         </div>
       </motion.div>
 

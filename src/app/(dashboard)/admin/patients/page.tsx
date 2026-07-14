@@ -281,21 +281,18 @@ export default function PatientManagement() {
       )}
 
       {/* Header Banner */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 p-6 shadow-lg shadow-teal-500/20">
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-          <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
           <div className="relative z-10 flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="h-5 w-5 text-white/80" />
-                <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Klinik App</span>
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                <BedDouble className="h-7 w-7 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-white">Manajemen Pasien</h1>
-              <p className="text-sm text-white/80 mt-1">Lihat data pasien, riwayat kunjungan, dan rekam medis.</p>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-white/60">
-              <Users className="h-16 w-16 text-white/20" />
+              <div>
+                <h1 className="text-xl font-bold">Manajemen Pasien</h1>
+                <p className="text-white/60 text-xs mt-0.5">Lihat data pasien, riwayat kunjungan, dan rekam medis</p>
+              </div>
             </div>
           </div>
         </div>

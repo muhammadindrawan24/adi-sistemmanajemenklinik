@@ -192,23 +192,18 @@ export default function ReportsPage() {
       </AnimatePresence>
 
       {/* Header Banner */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-emerald-600 to-cyan-500 p-8 text-white shadow-2xl shadow-teal-500/20"
-      >
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0djItSDI0di0yaDEyem0wIDZWMjBIMjR2LTJoMTJ6TTQ4IDE0djJoLTEydjJoMTJ6bTAgNnYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
-        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-              <FileText className="h-5 w-5" />
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+              <FileText className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Laporan</h1>
+            <div>
+              <h1 className="text-xl font-bold">Laporan</h1>
+              <p className="text-white/60 text-xs mt-0.5">Analisis dan export data kunjungan klinik</p>
+            </div>
           </div>
-          <p className="text-teal-100 text-sm max-w-md">Analisis dan export data kunjungan klinik. Gunakan filter untuk melihat data sesuai kebutuhan Anda.</p>
         </div>
       </motion.div>
 

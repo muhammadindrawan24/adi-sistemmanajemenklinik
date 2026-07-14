@@ -93,44 +93,24 @@ export default function AuditLogPage() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-6 sm:p-8 shadow-xl shadow-indigo-500/20"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20"
       >
-        {/* Decorative background elements */}
-        <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-pink-400/20 blur-2xl" />
-        <div className="absolute top-1/2 right-1/4 h-20 w-20 rounded-full bg-purple-300/15 blur-xl" />
-
-        <div className="relative flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-lg">
-            <ClipboardList className="h-7 w-7 text-white" />
+        <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+              <ClipboardList className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Audit Log</h1>
+              <p className="text-white/60 text-xs mt-0.5">Riwayat aktivitas sistem real-time</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Audit Log</h1>
-            <p className="text-indigo-100 mt-0.5 text-sm sm:text-base">Riwayat semua aktivitas sistem secara real-time</p>
+          <div className="hidden sm:flex items-center gap-2 text-white/70 text-xs">
+            <Activity className="h-3.5 w-3.5" />
+            <span>{logs.length} log</span>
           </div>
         </div>
-
-        {/* Stats row */}
-        <motion.div
-          custom={1}
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-          className="relative mt-5 flex flex-wrap gap-3"
-        >
-          <div className="flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm px-3 py-1.5 text-sm text-white/90">
-            <Activity className="h-3.5 w-3.5" />
-            <span className="font-medium">{logs.length} total log</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm px-3 py-1.5 text-sm text-white/90">
-            <Clock className="h-3.5 w-3.5" />
-            <span className="font-medium">{dateFilter ? format(new Date(dateFilter), 'dd MMM yyyy', { locale: id }) : 'Semua'}</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm px-3 py-1.5 text-sm text-white/90">
-            <Filter className="h-3.5 w-3.5" />
-            <span className="font-medium">{filtered.length} ditampilkan</span>
-          </div>
-        </motion.div>
       </motion.div>
 
       {/* Search & Filters */}

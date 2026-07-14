@@ -225,37 +225,28 @@ export default function DoctorManagement() {
       </AnimatePresence>
 
       <div className="space-y-6 p-4 md:p-6 lg:p-8">
-        {/* Modern Gradient Header Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-teal-600 via-teal-500 to-cyan-500 p-6 md:p-8 shadow-xl"
-        >
-          {/* Background decoration */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
-            <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
-          </div>
-
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-                <Stethoscope className="h-7 w-7 text-white" />
+        {/* Header Banner */}
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                  <Stethoscope className="h-7 w-7 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold">Manajemen Dokter</h1>
+                  <p className="text-white/60 text-xs mt-0.5">Kelola data dokter klinik dengan mudah</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">Manajemen Dokter</h1>
-                <p className="text-teal-100 mt-1 text-sm md:text-base">Kelola data dokter klinik dengan mudah</p>
-              </div>
+              <Button
+                onClick={openAddDialog}
+                className="gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 text-white rounded-xl"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Tambah Dokter</span>
+              </Button>
             </div>
-            <Button
-              onClick={openAddDialog}
-              className="gap-2 bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm rounded-xl px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <Plus className="h-5 w-5" />
-              Tambah Dokter
-            </Button>
           </div>
         </motion.div>
 
