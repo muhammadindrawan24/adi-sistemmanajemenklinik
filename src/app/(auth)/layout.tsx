@@ -182,6 +182,13 @@ export default function AuthLayout({
           </svg>
         </div>
 
+        {/* Watermark */}
+        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-10">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+            Develop by MAS ADI &middot; 2026
+          </p>
+        </div>
+
         <div className="relative z-10 w-full max-w-md">
           {/* Mobile logo — shown only on small screens */}
           <div className="lg:hidden text-center mb-8">
