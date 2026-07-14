@@ -273,6 +273,16 @@ export function DashboardLayout({ children, role, userName }: DashboardLayoutPro
           >
             <Menu className="h-5 w-5" />
           </button>
+          {/* Breadcrumb / Page indicator */}
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#0c3b33] to-[#0f4a3f] shadow-sm">
+              <HeartPulse className="h-4 w-4 text-white" />
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">KlinikSehat</p>
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{roleLabels[role]}</p>
+            </div>
+          </div>
           <div className="flex-1" />
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Clock */}
