@@ -282,86 +282,28 @@ export default function LoginPage() {
           </motion.div>
         </form>
 
-        {/* Divider */}
-        <motion.div 
-          initial="hidden" 
-          animate="visible" 
-          variants={fadeIn} 
-          custom={5}
-          className="relative my-6"
-        >
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200" />
-          </div>
-          <div className="relative flex justify-center text-xs">
-            <span className="px-3 bg-white text-slate-400">atau</span>
-          </div>
-        </motion.div>
-
-        {/* Register Link */}
-        <motion.div 
-          initial="hidden" 
-          animate="visible" 
-          variants={fadeIn} 
-          custom={6}
-          className="text-center"
-        >
-          <p className="text-sm text-slate-500">
-            Belum punya akun?{" "}
-            <Link
-              href="/register"
-              className="text-teal-600 hover:text-teal-700 font-semibold inline-flex items-center gap-1 transition-colors group"
-            >
-              Daftar sekarang
-              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </p>
-        </motion.div>
-
         {/* Info untuk Pasien */}
         <motion.div 
           initial="hidden" 
           animate="visible" 
           variants={fadeIn} 
-          custom={7}
-          className="mt-8 rounded-2xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 p-5"
+          custom={5}
+          className="mt-6 rounded-xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 p-4"
         >
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-md shadow-teal-500/20 shrink-0">
-              <UserPlus className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 shadow-md shadow-teal-500/20 shrink-0">
+              <UserPlus className="h-4 w-4 text-white" />
             </div>
-            <div>
-              <h4 className="text-sm font-bold text-teal-800 mb-1">Pasien Baru?</h4>
-              <p className="text-xs text-teal-600 leading-relaxed">
-                Daftar akun untuk mengambil antrian online, cek jadwal dokter, dan akses rekam medis Anda.
+            <div className="flex-1">
+              <p className="text-xs text-teal-700">
+                <span className="font-bold">Pasien baru?</span>{" "}
+                <Link href="/register" className="font-semibold text-teal-600 hover:text-teal-700 transition-colors">
+                  Daftar sekarang
+                </Link>{" "}
+                untuk ambil antrian online
               </p>
-              <Link 
-                href="/register" 
-                className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-teal-700 hover:text-teal-800 transition-colors"
-              >
-                Daftar sekarang
-                <ArrowRight className="h-3 w-3" />
-              </Link>
             </div>
           </div>
-        </motion.div>
-
-        {/* Fitur Utama */}
-        <motion.div 
-          initial="hidden" 
-          animate="visible" 
-          variants={fadeIn} 
-          custom={8}
-          className="mt-6 grid grid-cols-3 gap-3"
-        >
-          {features.map((feature, i) => (
-            <div key={i} className="text-center">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 mx-auto mb-2">
-                <feature.icon className="h-4 w-4 text-slate-500" />
-              </div>
-              <p className="text-[10px] font-semibold text-slate-600 leading-tight">{feature.label}</p>
-            </div>
-          ))}
         </motion.div>
       </div>
     </>
