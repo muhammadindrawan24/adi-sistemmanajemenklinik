@@ -344,6 +344,12 @@ CREATE POLICY "Admin can insert users"
     )
   );
 
+CREATE POLICY "Authenticated users can insert own record"
+  ON users FOR INSERT
+  WITH CHECK (
+    auth.uid() = id
+  );
+
 CREATE POLICY "Admin can update users"
   ON users FOR UPDATE
   USING (
