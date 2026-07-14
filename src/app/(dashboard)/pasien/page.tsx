@@ -161,27 +161,27 @@ export default function PasienDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
         <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
                 <History className="h-5 w-5 text-white" />
               </div>
               <div>
-                {loading ? <div className="h-7 w-12 bg-slate-200 rounded animate-pulse" /> : <p className="text-2xl font-bold text-slate-900">{stats.totalKunjungan}</p>}
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Kunjungan</p>
+                {loading ? <div className="h-7 w-12 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" /> : <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.totalKunjungan}</p>}
+                <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kunjungan</p>
               </div>
             </div>
           </div>
         </motion.div>
         <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-200">
                 <ListOrdered className="h-5 w-5 text-white" />
               </div>
               <div>
-                {loading ? <div className="h-7 w-12 bg-slate-200 rounded animate-pulse" /> : <p className="text-2xl font-bold text-slate-900">{stats.antrianAktif}</p>}
-                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Antrian Aktif</p>
+                {loading ? <div className="h-7 w-12 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" /> : <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.antrianAktif}</p>}
+                <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Antrian Aktif</p>
               </div>
             </div>
           </div>
@@ -190,17 +190,17 @@ export default function PasienDashboard() {
 
       {/* Current Queue Status */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-6">
-              <div className="h-32 bg-slate-100 rounded-xl animate-pulse" />
+              <div className="h-32 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />
             </div>
           ) : !currentQueue ? (
             <div className="text-center py-8 px-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-3">
-                <ListOrdered className="h-6 w-6 text-slate-400" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-3">
+                <ListOrdered className="h-6 w-6 text-slate-400 dark:text-slate-500" />
               </div>
-              <p className="text-sm font-medium text-slate-500 mb-3">Tidak ada antrian aktif</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-3">Tidak ada antrian aktif</p>
               <Link href="/pasien/take-queue">
                 <button className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] text-white text-sm font-semibold rounded-xl shadow-lg shadow-teal-900/20 transition-all mx-auto">
                   <ListOrdered className="h-4 w-4" /> Ambil Antrian Sekarang
@@ -219,9 +219,9 @@ export default function PasienDashboard() {
                     {currentQueue.queue_number}
                   </span>
                   <div>
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Antrian Anda</p>
-                    <p className="text-lg font-bold text-slate-900">{currentQueue.poli?.name || '-'}</p>
-                    <p className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Antrian Anda</p>
+                    <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{currentQueue.poli?.name || '-'}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {format(new Date(currentQueue.created_at), 'dd MMM, HH:mm', { locale: id })}
                     </p>
@@ -233,8 +233,8 @@ export default function PasienDashboard() {
                 </span>
               </div>
               {currentQueue.status === 'dipanggil' && (
-                <div className="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-100 text-center">
-                  <p className="text-sm font-bold text-blue-700">Silakan menuju ruang periksa!</p>
+                <div className="mt-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/30 text-center">
+                  <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Silakan menuju ruang periksa!</p>
                 </div>
               )}
             </div>
@@ -251,15 +251,15 @@ export default function PasienDashboard() {
             { href: '/pasien/history', label: 'Riwayat', icon: ClipboardCheck, gradient: 'from-emerald-500 to-teal-600' },
           ].map((action) => (
             <Link key={action.href} href={action.href}>
-              <div className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 transition-all duration-300 hover:shadow-md hover:border-slate-200 hover:-translate-y-0.5">
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all duration-300 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 hover:-translate-y-0.5">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${action.gradient} shadow-md`}>
                     <action.icon className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <span className="text-sm font-semibold text-slate-900">{action.label}</span>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{action.label}</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
                 </div>
               </div>
             </Link>
@@ -269,43 +269,43 @@ export default function PasienDashboard() {
 
       {/* Jadwal Dokter Hari Ini */}
       <motion.div custom={5} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-slate-100">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-slate-100 dark:border-slate-700">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200">
                 <Stethoscope className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Jadwal Dokter Hari Ini</h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">{todaySchedules.length} dokter aktif</p>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Jadwal Dokter Hari Ini</h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{todaySchedules.length} dokter aktif</p>
               </div>
             </div>
           </div>
           <div className="p-5">
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {[1, 2].map((i) => <div key={i} className="h-24 bg-slate-100 rounded-xl animate-pulse" />)}
+                {[1, 2].map((i) => <div key={i} className="h-24 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />)}
               </div>
             ) : todaySchedules.length === 0 ? (
               <div className="text-center py-6">
-                <Calendar className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm text-slate-500">Tidak ada jadwal dokter hari ini</p>
+                <Calendar className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                <p className="text-sm text-slate-500 dark:text-slate-400">Tidak ada jadwal dokter hari ini</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Object.entries(schedulesByPoli).map(([poliName, schedules]) => (
-                  <div key={poliName} className="rounded-xl bg-slate-50 border border-slate-100 p-3.5">
+                  <div key={poliName} className="rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 p-3.5">
                     <div className="flex items-center gap-2 mb-2.5">
                       <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-[9px] font-bold text-white shadow-sm">
                         {schedules[0]?.poli_initial}
                       </span>
-                      <h4 className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">{poliName}</h4>
+                      <h4 className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">{poliName}</h4>
                     </div>
                     <div className="space-y-1.5">
                       {schedules.map((s: any) => (
                         <div key={s.id} className="flex items-center justify-between">
-                          <span className="text-[11px] font-medium text-slate-700 truncate max-w-[100px]">{s.doctor_name}</span>
-                          <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300 truncate max-w-[100px]">{s.doctor_name}</span>
+                          <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full flex items-center gap-1">
                             <Clock className="h-2 w-2" />
                             {s.start_time?.slice(0, 5)}-{s.end_time?.slice(0, 5)}
                           </span>

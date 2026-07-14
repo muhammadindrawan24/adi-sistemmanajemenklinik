@@ -142,25 +142,25 @@ export default function MyQueuePage() {
       {/* Queue Status */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         {loading ? (
-          <div className="bg-white rounded-2xl border border-slate-100 p-12 shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-12 shadow-sm">
             <div className="flex flex-col items-center">
-              <div className="h-28 w-28 bg-slate-100 rounded-3xl animate-pulse mb-4" />
-              <div className="h-6 w-32 bg-slate-100 rounded animate-pulse mb-2" />
-              <div className="h-4 w-48 bg-slate-100 rounded animate-pulse" />
+              <div className="h-28 w-28 bg-slate-100 dark:bg-slate-700 rounded-3xl animate-pulse mb-4" />
+              <div className="h-6 w-32 bg-slate-100 dark:bg-slate-700 rounded animate-pulse mb-2" />
+              <div className="h-4 w-48 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
             </div>
           </div>
         ) : !currentQueue ? (
-          <div className="bg-white rounded-2xl border border-slate-100 p-12 text-center shadow-sm">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-4">
-              <Activity className="h-8 w-8 text-slate-300" />
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-12 text-center shadow-sm">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-4">
+              <Activity className="h-8 w-8 text-slate-300 dark:text-slate-500" />
             </div>
-            <p className="text-lg font-semibold text-slate-600">Tidak ada antrian aktif</p>
-            <p className="text-sm text-slate-400 mt-1">Ambil antrian baru untuk memulai</p>
+            <p className="text-lg font-semibold text-slate-600 dark:text-slate-300">Tidak ada antrian aktif</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Ambil antrian baru untuk memulai</p>
           </div>
         ) : (
-          <div className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden ${isDipanggil ? 'ring-2 ring-blue-400 ring-offset-2' : ''}`}>
+          <div className={`bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden ${isDipanggil ? 'ring-2 ring-blue-400 ring-offset-2 dark:ring-offset-slate-900' : ''}`}>
             {/* Status Header */}
-            <div className={`p-4 ${isDipanggil ? 'bg-gradient-to-r from-blue-50 to-indigo-50' : currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-r from-teal-50 to-emerald-50' : 'bg-gradient-to-r from-amber-50 to-orange-50'}`}>
+            <div className={`p-4 ${isDipanggil ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/20' : currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-900/30 dark:to-emerald-900/20' : 'bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20'}`}>
               <div className="flex items-center justify-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${sc.dot}`} />
                 <span className={`text-sm font-bold ${sc.text}`}>{sc.label}</span>
@@ -182,34 +182,34 @@ export default function MyQueuePage() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-5 p-3 rounded-xl bg-blue-50 border border-blue-100"
+                  className="mb-5 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/30"
                 >
-                  <p className="text-sm font-bold text-blue-700">Silakan menuju ruang periksa!</p>
+                  <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Silakan menuju ruang periksa!</p>
                 </motion.div>
               )}
 
               {/* Info Grid */}
               <div className="max-w-sm mx-auto space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
                   <div className="flex items-center gap-2">
-                    <Stethoscope className="h-4 w-4 text-slate-400" />
-                    <span className="text-xs font-semibold text-slate-500">Poli</span>
+                    <Stethoscope className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Poli</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">{currentQueue.poli?.name || '-'}</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{currentQueue.poli?.name || '-'}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-slate-400" />
-                    <span className="text-xs font-semibold text-slate-500">Waktu Ambil</span>
+                    <Clock className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Waktu Ambil</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">
+                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
                     {format(new Date(currentQueue.created_at), 'HH:mm', { locale: id })} WIB
                   </span>
                 </div>
                 {currentQueue.complaint && (
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-left">
-                    <p className="text-xs font-semibold text-slate-500 mb-1">Keluhan</p>
-                    <p className="text-sm text-slate-700">{currentQueue.complaint}</p>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 text-left">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Keluhan</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{currentQueue.complaint}</p>
                   </div>
                 )}
               </div>
@@ -219,7 +219,7 @@ export default function MyQueuePage() {
                 <button
                   onClick={cancelQueue}
                   disabled={cancelling}
-                  className="mt-6 flex items-center justify-center gap-2 px-6 py-3 border border-red-200 text-red-600 text-sm font-semibold rounded-xl hover:bg-red-50 transition-all duration-200 disabled:opacity-50 mx-auto"
+                  className="mt-6 flex items-center justify-center gap-2 px-6 py-3 border border-red-200 dark:border-red-800/30 text-red-600 dark:text-red-400 text-sm font-semibold rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 disabled:opacity-50 mx-auto"
                 >
                   <XCircle className="h-4 w-4" />
                   {cancelling ? 'Membatalkan...' : 'Batalkan Antrian'}

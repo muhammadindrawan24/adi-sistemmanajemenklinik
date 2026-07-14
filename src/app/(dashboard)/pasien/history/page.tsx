@@ -136,37 +136,37 @@ export default function HistoryPage() {
 
       {/* Records List */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-6 space-y-3">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-20 bg-slate-100 rounded-xl animate-pulse" />
+                <div key={i} className="h-20 bg-slate-100 dark:bg-slate-700 rounded-xl animate-pulse" />
               ))}
             </div>
           ) : records.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-4">
-                <History className="h-8 w-8 text-slate-300" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-4">
+                <History className="h-8 w-8 text-slate-300 dark:text-slate-500" />
               </div>
-              <p className="text-sm font-medium text-slate-500">Belum ada riwayat</p>
-              <p className="text-xs text-slate-400 mt-1">Riwayat pemeriksaan akan muncul di sini</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada riwayat</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Riwayat pemeriksaan akan muncul di sini</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-700">
               {records.map((record) => (
                 <div
                   key={record.id}
                   onClick={() => setSelectedRecord(record)}
-                  className="flex items-center justify-between p-4 hover:bg-slate-50/50 transition-all cursor-pointer"
+                  className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all cursor-pointer"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200">
                       <Stethoscope className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">{record.doctor?.name || '-'}</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">{record.doctor?.specialization || '-'} &middot; {record.queue?.poli?.name || '-'}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                      <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{record.doctor?.name || '-'}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{record.doctor?.specialization || '-'} &middot; {record.queue?.poli?.name || '-'}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1">
                         <Calendar className="h-2.5 w-2.5" />
                         {format(new Date(record.created_at), 'dd MMMM yyyy, HH:mm', { locale: id })}
                       </p>
@@ -174,11 +174,11 @@ export default function HistoryPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {record.diagnosis && (
-                      <span className="hidden sm:block text-[10px] text-slate-500 max-w-[120px] truncate">{record.diagnosis}</span>
+                      <span className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 max-w-[120px] truncate">{record.diagnosis}</span>
                     )}
                     <button
                       onClick={(e) => { e.stopPropagation(); exportPDF(record); }}
-                      className="flex items-center gap-1 px-2.5 py-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-all text-[10px] font-semibold"
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all text-[10px] font-semibold"
                     >
                       <Download className="h-3 w-3" /> PDF
                     </button>
@@ -205,7 +205,7 @@ export default function HistoryPage() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden"
+              className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden"
             >
               {/* Dialog Header */}
               <div className="bg-gradient-to-r from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] px-6 py-5">
@@ -229,19 +229,19 @@ export default function HistoryPage() {
 
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
                 {/* Doctor Info */}
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 mb-5">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 mb-5">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white font-bold shadow-sm">
                     {selectedRecord.doctor?.name?.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{selectedRecord.doctor?.name}</p>
-                    <p className="text-xs text-slate-500">{selectedRecord.doctor?.specialization} &middot; {selectedRecord.queue?.poli?.name}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{selectedRecord.doctor?.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{selectedRecord.doctor?.specialization} &middot; {selectedRecord.queue?.poli?.name}</p>
                   </div>
                 </div>
 
                 {/* Examination Details */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Stethoscope className="h-3.5 w-3.5" /> Hasil Pemeriksaan
                   </h4>
                   {[
@@ -255,9 +255,9 @@ export default function HistoryPage() {
                     { label: 'Resep', value: selectedRecord.prescription },
                     { label: 'Catatan', value: selectedRecord.notes },
                   ].filter(f => f.value).map((f) => (
-                    <div key={f.label} className="flex justify-between text-sm py-2 border-b border-slate-50 last:border-0">
-                      <span className="text-slate-500">{f.label}</span>
-                      <span className="font-medium text-slate-900 text-right max-w-[60%]">{f.value}</span>
+                    <div key={f.label} className="flex justify-between text-sm py-2 border-b border-slate-50 dark:border-slate-700 last:border-0">
+                      <span className="text-slate-500 dark:text-slate-400">{f.label}</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100 text-right max-w-[60%]">{f.value}</span>
                     </div>
                   ))}
                 </div>
@@ -266,7 +266,7 @@ export default function HistoryPage() {
                 <div className="flex gap-3 pt-5">
                   <button
                     onClick={() => setSelectedRecord(null)}
-                    className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200"
+                    className="flex-1 px-4 py-3 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200"
                   >
                     Tutup
                   </button>
