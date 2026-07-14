@@ -80,6 +80,7 @@ export default function PatientRegistration() {
   const [todaySchedules, setTodaySchedules] = React.useState<any[]>([]);
   const [showSchedule, setShowSchedule] = React.useState(false);
   const [queueStatus, setQueueStatus] = React.useState(getQueueStatus());
+  const [overrideTime, setOverrideTime] = React.useState(false);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<PatientForm>();
   const { register: registerQueue, handleSubmit: handleSubmitQueue, reset: resetQueue, formState: { errors: queueErrors }, watch } = useForm<QueueForm>();
 
@@ -286,11 +287,13 @@ export default function PatientRegistration() {
   const onSubmitQueue = async (data: QueueForm) => {
     if (!selectedPatient) return;
 
-    // Cek jam pendaftaran
-    const status = getQueueStatus();
-    if (!status.canQueue) {
-      showToast(status.message, 'error');
-      return;
+    // Cek jam pendaftaran (kecuali override aktif)
+    if (!overrideTime) {
+      const status = getQueueStatus();
+      if (!status.canQueue) {
+        showToast(status.message, 'error');
+        return;
+      }
     }
 
     setSaving(true);
@@ -863,12 +866,30 @@ export default function PatientRegistration() {
                 {queueErrors.complaint && <p className="text-xs text-red-500">{queueErrors.complaint.message}</p>}
               </div>
 
+              {/* Override Jam - hanya muncul saat di luar jam */}
+              {!queueStatus.canQueue && (
+                <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={overrideTime}
+                      onChange={(e) => setOverrideTime(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-amber-800">Daftarkan Pasien Offline</p>
+                      <p className="text-xs text-amber-600 mt-0.5">Centang untuk mendaftarkan pasien yang datang langsung ke klinik di luar jam operasional</p>
+                    </div>
+                  </label>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={() => setShowQueueForm(false)} className="flex-1 border-slate-200 hover:bg-slate-50">
+                <Button type="button" variant="outline" onClick={() => { setShowQueueForm(false); setOverrideTime(false); }} className="flex-1 border-slate-200 hover:bg-slate-50">
                   Batal
                 </Button>
-                <Button type="submit" disabled={saving || !queueStatus.canQueue} className="flex-1 gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                <Button type="submit" disabled={saving || (!queueStatus.canQueue && !overrideTime)} className="flex-1 gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200 disabled:opacity-50 disabled:cursor-not-allowed">
                   {saving ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
