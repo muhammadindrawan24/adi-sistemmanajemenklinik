@@ -89,11 +89,11 @@ export default function PasienDashboard() {
   }, [supabase]);
 
   const statusConfig: Record<string, { label: string; class: string }> = {
-    menunggu: { label: 'Menunggu', class: 'bg-amber-50 text-amber-700 border border-amber-200' },
-    dipanggil: { label: 'Dipanggil!', class: 'bg-blue-50 text-blue-700 border border-blue-200 animate-pulse' },
-    sedang_diperiksa: { label: 'Diperiksa', class: 'bg-teal-50 text-teal-700 border border-teal-200' },
-    selesai: { label: 'Selesai', class: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-    dibatalkan: { label: 'Dibatalkan', class: 'bg-red-50 text-red-700 border border-red-200' },
+    menunggu: { label: 'Menunggu', class: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-700/30' },
+    dipanggil: { label: 'Dipanggil!', class: 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-700/30 animate-pulse' },
+    sedang_diperiksa: { label: 'Diperiksa', class: 'bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-700/30' },
+    selesai: { label: 'Selesai', class: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700/30' },
+    dibatalkan: { label: 'Dibatalkan', class: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-700/30' },
   };
 
   return (
@@ -132,30 +132,30 @@ export default function PasienDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm dark:bg-slate-800">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
                   <History className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  {loading ? <Skeleton className="h-7 w-12" /> : <p className="text-2xl font-bold text-slate-900">{stats.totalKunjungan}</p>}
-                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">Kunjungan</p>
+                  {loading ? <Skeleton className="h-7 w-12" /> : <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.totalKunjungan}</p>}
+                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kunjungan</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
         <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm dark:bg-slate-800">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-200">
                   <ListOrdered className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  {loading ? <Skeleton className="h-7 w-12" /> : <p className="text-2xl font-bold text-slate-900">{stats.antrianAktif}</p>}
-                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">Antrian Aktif</p>
+                  {loading ? <Skeleton className="h-7 w-12" /> : <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.antrianAktif}</p>}
+                  <p className="text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Antrian Aktif</p>
                 </div>
               </div>
             </CardContent>
@@ -165,16 +165,16 @@ export default function PasienDashboard() {
 
       {/* Current Queue Status */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card className="border-0 shadow-sm overflow-hidden">
+        <Card className="border-0 shadow-sm overflow-hidden dark:bg-slate-800">
           <CardContent className="p-0">
             {loading ? (
               <Skeleton className="h-32 w-full" />
             ) : !currentQueue ? (
               <div className="text-center py-8 px-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-3">
-                  <ListOrdered className="h-6 w-6 text-slate-400" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-3">
+                  <ListOrdered className="h-6 w-6 text-slate-400 dark:text-slate-500" />
                 </div>
-                <p className="text-sm font-medium text-slate-500 mb-3">Tidak ada antrian aktif</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-3">Tidak ada antrian aktif</p>
                 <Link href="/pasien/take-queue">
                   <Button className="gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-teal-200">
                     <ListOrdered className="h-4 w-4" /> Ambil Antrian Sekarang
@@ -183,9 +183,9 @@ export default function PasienDashboard() {
               </div>
             ) : (
               <div className={`p-5 ${
-                currentQueue.status === 'dipanggil' ? 'bg-gradient-to-r from-blue-50 to-blue-100/50' :
-                currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-r from-teal-50 to-emerald-50' :
-                'bg-gradient-to-r from-amber-50 to-orange-50/50'
+                currentQueue.status === 'dipanggil' ? 'bg-gradient-to-r from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20' :
+                currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-900/30 dark:to-emerald-900/20' :
+                'bg-gradient-to-r from-amber-50 to-orange-50/50 dark:from-amber-900/30 dark:to-orange-900/20'
               }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -197,9 +197,9 @@ export default function PasienDashboard() {
                       <span className="text-xl font-bold text-white">{currentQueue.queue_number}</span>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Antrian Anda</p>
-                      <p className="text-lg font-bold text-slate-900">{currentQueue.poli?.name || '-'}</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Antrian Anda</p>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{currentQueue.poli?.name || '-'}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                         {format(new Date(currentQueue.created_at), 'dd MMM, HH:mm', { locale: id })}
                       </p>
                     </div>
@@ -209,7 +209,7 @@ export default function PasienDashboard() {
                   </span>
                 </div>
                 {currentQueue.status === 'dipanggil' && (
-                  <p className="mt-3 text-sm font-bold text-blue-700 text-center">Silakan menuju ruang periksa!</p>
+                  <p className="mt-3 text-sm font-bold text-blue-700 dark:text-blue-400 text-center">Silakan menuju ruang periksa!</p>
                 )}
               </div>
             )}
@@ -226,15 +226,15 @@ export default function PasienDashboard() {
             { href: '/pasien/history', label: 'Riwayat', icon: ClipboardCheck, gradient: 'from-emerald-500 to-teal-600' },
           ].map((action) => (
             <Link key={action.href} href={action.href}>
-              <div className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 transition-all duration-300 hover:shadow-md hover:border-slate-200 hover:-translate-y-0.5">
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all duration-300 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 hover:-translate-y-0.5">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${action.gradient} shadow-md`}>
                     <action.icon className="h-5 w-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <span className="text-sm font-semibold text-slate-900">{action.label}</span>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{action.label}</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
                 </div>
               </div>
             </Link>
