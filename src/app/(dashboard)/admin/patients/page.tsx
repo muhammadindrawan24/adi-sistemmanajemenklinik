@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Search, Eye, Pencil, Calendar, FileText, Activity, Stethoscope, CheckCircle, AlertCircle, ChevronRight, Sparkles } from 'lucide-react';
+import { Users, Search, Eye, Pencil, Calendar, FileText, Activity, Stethoscope, CheckCircle, AlertCircle, ChevronRight, Sparkles, BedDouble } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
