@@ -160,7 +160,13 @@ export default function WaitingRoomMonitor() {
       <div className="flex items-center justify-between px-8 py-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => {
+              if (window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = '/';
+              }
+            }}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
             title="Kembali"
           >
