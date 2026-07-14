@@ -13,6 +13,32 @@ import { useForm } from 'react-hook-form';
 interface QueueForm { poli_id: string; complaint: string; }
 interface QueueResult { queueNumber: string; position: number; poliName: string; }
 
+// Jam operasional klinik
+const CLINIC_OPEN_HOUR = 7;   // Pendaftaran antrian dibuka
+const CLINIC_CLOSE_HOUR = 20; // Pendaftaran antrian ditutup
+const CLINIC_CLOSE_MINUTE = 30; // Menit tutup (20:30)
+const DOCTOR_START_HOUR = 8;  // Dokter mulai praktek
+
+function getQueueStatus(): { canQueue: boolean; message: string } {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const currentMinutes = hours * 60 + minutes;
+
+  const openTime = CLINIC_OPEN_HOUR * 60; // 07:00 = 420
+  const closeTime = CLINIC_CLOSE_HOUR * 60 + CLINIC_CLOSE_MINUTE; // 20:30 = 1230
+
+  if (currentMinutes < openTime) {
+    return { canQueue: false, message: `Pendaftaran antrian dibuka pukul ${CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 WIB` };
+  }
+
+  if (currentMinutes >= closeTime) {
+    return { canQueue: false, message: `Pendaftaran antrian ditutup pukul ${CLINIC_CLOSE_HOUR.toString().padStart(2, '0')}:${CLINIC_CLOSE_MINUTE.toString().padStart(2, '0')} WIB` };
+  }
+
+  return { canQueue: true, message: '' };
+}
+
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
@@ -31,8 +57,17 @@ export default function TakeQueuePage() {
   const [result, setResult] = React.useState<QueueResult | null>(null);
   const [showSchedule, setShowSchedule] = React.useState(false);
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [queueStatus, setQueueStatus] = React.useState(getQueueStatus());
   const { register, handleSubmit, formState: { errors }, watch } = useForm<QueueForm>();
   const selectedPoli = watch('poli_id');
+
+  // Update queue status setiap menit
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setQueueStatus(getQueueStatus());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type }); setTimeout(() => setToast(null), 3000);
@@ -87,6 +122,12 @@ export default function TakeQueuePage() {
   const onSubmit = async (data: QueueForm) => {
     setSaving(true);
     try {
+      // Cek jam pendaftaran
+      const status = getQueueStatus();
+      if (!status.canQueue) {
+        throw new Error(status.message);
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Silakan login terlebih dahulu');
 
@@ -217,6 +258,12 @@ export default function TakeQueuePage() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Ambil Antrian</h1>
         <p className="text-slate-500 mt-1 text-sm">Pilih poli, cek jadwal dokter, dan ambil nomor antrian.</p>
+        <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+          <Clock className="h-3 w-3" />
+          <span>Jam pendaftaran: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {CLINIC_CLOSE_HOUR.toString().padStart(2, '0')}:{CLINIC_CLOSE_MINUTE.toString().padStart(2, '0')} WIB</span>
+          <span className="text-slate-300">|</span>
+          <span>Praktek dokter: {DOCTOR_START_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00 WIB</span>
+        </div>
       </motion.div>
 
       {/* Jadwal Dokter Hari Ini - Collapsible */}
@@ -307,6 +354,17 @@ export default function TakeQueuePage() {
             </div>
           </div>
 
+          {/* Warning jika di luar jam pendaftaran */}
+          {!queueStatus.canQueue && (
+            <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-amber-800">{queueStatus.message}</p>
+                <p className="text-xs text-amber-600 mt-0.5">Jam operasional klinik: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00 WIB</p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Poli Selection */}
             <div className="space-y-1.5">
@@ -368,7 +426,7 @@ export default function TakeQueuePage() {
             </div>
 
             {/* Submit */}
-            <Button type="submit" disabled={saving} className="w-full h-12 gap-2 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] shadow-lg shadow-teal-900/20 text-sm font-semibold rounded-xl">
+            <Button type="submit" disabled={saving || !queueStatus.canQueue} className="w-full h-12 gap-2 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] shadow-lg shadow-teal-900/20 text-sm font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
               {saving ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
