@@ -154,7 +154,7 @@ export default function LoginPage() {
           custom={0}
           className="mb-8"
         >
-          <div className="flex items-center gap-4 mb-2">
+          <div className="flex items-center gap-4 mb-3">
             <div className="relative">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 shadow-xl shadow-teal-500/30">
                 <LogIn className="h-7 w-7 text-white" />
@@ -162,16 +162,25 @@ export default function LoginPage() {
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 opacity-30 blur-lg" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                Selamat Datang
+              <h2 className="text-[28px] font-extrabold tracking-tight">
+                <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent">Selamat</span>{" "}
+                <span className="bg-gradient-to-r from-teal-600 via-emerald-500 to-teal-600 bg-clip-text text-transparent">Datang</span>
               </h2>
-              <p className="text-sm text-slate-500 mt-0.5">
+              <p className="text-sm text-slate-500 mt-0.5 font-medium">
                 Masuk ke akun Anda untuk melanjutkan
               </p>
             </div>
           </div>
-          {/* Decorative line */}
-          <div className="mt-5 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+          {/* Decorative line with dots */}
+          <div className="flex items-center gap-2 mt-5">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+            <div className="flex gap-1">
+              <div className="w-1 h-1 rounded-full bg-teal-400" />
+              <div className="w-1 h-1 rounded-full bg-emerald-400" />
+              <div className="w-1 h-1 rounded-full bg-teal-400" />
+            </div>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+          </div>
         </motion.div>
 
         {/* Form */}
