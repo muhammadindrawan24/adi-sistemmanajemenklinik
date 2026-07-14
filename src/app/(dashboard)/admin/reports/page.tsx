@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
-import { FileText, Download, Calendar, Filter } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FileText, Download, Calendar, Filter, TrendingUp, CheckCircle2, XCircle, BarChart3 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,20 @@ import * as XLSX from 'xlsx';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.3 } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.06, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } }),
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const cardHover = {
+  rest: { scale: 1, y: 0 },
+  hover: { scale: 1.02, y: -2, transition: { duration: 0.2 } },
 };
 
 export default function ReportsPage() {
@@ -43,7 +56,6 @@ export default function ReportsPage() {
         supabase.from('doctors').select('id, user_id, specialty').order('created_at'),
         supabase.from('poli').select('id, name').order('name'),
       ]);
-      // Fetch doctor profile names
       const userIds = d?.map((doc: any) => doc.user_id).filter(Boolean) || [];
       let profileMap: Record<string, string> = {};
       if (userIds.length > 0) {
@@ -65,7 +77,6 @@ export default function ReportsPage() {
       .lte('created_at', dateTo + 'T23:59:59');
 
     if (doctorFilter) {
-      // Filter by doctor via doctor_schedules
       const { data: scheduleIds } = await supabase.from('doctor_schedules').select('id').eq('doctor_id', doctorFilter);
       const ids = scheduleIds?.map((s: any) => s.id) || [];
       if (ids.length > 0) {
@@ -81,7 +92,6 @@ export default function ReportsPage() {
 
     const { data } = await query.order('created_at', { ascending: false });
 
-    // Fetch profile names for patients and doctors
     const allUserIds = new Set<string>();
     data?.forEach((q: any) => {
       if (q.patient?.user_id) allUserIds.add(q.patient.user_id);
@@ -159,66 +169,107 @@ export default function ReportsPage() {
     showToast('Excel berhasil diunduh');
   };
 
+  const statCards = [
+    { label: 'Total Kunjungan', value: stats.totalKunjungan, icon: BarChart3, color: 'from-blue-500 to-indigo-600', bgLight: 'bg-blue-50 dark:bg-blue-950/40', textColor: 'text-blue-600 dark:text-blue-400' },
+    { label: 'Selesai', value: stats.totalSelesai, icon: CheckCircle2, color: 'from-emerald-500 to-green-600', bgLight: 'bg-emerald-50 dark:bg-emerald-950/40', textColor: 'text-emerald-600 dark:text-emerald-400' },
+    { label: 'Dibatalkan', value: stats.totalDibatalkan, icon: XCircle, color: 'from-red-500 to-rose-600', bgLight: 'bg-red-50 dark:bg-red-950/40', textColor: 'text-red-600 dark:text-red-400' },
+    { label: 'Rata-rata/Hari', value: stats.rataHarian, icon: TrendingUp, color: 'from-teal-500 to-cyan-600', bgLight: 'bg-teal-50 dark:bg-teal-950/40', textColor: 'text-teal-600 dark:text-teal-400' },
+  ];
+
   return (
     <div className="space-y-6">
-      {toast && (
-        <div className={`fixed top-4 right-4 z-[100] rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg ${toast.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
-          {toast.message}
-        </div>
-      )}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-4 right-4 z-[100] rounded-2xl px-5 py-3.5 text-sm font-semibold text-white shadow-xl backdrop-blur-sm ${toast.type === 'success' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}
+          >
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Laporan</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-1">Analisis dan export data kunjungan klinik.</p>
+      {/* Header Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-600 via-emerald-600 to-cyan-500 p-8 text-white shadow-2xl shadow-teal-500/20"
+      >
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE0djItSDI0di0yaDEyem0wIDZWMjBIMjR2LTJoMTJ6TTQ4IDE0djJoLTEydjJoMTJ6bTAgNnYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
+              <FileText className="h-5 w-5" />
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight">Laporan</h1>
+          </div>
+          <p className="text-teal-100 text-sm max-w-md">Analisis dan export data kunjungan klinik. Gunakan filter untuk melihat data sesuai kebutuhan Anda.</p>
+        </div>
       </motion.div>
 
       {/* Filters */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+        <Card className="border-0 shadow-xl shadow-slate-200/50 dark:shadow-none dark:border dark:border-slate-800">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2.5 text-lg">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-500 shadow-lg shadow-teal-500/25">
+                <Filter className="h-4 w-4 text-white" />
+              </div>
               Filter Laporan
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Periode</label>
-                <Select value={periodType} onChange={(e) => setPeriodType(e.target.value)} className="mt-1">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Periode</label>
+                <Select value={periodType} onChange={(e) => setPeriodType(e.target.value)} className="mt-0.5 h-10 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-teal-500/20 focus:border-teal-500 transition-all">
                   <option value="harian">Harian</option>
                   <option value="mingguan">Mingguan</option>
                   <option value="bulanan">Bulanan</option>
                   <option value="tahunan">Tahunan</option>
                 </Select>
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Dari Tanggal</label>
-                <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="mt-1" />
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dari Tanggal</label>
+                <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="mt-0.5 h-10 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-teal-500/20 focus:border-teal-500 transition-all" />
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Sampai Tanggal</label>
-                <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="mt-1" />
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Sampai Tanggal</label>
+                <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="mt-0.5 h-10 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-teal-500/20 focus:border-teal-500 transition-all" />
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Dokter</label>
-                <Select value={doctorFilter} onChange={(e) => setDoctorFilter(e.target.value)} className="mt-1">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dokter</label>
+                <Select value={doctorFilter} onChange={(e) => setDoctorFilter(e.target.value)} className="mt-0.5 h-10 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-teal-500/20 focus:border-teal-500 transition-all">
                   <option value="">Semua Dokter</option>
                   {doctors.map((d) => <option key={d.id} value={d.id}>{d.full_name}</option>)}
                 </Select>
               </div>
-              <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Poli</label>
-                <Select value={poliFilter} onChange={(e) => setPoliFilter(e.target.value)} className="mt-1">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Poli</label>
+                <Select value={poliFilter} onChange={(e) => setPoliFilter(e.target.value)} className="mt-0.5 h-10 rounded-xl border-slate-200 dark:border-slate-700 focus:ring-teal-500/20 focus:border-teal-500 transition-all">
                   <option value="">Semua Poli</option>
                   {poli.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </Select>
               </div>
             </div>
-            <div className="mt-4 flex gap-2">
-              <Button onClick={generateReport} disabled={loading} className="gap-2">
-                <Filter className="h-4 w-4" />
-                {loading ? 'Memuat...' : 'Generate Laporan'}
+            <div className="mt-5 flex items-center gap-3">
+              <Button onClick={generateReport} disabled={loading} className="h-10 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white shadow-lg shadow-teal-500/25 transition-all duration-200 hover:shadow-xl hover:shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    Memuat...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Generate Laporan
+                  </span>
+                )}
               </Button>
             </div>
           </CardContent>
@@ -228,29 +279,43 @@ export default function ReportsPage() {
       {/* Summary Stats */}
       <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: 'Total Kunjungan', value: stats.totalKunjungan, color: 'from-blue-500 to-blue-600' },
-            { label: 'Selesai', value: stats.totalSelesai, color: 'from-green-500 to-emerald-600' },
-            { label: 'Dibatalkan', value: stats.totalDibatalkan, color: 'from-red-500 to-rose-600' },
-            { label: 'Rata-rata/Hari', value: stats.rataHarian, color: 'from-teal-500 to-emerald-600' },
-          ].map((s) => (
-            <Card key={s.label}>
-              <CardContent className="p-4">
-                <p className="text-sm text-slate-500 dark:text-slate-400">{s.label}</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">{s.value}</p>
-              </CardContent>
-            </Card>
-          ))}
+          {statCards.map((s) => {
+            const Icon = s.icon;
+            return (
+              <motion.div
+                key={s.label}
+                variants={cardHover}
+                initial="rest"
+                whileHover="hover"
+                className="group"
+              >
+                <Card className="relative overflow-hidden border-0 shadow-xl shadow-slate-200/50 dark:shadow-none dark:border dark:border-slate-800 transition-all duration-300">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${s.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <CardContent className="relative p-5">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{s.label}</p>
+                        <p className="text-3xl font-bold text-slate-900 dark:text-slate-100 mt-2 tabular-nums">{s.value.toLocaleString('id-ID')}</p>
+                      </div>
+                      <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${s.bgLight} ${s.textColor} transition-all duration-300 group-hover:bg-white/20 group-hover:text-white`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
 
       {/* Export Buttons */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={exportPDF} disabled={reportData.length === 0} className="gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="outline" onClick={exportPDF} disabled={reportData.length === 0} className="h-10 px-5 rounded-xl border-slate-200 dark:border-slate-700 hover:bg-red-50 hover:border-red-200 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:border-red-800 dark:hover:text-red-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed gap-2">
             <Download className="h-4 w-4" /> Export PDF
           </Button>
-          <Button variant="outline" onClick={exportExcel} disabled={reportData.length === 0} className="gap-2">
+          <Button variant="outline" onClick={exportExcel} disabled={reportData.length === 0} className="h-10 px-5 rounded-xl border-slate-200 dark:border-slate-700 hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-600 dark:hover:bg-emerald-950/40 dark:hover:border-emerald-800 dark:hover:text-emerald-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed gap-2">
             <Download className="h-4 w-4" /> Export Excel
           </Button>
         </div>
@@ -258,46 +323,88 @@ export default function ReportsPage() {
 
       {/* Report Table */}
       <motion.div custom={4} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
+        <Card className="border-0 shadow-xl shadow-slate-200/50 dark:shadow-none dark:border dark:border-slate-800 overflow-hidden">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">No</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Tanggal</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Pasien</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Poli</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Dokter</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Status</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">No</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tanggal</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pasien</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Poli</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dokter</th>
+                    <th className="px-5 py-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     Array.from({ length: 5 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700">{Array.from({ length: 6 }).map((_, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>)}</tr>
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 animate-pulse">
+                        {Array.from({ length: 6 }).map((_, j) => (
+                          <td key={j} className="px-5 py-4">
+                            <Skeleton className="h-4 w-20 rounded-lg" />
+                          </td>
+                        ))}
+                      </tr>
                     ))
                   ) : reportData.length === 0 ? (
-                    <tr><td colSpan={6} className="px-4 py-12 text-center text-slate-400 dark:text-slate-500">Klik &quot;Generate Laporan&quot; untuk melihat data</td></tr>
+                    <tr>
+                      <td colSpan={6} className="px-5 py-16 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
+                            <FileText className="h-7 w-7 text-slate-300 dark:text-slate-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Tidak ada data</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Klik &quot;Generate Laporan&quot; untuk melihat data</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     reportData.map((row, i) => (
-                      <tr key={row.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900">
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{i + 1}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{format(new Date(row.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}</td>
-                        <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">{row.patient_name || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{row.poli?.name || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{row.doctor_name || '-'}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${row.status === 'selesai' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : row.status === 'dibatalkan' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+                      <motion.tr
+                        key={row.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: i * 0.02 }}
+                        className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-gradient-to-r hover:from-slate-50 hover:to-transparent dark:hover:from-slate-800/50 dark:hover:to-transparent transition-colors duration-150"
+                      >
+                        <td className="px-5 py-3.5 text-sm text-slate-400 dark:text-slate-500 font-medium tabular-nums">{i + 1}</td>
+                        <td className="px-5 py-3.5 text-sm text-slate-600 dark:text-slate-400">
+                          <span className="font-medium">{format(new Date(row.created_at), 'dd MMM yyyy', { locale: id })}</span>
+                          <span className="text-slate-400 dark:text-slate-500 ml-1.5">{format(new Date(row.created_at), 'HH:mm')}</span>
+                        </td>
+                        <td className="px-5 py-3.5 text-sm font-semibold text-slate-900 dark:text-slate-100">{row.patient_name || '-'}</td>
+                        <td className="px-5 py-3.5 text-sm text-slate-600 dark:text-slate-400">{row.poli?.name || '-'}</td>
+                        <td className="px-5 py-3.5 text-sm text-slate-600 dark:text-slate-400">{row.doctor_name || '-'}</td>
+                        <td className="px-5 py-3.5">
+                          <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
+                            row.status === 'selesai' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/50 dark:bg-emerald-950/40 dark:text-emerald-400 dark:ring-emerald-800/50' :
+                            row.status === 'dibatalkan' ? 'bg-red-50 text-red-700 ring-1 ring-red-200/50 dark:bg-red-950/40 dark:text-red-400 dark:ring-red-800/50' :
+                            'bg-amber-50 text-amber-700 ring-1 ring-amber-200/50 dark:bg-amber-950/40 dark:text-amber-400 dark:ring-amber-800/50'
+                          }`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${
+                              row.status === 'selesai' ? 'bg-emerald-500' :
+                              row.status === 'dibatalkan' ? 'bg-red-500' : 'bg-amber-500'
+                            }`} />
                             {row.status}
                           </span>
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))
                   )}
                 </tbody>
               </table>
             </div>
+            {reportData.length > 0 && (
+              <div className="border-t border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 px-5 py-3">
+                <p className="text-xs text-slate-400 dark:text-slate-500">
+                  Menampilkan {reportData.length} data
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>

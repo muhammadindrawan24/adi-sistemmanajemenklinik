@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { ClipboardList, Search, Filter, User } from 'lucide-react';
+import { ClipboardList, Search, Filter, User, Activity, Clock, ChevronRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
@@ -14,7 +14,20 @@ import { id } from 'date-fns/locale';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.3 } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] } }),
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
+  },
+};
+
+const tableRowFade = {
+  hidden: { opacity: 0, x: -10 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
 };
 
 export default function AuditLogPage() {
@@ -74,77 +87,165 @@ export default function AuditLogPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Audit Log</h1>
-        <p className="text-slate-500 dark:text-slate-300 mt-1">Riwayat semua aktivitas sistem.</p>
+    <div className="min-h-screen space-y-6 pb-8">
+      {/* Gradient Header Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-6 sm:p-8 shadow-xl shadow-indigo-500/20"
+      >
+        {/* Decorative background elements */}
+        <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-pink-400/20 blur-2xl" />
+        <div className="absolute top-1/2 right-1/4 h-20 w-20 rounded-full bg-purple-300/15 blur-xl" />
+
+        <div className="relative flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm shadow-lg">
+            <ClipboardList className="h-7 w-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Audit Log</h1>
+            <p className="text-indigo-100 mt-0.5 text-sm sm:text-base">Riwayat semua aktivitas sistem secara real-time</p>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <motion.div
+          custom={1}
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          className="relative mt-5 flex flex-wrap gap-3"
+        >
+          <div className="flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm px-3 py-1.5 text-sm text-white/90">
+            <Activity className="h-3.5 w-3.5" />
+            <span className="font-medium">{logs.length} total log</span>
+          </div>
+          <div className="flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm px-3 py-1.5 text-sm text-white/90">
+            <Clock className="h-3.5 w-3.5" />
+            <span className="font-medium">{dateFilter ? format(new Date(dateFilter), 'dd MMM yyyy', { locale: id }) : 'Semua'}</span>
+          </div>
+          <div className="flex items-center gap-2 rounded-lg bg-white/15 backdrop-blur-sm px-3 py-1.5 text-sm text-white/90">
+            <Filter className="h-3.5 w-3.5" />
+            <span className="font-medium">{filtered.length} ditampilkan</span>
+          </div>
+        </motion.div>
       </motion.div>
 
-      {/* Filters */}
-      <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
+      {/* Search & Filters */}
+      <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
+        <Card className="border-0 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 ring-1 ring-slate-200/60 dark:ring-slate-700/60">
           <CardContent className="p-4">
             <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-300" />
-                <Input placeholder="Cari aktivitas..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+              <div className="relative flex-1 group">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors duration-200" />
+                <Input
+                  placeholder="Cari aktivitas, pengguna, atau detail..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-10 h-11 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-200 placeholder:text-slate-400"
+                />
               </div>
-              <Select value={actionFilter} onChange={(e) => setActionFilter(e.target.value)} className="w-full sm:w-44">
+              <Select
+                value={actionFilter}
+                onChange={(e) => setActionFilter(e.target.value)}
+                className="w-full sm:w-44 h-11 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-200"
+              >
                 <option value="semua">Semua Aksi</option>
                 <option value="create">Buat</option>
                 <option value="update">Ubah</option>
                 <option value="delete">Hapus</option>
                 <option value="login">Login</option>
               </Select>
-              <Input type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} className="w-full sm:w-44" />
+              <Input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="w-full sm:w-44 h-11 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-200"
+              />
             </div>
           </CardContent>
         </Card>
       </motion.div>
 
       {/* Log Table */}
-      <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card>
+      <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
+        <Card className="border-0 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 ring-1 ring-slate-200/60 dark:ring-slate-700/60 overflow-hidden">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Waktu</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">User</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Aksi</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Detail</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800/80">
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Waktu</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">User</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Aksi</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Detail</th>
                   </tr>
                 </thead>
-                <tbody>
+                <motion.tbody variants={staggerContainer} initial="hidden" animate="visible">
                   {loading ? (
                     Array.from({ length: 8 }).map((_, i) => (
-                      <tr key={i} className="border-b border-slate-100 dark:border-slate-700">{Array.from({ length: 4 }).map((_, j) => <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>)}</tr>
-                    ))
-                  ) : filtered.length === 0 ? (
-                    <tr><td colSpan={4} className="px-4 py-12 text-center text-slate-400 dark:text-slate-300">Tidak ada data audit log</td></tr>
-                  ) : (
-                    filtered.map((log) => (
-                      <tr key={log.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                        <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-300 whitespace-nowrap">
-                          {format(new Date(log.created_at), 'dd MMM yyyy, HH:mm:ss', { locale: id })}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-                              <User className="h-3.5 w-3.5 text-slate-500 dark:text-slate-300" />
-                            </div>
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-100">{log.user_name || 'Sistem'}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge variant={actionVariant(log.action) as any}>{log.action}</Badge>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 max-w-xs truncate">{log.details || '-'}</td>
+                      <tr key={i} className="border-b border-slate-100 dark:border-slate-800">
+                        {Array.from({ length: 4 }).map((_, j) => (
+                          <td key={j} className="px-5 py-3.5"><Skeleton className="h-4 w-24 rounded-lg" /></td>
+                        ))}
                       </tr>
                     ))
+                  ) : filtered.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-5 py-16 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+                            <ClipboardList className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Tidak ada data audit log</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Coba ubah filter atau kata kunci pencarian</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filtered.map((log, idx) => (
+                      <motion.tr
+                        key={log.id}
+                        variants={tableRowFade}
+                        className="border-b border-slate-100 dark:border-slate-800 hover:bg-gradient-to-r hover:from-indigo-50/50 hover:to-purple-50/50 dark:hover:from-indigo-950/30 dark:hover:to-purple-950/30 transition-all duration-200 group cursor-default"
+                      >
+                        <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap font-mono">
+                          {format(new Date(log.created_at), 'dd MMM yyyy, HH:mm:ss', { locale: id })}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50 ring-2 ring-white dark:ring-slate-900 shadow-sm group-hover:scale-110 transition-transform duration-200">
+                              <User className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors duration-200">
+                              {log.user_name || 'Sistem'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <Badge
+                            variant={actionVariant(log.action) as any}
+                            className="rounded-lg px-2.5 py-0.5 text-xs font-medium"
+                          >
+                            {log.action}
+                          </Badge>
+                        </td>
+                        <td className="px-5 py-3.5 text-sm text-slate-600 dark:text-slate-300 max-w-xs truncate">
+                          <div className="flex items-center gap-1.5">
+                            <span className="truncate">{log.details || '-'}</span>
+                            {log.details && (
+                              <ChevronRight className="h-3 w-3 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0" />
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))
                   )}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
           </CardContent>

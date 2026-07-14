@@ -19,8 +19,8 @@ import {
   Sunrise,
   Sparkles,
   ArrowUpRight,
+  LayoutDashboard,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
@@ -50,7 +50,7 @@ const fadeIn = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.05, duration: 0.3 },
+    transition: { delay: i * 0.05, duration: 0.4, ease: 'easeOut' as const },
   }),
 };
 
@@ -151,21 +151,21 @@ export default function AdminDashboard() {
   }, [supabase]);
 
   const statCards = [
-    { label: 'Total Pasien', value: stats.totalPasien, icon: Users, color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20', ring: 'ring-blue-100 dark:ring-blue-800/30' },
-    { label: 'Total Dokter', value: stats.totalDokter, icon: Stethoscope, color: 'from-teal-500 to-emerald-600', bg: 'bg-teal-50 dark:bg-teal-900/20', ring: 'ring-teal-100 dark:ring-teal-800/30' },
-    { label: 'Total Petugas', value: stats.totalPetugas, icon: UserCheck, color: 'from-violet-500 to-purple-600', bg: 'bg-violet-50 dark:bg-violet-900/20', ring: 'ring-violet-100 dark:ring-violet-800/30' },
-    { label: 'Total Poli', value: stats.totalPoli, icon: Building2, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50 dark:bg-amber-900/20', ring: 'ring-amber-100 dark:ring-amber-800/30' },
-    { label: 'Pasien Hari Ini', value: stats.pasienHariIni, icon: CalendarDays, color: 'from-green-500 to-emerald-600', bg: 'bg-green-50 dark:bg-green-900/20', ring: 'ring-green-100 dark:ring-green-800/30' },
-    { label: 'Antrian Aktif', value: stats.antrianAktif, icon: ListOrdered, color: 'from-rose-500 to-pink-600', bg: 'bg-rose-50 dark:bg-rose-900/20', ring: 'ring-rose-100 dark:ring-rose-800/30' },
+    { label: 'Total Pasien', value: stats.totalPasien, icon: Users, color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+    { label: 'Total Dokter', value: stats.totalDokter, icon: Stethoscope, color: 'from-teal-500 to-emerald-600', bg: 'bg-teal-50 dark:bg-teal-900/20' },
+    { label: 'Total Petugas', value: stats.totalPetugas, icon: UserCheck, color: 'from-violet-500 to-purple-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
+    { label: 'Total Poli', value: stats.totalPoli, icon: Building2, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { label: 'Pasien Hari Ini', value: stats.pasienHariIni, icon: CalendarDays, color: 'from-green-500 to-emerald-600', bg: 'bg-green-50 dark:bg-green-900/20' },
+    { label: 'Antrian Aktif', value: stats.antrianAktif, icon: ListOrdered, color: 'from-rose-500 to-pink-600', bg: 'bg-rose-50 dark:bg-rose-900/20' },
   ];
 
   const quickActions = [
-    { label: 'Kelola User', href: '/admin/users', icon: Users, color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-800/30' },
-    { label: 'Kelola Dokter', href: '/admin/doctors', icon: Stethoscope, color: 'bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-teal-800/30' },
-    { label: 'Kelola Poli', href: '/admin/poli', icon: Building2, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-800/30' },
-    { label: 'Jadwal Dokter', href: '/admin/schedules', icon: CalendarDays, color: 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-800/30' },
-    { label: 'Laporan', href: '/admin/reports', icon: FileText, color: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-800/30' },
-    { label: 'Audit Log', href: '/admin/audit-log', icon: Settings, color: 'bg-slate-50 dark:bg-slate-700/30 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50' },
+    { label: 'Kelola User', href: '/admin/users', icon: Users, color: 'from-blue-500 to-blue-600' },
+    { label: 'Kelola Dokter', href: '/admin/doctors', icon: Stethoscope, color: 'from-teal-500 to-emerald-600' },
+    { label: 'Kelola Poli', href: '/admin/poli', icon: Building2, color: 'from-amber-500 to-orange-600' },
+    { label: 'Jadwal Dokter', href: '/admin/schedules', icon: CalendarDays, color: 'from-violet-500 to-purple-600' },
+    { label: 'Laporan', href: '/admin/reports', icon: FileText, color: 'from-green-500 to-emerald-600' },
+    { label: 'Audit Log', href: '/admin/audit-log', icon: Settings, color: 'from-slate-500 to-slate-600' },
   ];
 
   const queueStatusBadge = (status: string) => {
@@ -181,77 +181,71 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6 dark:bg-slate-900 min-h-screen">
-      {/* Welcome Banner */}
+      {/* Header Banner */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 p-6 sm:p-8 text-white">
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-white/5 rounded-full" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-white/5 rounded-full" />
 
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <greeting.icon className="h-5 w-5 text-teal-200" />
-                <span className="text-teal-200 text-sm font-medium">{greeting.text}</span>
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                <LayoutDashboard className="h-7 w-7 text-white" />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold">
-                {userName}
-              </h1>
-              <p className="text-teal-100/80 mt-1">
-                Berikut ringkasan aktivitas klinik hari ini.
-              </p>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <greeting.icon className="h-4 w-4 text-emerald-300" />
+                  <span className="text-emerald-300 text-xs font-medium">{greeting.text}</span>
+                </div>
+                <h1 className="text-xl font-bold">{userName}</h1>
+                <p className="text-white/60 text-xs mt-0.5">Berikut ringkasan aktivitas klinik hari ini</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-teal-200">
+            <div className="flex items-center gap-2 text-sm text-white/50 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
               <Clock className="h-4 w-4" />
-              <span>{format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}</span>
+              <span className="text-xs font-medium">{format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}</span>
             </div>
           </div>
         </div>
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        {statCards.map((card, i) => (
-          <motion.div key={card.label} custom={i} initial="hidden" animate="visible" variants={fadeIn}>
-            <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-slate-100 dark:border-slate-700 dark:bg-slate-800">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${card.color} shadow-md`}>
-                    <card.icon className="h-5 w-5 text-white" />
-                  </div>
+      <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {statCards.map((card) => (
+            <div key={card.label} className={`${card.bg} rounded-xl p-3 border border-slate-100 dark:border-slate-700`}>
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${card.color} shadow-sm`}>
+                  <card.icon className="h-4 w-4 text-white" />
                 </div>
-                <div>
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wide">{card.label}</p>
-                  {loading ? (
-                    <Skeleton className="mt-1.5 h-7 w-12" />
-                  ) : (
-                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-0.5">{card.value}</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+              </div>
+              {loading ? (
+                <Skeleton className="h-7 w-12 rounded-lg" />
+              ) : (
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{card.value}</p>
+              )}
+              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{card.label}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart */}
         <motion.div custom={6} initial="hidden" animate="visible" variants={fadeIn} className="lg:col-span-2">
-          <Card className="border-slate-100 dark:border-slate-700 dark:bg-slate-800">
+          <div className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
             <div className="px-6 pt-5 pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/20">
-                    <TrendingUp className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Kunjungan 7 Hari Terakhir</h3>
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 shadow-sm">
+                  <TrendingUp className="h-4 w-4 text-white" />
                 </div>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Kunjungan 7 Hari Terakhir</h3>
               </div>
             </div>
-            <CardContent className="pt-0">
+            <div className="px-6 pb-5 pt-0">
               {loading ? (
-                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-64 w-full rounded-xl" />
               ) : (
                 <ResponsiveContainer width="100%" height={280}>
                   <BarChart data={chartData}>
@@ -276,68 +270,70 @@ export default function AdminDashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
 
         {/* Quick Actions */}
         <motion.div custom={7} initial="hidden" animate="visible" variants={fadeIn}>
-          <Card className="h-full border-slate-100 dark:border-slate-700 dark:bg-slate-800">
+          <div className="h-full rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
             <div className="px-6 pt-5 pb-2">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/20">
-                  <Sparkles className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-sm">
+                  <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Aksi Cepat</h3>
               </div>
             </div>
-            <CardContent className="pt-2">
+            <div className="px-6 pt-2 pb-5">
               <div className="grid grid-cols-2 gap-2.5">
                 {quickActions.map((action) => (
                   <Link key={action.href} href={action.href}>
-                    <div className={`group flex flex-col items-center gap-2 rounded-xl p-3.5 text-center transition-all duration-200 shadow-sm hover:shadow-md ${action.color}`}>
-                      <action.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
-                      <span className="text-xs font-semibold">{action.label}</span>
+                    <div className="group flex flex-col items-center gap-2.5 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 p-3.5 text-center transition-all duration-200 hover:shadow-md hover:bg-white dark:hover:bg-slate-700 hover:border-slate-200 dark:hover:border-slate-600">
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${action.color} shadow-sm group-hover:shadow-md transition-shadow`}>
+                        <action.icon className="h-4 w-4 text-white transition-transform group-hover:scale-110" />
+                      </div>
+                      <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">{action.label}</span>
                     </div>
                   </Link>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
 
       {/* Recent Activity */}
       <motion.div custom={8} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card className="border-slate-100 dark:border-slate-700 dark:bg-slate-800">
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
           <div className="px-6 pt-5 pb-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/20">
-                  <Activity className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm">
+                  <Activity className="h-4 w-4 text-white" />
                 </div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Aktivitas Terbaru</h3>
               </div>
               {recentActivity.length > 0 && (
-                <Link href="/admin/audit-log" className="flex items-center gap-1 text-xs font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors">
+                <Link href="/admin/audit-log" className="flex items-center gap-1 text-xs font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors">
                   Lihat semua <ArrowUpRight className="h-3 w-3" />
                 </Link>
               )}
             </div>
           </div>
-          <CardContent className="pt-2">
+          <div className="px-6 pt-2 pb-5">
             {loading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-14 w-full rounded-xl" />
+                  <Skeleton key={i} className="h-16 w-full rounded-xl" />
                 ))}
               </div>
             ) : recentActivity.length === 0 ? (
               <div className="text-center py-10">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 mx-auto mb-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-3">
                   <ListOrdered className="h-5 w-5 text-slate-400 dark:text-slate-300" />
                 </div>
-                <p className="text-sm text-slate-400 dark:text-slate-300">Belum ada aktivitas hari ini</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada aktivitas hari ini</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -347,27 +343,33 @@ export default function AdminDashboard() {
                     className="flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-700 p-3.5 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 ring-1 ring-teal-100 dark:ring-teal-700/30">
-                        <ListOrdered className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-sm">
+                        <ListOrdered className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                          {item.patient?.full_name || 'Pasien'} — <span className="text-slate-500 dark:text-slate-300">{item.poli?.name || 'Poli'}</span>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                          {item.patient?.full_name || 'Pasien'} — <span className="text-slate-500 dark:text-slate-400 font-normal">{item.poli?.name || 'Poli'}</span>
                         </p>
-                        <p className="text-xs text-slate-400 dark:text-slate-300 mt-0.5">
-                          No. {item.queue_number} &middot; {format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <p className="text-xs text-slate-400 dark:text-slate-500">
+                            No. {item.queue_number}
+                          </p>
+                          <span className="text-slate-300 dark:text-slate-600">&middot;</span>
+                          <p className="text-xs text-slate-400 dark:text-slate-500">
+                            {format(new Date(item.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${queueStatusBadge(item.status)}`}>
+                    <span className={`rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${queueStatusBadge(item.status)}`}>
                       {item.status.replace('_', ' ')}
                     </span>
                   </div>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </motion.div>
     </div>
   );

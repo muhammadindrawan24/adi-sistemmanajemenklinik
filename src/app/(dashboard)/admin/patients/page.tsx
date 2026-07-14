@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Search, Eye, Pencil, Calendar, FileText, Activity, Stethoscope, CheckCircle, AlertCircle } from 'lucide-react';
+import { Users, Search, Eye, Pencil, Calendar, FileText, Activity, Stethoscope, CheckCircle, AlertCircle, ChevronRight, Sparkles } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,6 +53,16 @@ const fadeIn = {
     y: 0,
     transition: { delay: i * 0.05, duration: 0.3 },
   }),
+};
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: 'easeOut' } },
 };
 
 export default function PatientManagement() {
@@ -257,56 +267,78 @@ export default function PatientManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Toast */}
       {toast && (
-        <div className={`fixed top-4 right-4 z-[100] rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg ${toast.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
-          {toast.type === 'success' ? <CheckCircle className="inline h-4 w-4 mr-1" /> : <AlertCircle className="inline h-4 w-4 mr-1" />}
+        <motion.div
+          initial={{ opacity: 0, y: -20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.95 }}
+          className={`fixed top-4 right-4 z-[100] rounded-2xl px-5 py-3.5 text-sm font-medium text-white shadow-xl backdrop-blur-sm ${toast.type === 'success' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}
+        >
+          {toast.type === 'success' ? <CheckCircle className="inline h-4 w-4 mr-2" /> : <AlertCircle className="inline h-4 w-4 mr-2" />}
           {toast.message}
-        </div>
+        </motion.div>
       )}
 
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Manajemen Pasien</h1>
-        <p className="text-slate-500 dark:text-slate-300 mt-1">Lihat data pasien, riwayat kunjungan, dan rekam medis.</p>
+      {/* Header Banner */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 p-6 shadow-lg shadow-teal-500/20">
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute -bottom-6 -left-6 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Sparkles className="h-5 w-5 text-white/80" />
+                <span className="text-xs font-medium text-white/80 uppercase tracking-wider">Klinik App</span>
+              </div>
+              <h1 className="text-2xl font-bold text-white">Manajemen Pasien</h1>
+              <p className="text-sm text-white/80 mt-1">Lihat data pasien, riwayat kunjungan, dan rekam medis.</p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 text-white/60">
+              <Users className="h-16 w-16 text-white/20" />
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Stats */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card className="dark:bg-slate-800 dark:border-slate-700">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30">
-                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+          <Card className="border-0 shadow-md shadow-slate-200/50 dark:shadow-slate-800/50 dark:bg-slate-800 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{totalPatients}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-300">Total Pasien</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-300">Total Pasien</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="dark:bg-slate-800 dark:border-slate-700">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-900/30">
-                  <Activity className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <Card className="border-0 shadow-md shadow-slate-200/50 dark:shadow-slate-800/50 dark:bg-slate-800 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30">
+                  <Activity className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activePatients}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-300">Pernah Berobat</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-300">Pernah Berobat</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="dark:bg-slate-800 dark:border-slate-700">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-900/30">
-                  <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <Card className="border-0 shadow-md shadow-slate-200/50 dark:shadow-slate-800/50 dark:bg-slate-800 dark:border-slate-700 hover:shadow-lg transition-shadow duration-300">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/30">
+                  <Calendar className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{todayPatients}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-300">Kunjungan Hari Ini</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-300">Kunjungan Hari Ini</p>
                 </div>
               </div>
             </CardContent>
@@ -316,29 +348,37 @@ export default function PatientManagement() {
 
       {/* Search */}
       <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
-          <Input placeholder="Cari nama, No. RM, NIK, atau telepon..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+        <div className="relative group">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center">
+            <Search className="absolute left-4 h-5 w-5 text-slate-400 dark:text-slate-500 group-hover:text-teal-500 transition-colors duration-200" />
+            <Input
+              placeholder="Cari nama, No. RM, NIK, atau telepon..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-12 pr-4 py-3 rounded-2xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md focus:shadow-md focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200"
+            />
+          </div>
         </div>
       </motion.div>
 
       {/* Patient Table */}
       <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
-        <Card className="dark:bg-slate-800 dark:border-slate-700">
+        <Card className="border-0 shadow-lg shadow-slate-200/50 dark:shadow-slate-800/50 dark:bg-slate-800 dark:border-slate-700 rounded-2xl overflow-hidden">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Pasien</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">No. RM</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">NIK</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Usia</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">JK</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Gol. Darah</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Kunjungan</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Terakhir</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase">Aksi</th>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Pasien</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">No. RM</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">NIK</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Usia</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">JK</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Gol. Darah</th>
+                    <th className="px-5 py-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Kunjungan</th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Terakhir</th>
+                    <th className="px-5 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -346,59 +386,87 @@ export default function PatientManagement() {
                     Array.from({ length: 5 }).map((_, i) => (
                       <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
                         {Array.from({ length: 9 }).map((_, j) => (
-                          <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
+                          <td key={j} className="px-5 py-4"><Skeleton className="h-4 w-24" /></td>
                         ))}
                       </tr>
                     ))
                   ) : filteredPatients.length === 0 ? (
-                    <tr><td colSpan={9} className="px-4 py-12 text-center text-slate-400 dark:text-slate-500">Tidak ada data pasien</td></tr>
+                    <tr>
+                      <td colSpan={9} className="px-5 py-16 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700">
+                            <Users className="h-8 w-8 text-slate-400 dark:text-slate-500" />
+                          </div>
+                          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Tidak ada data pasien</p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500">Coba ubah filter pencarian Anda</p>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
-                    filteredPatients.map((patient) => (
-                      <tr key={patient.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 dark:bg-teal-900/30 text-sm font-bold text-teal-700 dark:text-teal-300">
+                    filteredPatients.map((patient, index) => (
+                      <motion.tr
+                        key={patient.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03, duration: 0.3 }}
+                        className="border-b border-slate-100 dark:border-slate-700 hover:bg-gradient-to-r hover:from-teal-50/50 hover:to-transparent dark:hover:from-teal-900/20 dark:hover:to-transparent transition-all duration-200"
+                      >
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 text-sm font-bold text-white shadow-md shadow-teal-500/20">
                               {patient.full_name?.charAt(0)?.toUpperCase() || '?'}
                             </div>
-                            <span className="text-sm font-medium text-slate-900 dark:text-slate-100">{patient.full_name}</span>
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{patient.full_name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 font-mono">{patient.medical_record_number}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 font-mono">{patient.nik || '-'}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{calculateAge(patient.date_of_birth)}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                        <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300 font-mono bg-slate-50/50 dark:bg-slate-700/30 rounded-l-lg">{patient.medical_record_number}</td>
+                        <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300 font-mono">{patient.nik || '-'}</td>
+                        <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">{calculateAge(patient.date_of_birth)}</td>
+                        <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">
                           {patient.gender === 'laki_laki' ? 'Laki-laki' : patient.gender === 'perempuan' ? 'Perempuan' : '-'}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-4">
                           {patient.blood_type ? (
-                            <Badge variant="info">{patient.blood_type}</Badge>
+                            <span className="inline-flex items-center rounded-full bg-gradient-to-r from-red-100 to-rose-100 dark:from-red-900/30 dark:to-rose-900/30 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300">
+                              {patient.blood_type}
+                            </span>
                           ) : (
                             <span className="text-sm text-slate-400 dark:text-slate-500">-</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-center">
-                          <span className={`inline-flex items-center justify-center h-6 min-w-[24px] rounded-full px-2 text-xs font-bold ${
-                            patient.visit_count > 0 ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-500'
+                        <td className="px-5 py-4 text-center">
+                          <span className={`inline-flex items-center justify-center h-7 min-w-[28px] rounded-full px-2.5 text-xs font-bold shadow-sm ${
+                            patient.visit_count > 0
+                              ? 'bg-gradient-to-r from-teal-100 to-emerald-100 dark:from-teal-900/30 dark:to-emerald-900/30 text-teal-700 dark:text-teal-300 shadow-teal-200/50 dark:shadow-teal-800/30'
+                              : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
                           }`}>
                             {patient.visit_count}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+                        <td className="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">
                           {patient.last_visit
                             ? format(new Date(patient.last_visit), 'dd MMM yyyy', { locale: id })
                             : '-'}
                         </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center justify-end gap-1">
-                            <button onClick={() => openEdit(patient)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" title="Edit Pasien">
+                        <td className="px-5 py-4">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => openEdit(patient)}
+                              className="rounded-xl p-2.5 text-slate-400 dark:text-slate-500 hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-50 dark:hover:from-slate-700 dark:hover:to-slate-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 hover:shadow-sm"
+                              title="Edit Pasien"
+                            >
                               <Pencil className="h-4 w-4" />
                             </button>
-                            <button onClick={() => openDetail(patient)} className="rounded-lg p-2 text-slate-400 dark:text-slate-500 hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:text-teal-600 dark:hover:text-teal-400 transition-colors" title="Lihat Detail">
+                            <button
+                              onClick={() => openDetail(patient)}
+                              className="rounded-xl p-2.5 text-slate-400 dark:text-slate-500 hover:bg-gradient-to-r hover:from-teal-50 hover:to-emerald-50 dark:hover:from-teal-900/30 dark:hover:to-emerald-900/30 hover:text-teal-600 dark:hover:text-teal-400 transition-all duration-200 hover:shadow-sm"
+                              title="Lihat Detail"
+                            >
                               <Eye className="h-4 w-4" />
                             </button>
                           </div>
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))
                   )}
                 </tbody>
@@ -410,48 +478,53 @@ export default function PatientManagement() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editPatient} onOpenChange={() => setEditPatient(null)}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto dark:bg-slate-800 dark:border-slate-700">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto dark:bg-slate-800 dark:border-slate-700 rounded-2xl shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="dark:text-slate-100">Edit Data Pasien</DialogTitle>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/20">
+                <Pencil className="h-5 w-5 text-white" />
+              </div>
+              <DialogTitle className="dark:text-slate-100 text-lg">Edit Data Pasien</DialogTitle>
+            </div>
           </DialogHeader>
           {editPatient && (
             <form key={editPatient.id} onSubmit={handleSubmit(onSubmitEdit)} className="space-y-4 mt-4">
-              <div className="rounded-xl bg-slate-50 dark:bg-slate-700 p-3 mb-2">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No. RM: {editPatient.medical_record_number}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-300">Nomor rekam medis tidak dapat diubah.</p>
+              <div className="rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-600 p-4 mb-2 border border-slate-200 dark:border-slate-600">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">No. RM: {editPatient.medical_record_number}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-300 mt-0.5">Nomor rekam medis tidak dapat diubah.</p>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap</label>
-                <Input {...register('full_name', { required: 'Nama wajib diisi' })} className="mt-1" />
-                {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name.message}</p>}
+                <Input {...register('full_name', { required: 'Nama wajib diisi' })} className="mt-1.5 rounded-xl" />
+                {errors.full_name && <p className="text-xs text-red-500 mt-1.5">{errors.full_name.message}</p>}
               </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">NIK</label>
-                <Input {...register('nik')} placeholder="Nomor Induk Kependudukan" className="mt-1" />
+                <Input {...register('nik')} placeholder="Nomor Induk Kependudukan" className="mt-1.5 rounded-xl" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Telepon</label>
-                  <Input {...register('phone')} placeholder="08xxxxxxxxxx" className="mt-1" />
+                  <Input {...register('phone')} placeholder="08xxxxxxxxxx" className="mt-1.5 rounded-xl" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Tanggal Lahir</label>
-                  <Input {...register('date_of_birth')} type="date" className="mt-1" />
+                  <Input {...register('date_of_birth')} type="date" className="mt-1.5 rounded-xl" />
                 </div>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Alamat</label>
-                <Input {...register('address')} placeholder="Alamat lengkap" className="mt-1" />
+                <Input {...register('address')} placeholder="Alamat lengkap" className="mt-1.5 rounded-xl" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Jenis Kelamin</label>
-                  <Select {...register('gender')} className="mt-1">
+                  <Select {...register('gender')} className="mt-1.5 rounded-xl">
                     <option value="">Pilih</option>
                     <option value="laki_laki">Laki-laki</option>
                     <option value="perempuan">Perempuan</option>
@@ -459,7 +532,7 @@ export default function PatientManagement() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Golongan Darah</label>
-                  <Select {...register('blood_type')} className="mt-1">
+                  <Select {...register('blood_type')} className="mt-1.5 rounded-xl">
                     <option value="">Pilih</option>
                     <option value="A">A</option>
                     <option value="B">B</option>
@@ -471,17 +544,19 @@ export default function PatientManagement() {
 
               <div>
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Alergi</label>
-                <Input {...register('allergies')} placeholder="Contoh: Makanan laut, Debu" className="mt-1" />
+                <Input {...register('allergies')} placeholder="Contoh: Makanan laut, Debu" className="mt-1.5 rounded-xl" />
               </div>
 
               <div>
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Kontak Darurat</label>
-                <Input {...register('emergency_contact')} placeholder="Nama - Nomor HP" className="mt-1" />
+                <Input {...register('emergency_contact')} placeholder="Nama - Nomor HP" className="mt-1.5 rounded-xl" />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={() => setEditPatient(null)}>Batal</Button>
-                <Button type="submit" disabled={saving} className="gap-2">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                <Button type="button" variant="outline" onClick={() => setEditPatient(null)} className="rounded-xl">
+                  Batal
+                </Button>
+                <Button type="submit" disabled={saving} className="gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 shadow-lg shadow-teal-500/20">
                   {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </Button>
               </div>
@@ -492,32 +567,42 @@ export default function PatientManagement() {
 
       {/* Detail Dialog */}
       <Dialog open={!!selectedPatient} onOpenChange={() => { setSelectedPatient(null); setPatientHistory([]); }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto dark:bg-slate-800 dark:border-slate-700">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto dark:bg-slate-800 dark:border-slate-700 rounded-2xl shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="dark:text-slate-100">Detail Pasien</DialogTitle>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-lg shadow-teal-500/20">
+                <Users className="h-5 w-5 text-white" />
+              </div>
+              <DialogTitle className="dark:text-slate-100 text-lg">Detail Pasien</DialogTitle>
+            </div>
           </DialogHeader>
           {selectedPatient && (
             <div className="space-y-4 mt-4">
               {/* Patient Info Card */}
-              <div className="rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 p-5 text-white">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold">
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-500 p-6 text-white shadow-lg shadow-teal-500/20">
+                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/10 blur-xl" />
+                <div className="absolute -bottom-4 -left-4 h-16 w-16 rounded-full bg-white/10 blur-lg" />
+                <div className="relative z-10 flex items-center gap-5">
+                  <div className="flex h-18 w-18 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm text-3xl font-bold shadow-xl">
                     {selectedPatient.full_name?.charAt(0)}
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">{selectedPatient.full_name}</h3>
-                    <p className="text-sm text-white/80">RM: {selectedPatient.medical_record_number}</p>
+                    <p className="text-sm text-white/80 mt-0.5">RM: {selectedPatient.medical_record_number}</p>
                   </div>
                 </div>
               </div>
 
               {/* Identity */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 space-y-3 bg-white dark:bg-slate-800 shadow-sm">
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                    <Users className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Identitas
+                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500">
+                      <Users className="h-3.5 w-3.5 text-white" />
+                    </div>
+                    Identitas
                   </h4>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2.5 text-sm">
                     <div className="flex justify-between">
                       <span className="text-slate-500 dark:text-slate-300">NIK</span>
                       <span className="font-medium text-slate-900 dark:text-slate-100 font-mono">{selectedPatient.nik || '-'}</span>
@@ -545,14 +630,19 @@ export default function PatientManagement() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 space-y-3 bg-white dark:bg-slate-800 shadow-sm">
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Data Medis
+                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500">
+                      <Activity className="h-3.5 w-3.5 text-white" />
+                    </div>
+                    Data Medis
                   </h4>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2.5 text-sm">
                     <div className="flex justify-between">
                       <span className="text-slate-500 dark:text-slate-300">Gol. Darah</span>
-                      <Badge variant="info">{selectedPatient.blood_type || '-'}</Badge>
+                      <span className="inline-flex items-center rounded-full bg-gradient-to-r from-red-100 to-rose-100 dark:from-red-900/30 dark:to-rose-900/30 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300">
+                        {selectedPatient.blood_type || '-'}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500 dark:text-slate-300">Jenis Kelamin</span>
@@ -570,44 +660,55 @@ export default function PatientManagement() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500 dark:text-slate-300">Total Kunjungan</span>
-                      <span className="font-bold text-teal-600 dark:text-teal-400">{selectedPatient.visit_count}x</span>
+                      <span className="inline-flex items-center rounded-full bg-gradient-to-r from-teal-100 to-emerald-100 dark:from-teal-900/30 dark:to-emerald-900/30 px-3 py-1 text-xs font-bold text-teal-700 dark:text-teal-300">
+                        {selectedPatient.visit_count}x
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Medical History */}
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-800 shadow-sm">
                 <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-3">
-                  <FileText className="h-4 w-4 text-teal-600 dark:text-teal-400" /> Riwayat Pemeriksaan
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
+                    <FileText className="h-3.5 w-3.5 text-white" />
+                  </div>
+                  Riwayat Pemeriksaan
                 </h4>
                 {loadingHistory ? (
-                  <div className="space-y-2">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+                  <div className="space-y-2.5">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-18 w-full rounded-xl" />)}
                   </div>
                 ) : patientHistory.length === 0 ? (
-                  <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">Belum ada riwayat pemeriksaan</p>
+                  <div className="flex flex-col items-center gap-2 py-8">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700">
+                      <FileText className="h-6 w-6 text-slate-400 dark:text-slate-500" />
+                    </div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada riwayat pemeriksaan</p>
+                  </div>
                 ) : (
-                  <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  <div className="space-y-2.5 max-h-[300px] overflow-y-auto">
                     {patientHistory.map((record) => (
-                      <div key={record.id} className="flex items-start gap-3 rounded-lg border border-slate-100 dark:border-slate-700 p-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/30 shrink-0">
-                          <Stethoscope className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                      <div key={record.id} className="flex items-start gap-3 rounded-xl border border-slate-100 dark:border-slate-700 p-3.5 hover:bg-gradient-to-r hover:from-teal-50/50 hover:to-transparent dark:hover:from-teal-900/20 dark:hover:to-transparent transition-all duration-200 group">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 shrink-0 shadow-md shadow-teal-500/20 group-hover:shadow-lg group-hover:shadow-teal-500/30 transition-shadow duration-200">
+                          <Stethoscope className="h-4 w-4 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{record.diagnosis || 'Tanpa diagnosa'}</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{record.diagnosis || 'Tanpa diagnosa'}</p>
                             <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
                               {format(new Date(record.created_at), 'dd MMM yyyy', { locale: id })}
                             </span>
                           </div>
-                          <p className="text-xs text-slate-500 dark:text-slate-300 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">
                             {record.doctor_name} &middot; {record.poli_name}
                           </p>
                           {record.symptoms && (
-                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">Keluhan: {record.symptoms}</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5 truncate">Keluhan: {record.symptoms}</p>
                           )}
                         </div>
+                        <ChevronRight className="h-4 w-4 text-slate-300 dark:text-slate-600 shrink-0 mt-1 group-hover:text-teal-500 transition-colors duration-200" />
                       </div>
                     ))}
                   </div>
