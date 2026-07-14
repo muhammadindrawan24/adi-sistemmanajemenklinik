@@ -154,17 +154,24 @@ export default function LoginPage() {
           custom={0}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/25">
-              <LogIn className="h-6 w-6 text-white" />
+          <div className="flex items-center gap-4 mb-2">
+            <div className="relative">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 shadow-xl shadow-teal-500/30">
+                <LogIn className="h-7 w-7 text-white" />
+              </div>
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 opacity-30 blur-lg" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900">Selamat Datang</h2>
-              <p className="text-sm text-slate-500">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                Selamat Datang
+              </h2>
+              <p className="text-sm text-slate-500 mt-0.5">
                 Masuk ke akun Anda untuk melanjutkan
               </p>
             </div>
           </div>
+          {/* Decorative line */}
+          <div className="mt-5 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         </motion.div>
 
         {/* Form */}
@@ -173,29 +180,29 @@ export default function LoginPage() {
           <motion.div initial="hidden" animate="visible" variants={fadeIn} custom={1}>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-slate-700 mb-1.5"
+              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
             >
               Email
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Mail className="h-4 w-4 text-slate-400" />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Mail className="h-4 w-4 text-slate-400 group-focus-within:text-teal-500 transition-colors" />
               </div>
               <input
                 id="email"
                 type="email"
                 placeholder="nama@email.com"
                 {...register("email")}
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
               />
             </div>
             {errors.email && (
               <motion.p 
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-1.5 text-xs text-red-500 flex items-center gap-1"
+                className="mt-2 text-xs text-red-500 flex items-center gap-1.5"
               >
-                <AlertCircle className="w-3 h-3" />
+                <AlertCircle className="w-3.5 h-3.5" />
                 {errors.email.message}
               </motion.p>
             )}
@@ -205,25 +212,25 @@ export default function LoginPage() {
           <motion.div initial="hidden" animate="visible" variants={fadeIn} custom={2}>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-slate-700 mb-1.5"
+              className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
             >
               Password
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <Lock className="h-4 w-4 text-slate-400" />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Lock className="h-4 w-4 text-slate-400 group-focus-within:text-teal-500 transition-colors" />
               </div>
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Masukkan password"
                 {...register("password")}
-                className="w-full pl-10 pr-11 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="w-full pl-11 pr-12 py-3.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -236,9 +243,9 @@ export default function LoginPage() {
               <motion.p 
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-1.5 text-xs text-red-500 flex items-center gap-1"
+                className="mt-2 text-xs text-red-500 flex items-center gap-1.5"
               >
-                <AlertCircle className="w-3 h-3" />
+                <AlertCircle className="w-3.5 h-3.5" />
                 {errors.password.message}
               </motion.p>
             )}
@@ -254,7 +261,7 @@ export default function LoginPage() {
           >
             <Link
               href="/forgot-password"
-              className="text-sm text-teal-600 hover:text-teal-700 font-medium transition-colors"
+              className="text-sm font-semibold text-teal-600 hover:text-teal-700 transition-colors"
             >
               Lupa password?
             </Link>
@@ -265,7 +272,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-md shadow-teal-600/25 hover:shadow-lg hover:shadow-teal-600/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#0d9488] via-[#0f766e] to-[#0d9488] hover:from-[#0f766e] hover:via-[#115e59] hover:to-[#0f766e] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-lg shadow-teal-600/30 hover:shadow-xl hover:shadow-teal-600/40 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <>
@@ -274,8 +281,8 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <LogIn className="h-4 w-4" />
-                  <span>Masuk</span>
+                  <LogIn className="h-4.5 w-4.5" />
+                  <span className="text-sm">Masuk</span>
                 </>
               )}
             </button>
@@ -288,20 +295,24 @@ export default function LoginPage() {
           animate="visible" 
           variants={fadeIn} 
           custom={5}
-          className="mt-6 rounded-xl bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100 p-4"
+          className="mt-6 rounded-2xl bg-gradient-to-r from-teal-50/80 to-emerald-50/80 border border-teal-100/80 p-4 relative overflow-hidden"
         >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 shadow-md shadow-teal-500/20 shrink-0">
-              <UserPlus className="h-4 w-4 text-white" />
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-teal-400/10 to-emerald-400/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="relative flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/25 shrink-0">
+              <UserPlus className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-teal-700">
-                <span className="font-bold">Pasien baru?</span>{" "}
-                <Link href="/register" className="font-semibold text-teal-600 hover:text-teal-700 transition-colors">
-                  Daftar sekarang
-                </Link>{" "}
-                untuk ambil antrian online
+              <p className="text-sm font-semibold text-teal-800">
+                Pasien baru?
               </p>
+              <Link 
+                href="/register" 
+                className="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors inline-flex items-center gap-1 mt-0.5"
+              >
+                Daftar sekarang untuk ambil antrian online
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
         </motion.div>
