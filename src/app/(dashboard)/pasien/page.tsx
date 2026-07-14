@@ -12,6 +12,7 @@ import {
   Clock,
   ArrowRight,
   Stethoscope,
+  Calendar,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -101,20 +102,28 @@ export default function PasienDashboard() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
           <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
-              <User className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <p className="text-white/60 text-xs font-medium">Selamat datang,</p>
-              {loading ? (
-                <Skeleton className="h-6 w-40 bg-white/20 mt-1" />
-              ) : (
-                <h1 className="text-xl font-bold">{profile?.name || 'Pasien'}</h1>
-              )}
-              <p className="text-white/50 text-xs mt-0.5 flex items-center gap-1">
-                <Hash className="h-3 w-3" /> {profile?.rm_number || '-'}
-              </p>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                  <User className="h-7 w-7 text-white" />
+                </div>
+                <div>
+                  <p className="text-white/60 text-xs font-medium">Selamat datang,</p>
+                  {loading ? (
+                    <Skeleton className="h-6 w-40 bg-white/20 mt-1" />
+                  ) : (
+                    <h1 className="text-xl font-bold">{profile?.name || 'Pasien'}</h1>
+                  )}
+                  <p className="text-white/50 text-xs mt-0.5 flex items-center gap-1">
+                    <Hash className="h-3 w-3" /> {profile?.rm_number || '-'}
+                  </p>
+                </div>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 text-white/70">
+                <Calendar className="h-4 w-4" />
+                <span className="text-sm">{format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}</span>
+              </div>
             </div>
           </div>
         </div>
