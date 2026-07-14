@@ -140,6 +140,24 @@ export default function AuthLayout({
                 </span>
               ))}
             </div>
+
+            {/* Role Access Info */}
+            <div className="mt-5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 p-3.5">
+              <p className="text-[11px] font-semibold text-teal-200/80 mb-2 uppercase tracking-wider">Tersedia 4 Role Akses</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { role: 'Admin', color: 'bg-purple-400' },
+                  { role: 'Petugas', color: 'bg-blue-400' },
+                  { role: 'Dokter', color: 'bg-emerald-400' },
+                  { role: 'Pasien', color: 'bg-teal-300' },
+                ].map((r) => (
+                  <span key={r.role} className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white">
+                    <span className={`h-1.5 w-1.5 rounded-full ${r.color}`} />
+                    {r.role}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Bottom — Trust badge */}
