@@ -145,34 +145,34 @@ export default function LoginPage() {
         </motion.div>
       )}
 
-      <div className="p-8 sm:p-10">
+      <div className="p-6 sm:p-8">
         {/* Header */}
         <motion.div 
           initial="hidden" 
           animate="visible" 
           variants={fadeIn} 
           custom={0}
-          className="mb-8"
+          className="mb-6"
         >
-          <div className="flex items-center gap-4 mb-3">
+          <div className="flex items-center gap-4 mb-2">
             <div className="relative">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 shadow-xl shadow-teal-500/30">
-                <LogIn className="h-7 w-7 text-white" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 shadow-xl shadow-teal-500/30">
+                <LogIn className="h-6 w-6 text-white" />
               </div>
               <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 opacity-30 blur-lg" />
             </div>
             <div>
-              <h2 className="text-[28px] font-extrabold tracking-tight">
+              <h2 className="text-2xl font-extrabold tracking-tight">
                 <span className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 bg-clip-text text-transparent">Selamat</span>{" "}
                 <span className="bg-gradient-to-r from-teal-600 via-emerald-500 to-teal-600 bg-clip-text text-transparent">Datang</span>
               </h2>
-              <p className="text-sm text-slate-500 mt-0.5 font-medium">
+              <p className="text-xs text-slate-500 mt-0.5 font-medium">
                 Masuk ke akun Anda untuk melanjutkan
               </p>
             </div>
           </div>
           {/* Decorative line with dots */}
-          <div className="flex items-center gap-2 mt-5">
+          <div className="flex items-center gap-2 mt-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
             <div className="flex gap-1">
               <div className="w-1 h-1 rounded-full bg-teal-400" />
@@ -184,7 +184,7 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Email */}
           <motion.div initial="hidden" animate="visible" variants={fadeIn} custom={1}>
             <label
@@ -202,7 +202,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="nama@email.com"
                 {...register("email")}
-                className="w-full pl-11 pr-4 py-3.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
               />
             </div>
             {errors.email && (
@@ -234,7 +234,7 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Masukkan password"
                 {...register("password")}
-                className="w-full pl-11 pr-12 py-3.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                className="w-full pl-10 pr-12 py-2.5 bg-slate-50/80 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
               />
               <button
                 type="button"
@@ -281,7 +281,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#0d9488] via-[#0f766e] to-[#0d9488] hover:from-[#0f766e] hover:via-[#115e59] hover:to-[#0f766e] text-white font-semibold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-lg shadow-teal-600/30 hover:shadow-xl hover:shadow-teal-600/40 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#0d9488] via-[#0f766e] to-[#0d9488] hover:from-[#0f766e] hover:via-[#115e59] hover:to-[#0f766e] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg shadow-teal-600/30 hover:shadow-xl hover:shadow-teal-600/40 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             >
               {isLoading ? (
                 <>
@@ -290,7 +290,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <LogIn className="h-4.5 w-4.5" />
+                  <LogIn className="h-4 w-4" />
                   <span className="text-sm">Masuk</span>
                 </>
               )}
@@ -304,24 +304,22 @@ export default function LoginPage() {
           animate="visible" 
           variants={fadeIn} 
           custom={5}
-          className="mt-6 rounded-2xl bg-gradient-to-r from-teal-50/80 to-emerald-50/80 border border-teal-100/80 p-4 relative overflow-hidden"
+          className="mt-5 rounded-xl bg-gradient-to-r from-teal-50/80 to-emerald-50/80 border border-teal-100/80 p-3 relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-teal-400/10 to-emerald-400/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="relative flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/25 shrink-0">
-              <UserPlus className="h-5 w-5 text-white" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 shadow-md shadow-teal-500/25 shrink-0">
+              <UserPlus className="h-4 w-4 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-teal-800">
-                Pasien baru?
+              <p className="text-xs font-semibold text-teal-800">
+                Pasien baru?{" "}
+                <Link 
+                  href="/register" 
+                  className="text-teal-600 hover:text-teal-700 transition-colors"
+                >
+                  Daftar sekarang
+                </Link>
               </p>
-              <Link 
-                href="/register" 
-                className="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors inline-flex items-center gap-1 mt-0.5"
-              >
-                Daftar sekarang untuk ambil antrian online
-                <ArrowRight className="h-3 w-3" />
-              </Link>
             </div>
           </div>
         </motion.div>
