@@ -2,22 +2,24 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ListOrdered, Send, CheckCircle, AlertCircle, Stethoscope, Clock, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { ListOrdered, Send, CheckCircle, AlertCircle, Stethoscope, Clock, Calendar, ChevronDown, ChevronUp, User, FileText, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createClient } from '@/lib/supabase/client';
 import { useForm } from 'react-hook-form';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 interface QueueForm { poli_id: string; complaint: string; }
 interface QueueResult { queueNumber: string; position: number; poliName: string; }
 
 // Jam operasional klinik
-const CLINIC_OPEN_HOUR = 7;   // Pendaftaran antrian dibuka
-const CLINIC_CLOSE_HOUR = 20; // Pendaftaran antrian ditutup
-const CLINIC_CLOSE_MINUTE = 30; // Menit tutup (20:30)
-const DOCTOR_START_HOUR = 8;  // Dokter mulai praktek
+const CLINIC_OPEN_HOUR = 7;
+const CLINIC_CLOSE_HOUR = 20;
+const CLINIC_CLOSE_MINUTE = 30;
+const DOCTOR_START_HOUR = 8;
 
 function getQueueStatus(): { canQueue: boolean; message: string } {
   const now = new Date();
@@ -25,8 +27,8 @@ function getQueueStatus(): { canQueue: boolean; message: string } {
   const minutes = now.getMinutes();
   const currentMinutes = hours * 60 + minutes;
 
-  const openTime = CLINIC_OPEN_HOUR * 60; // 07:00 = 420
-  const closeTime = CLINIC_CLOSE_HOUR * 60 + CLINIC_CLOSE_MINUTE; // 20:30 = 1230
+  const openTime = CLINIC_OPEN_HOUR * 60;
+  const closeTime = CLINIC_CLOSE_HOUR * 60 + CLINIC_CLOSE_MINUTE;
 
   if (currentMinutes < openTime) {
     return { canQueue: false, message: `Pendaftaran antrian dibuka pukul ${CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 WIB` };
@@ -38,15 +40,6 @@ function getQueueStatus(): { canQueue: boolean; message: string } {
 
   return { canQueue: true, message: '' };
 }
-
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.06, duration: 0.4, ease: 'easeOut' as const },
-  }),
-};
 
 export default function TakeQueuePage() {
   const supabase = createClient();
@@ -61,7 +54,6 @@ export default function TakeQueuePage() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<QueueForm>();
   const selectedPoli = watch('poli_id');
 
-  // Update queue status setiap menit
   React.useEffect(() => {
     const interval = setInterval(() => {
       setQueueStatus(getQueueStatus());
@@ -75,11 +67,9 @@ export default function TakeQueuePage() {
 
   React.useEffect(() => {
     const fetchData = async () => {
-      // Fetch poli
       const { data: poliData } = await supabase.from('poli').select('*').eq('is_active', true).order('name');
       setPoli(poliData || []);
 
-      // Fetch today's doctor schedules with doctor info
       const dayOfWeek = (new Date().getDay() + 6) % 7;
       const { data: schedules } = await supabase
         .from('doctor_schedules')
@@ -88,7 +78,6 @@ export default function TakeQueuePage() {
         .eq('is_active', true)
         .order('start_time');
 
-      // Fetch all doctor profiles in one query
       const allDoctorUserIds = schedules?.map((s: any) => s.doctor?.user_id).filter(Boolean) || [];
       const uniqueDoctorIds = [...new Set(allDoctorUserIds)];
       
@@ -122,7 +111,6 @@ export default function TakeQueuePage() {
   const onSubmit = async (data: QueueForm) => {
     setSaving(true);
     try {
-      // Cek jam pendaftaran
       const status = getQueueStatus();
       if (!status.canQueue) {
         throw new Error(status.message);
@@ -150,8 +138,8 @@ export default function TakeQueuePage() {
         throw new Error('Anda sudah memiliki antrian aktif');
       }
 
-      const selectedPoli = poli.find((p) => p.id === data.poli_id);
-      if (!selectedPoli) throw new Error('Poli tidak ditemukan');
+      const selectedPoliData = poli.find((p) => p.id === data.poli_id);
+      if (!selectedPoliData) throw new Error('Poli tidak ditemukan');
 
       const today = new Date().toISOString().split('T')[0];
       const { count } = await supabase
@@ -161,7 +149,7 @@ export default function TakeQueuePage() {
         .gte('created_at', today);
 
       const queueNum = (count || 0) + 1;
-      const queueNumber = `${selectedPoli.initial}${String(queueNum).padStart(3, '0')}`;
+      const queueNumber = `${selectedPoliData.initial}${String(queueNum).padStart(3, '0')}`;
 
       const dayOfWeek = (new Date().getDay() + 6) % 7;
       const { data: schedule } = await supabase
@@ -195,40 +183,78 @@ export default function TakeQueuePage() {
     }
   };
 
+  // Success Result
   if (result) {
     return (
       <div className="space-y-6">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold text-slate-900">Ambil Antrian</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Ambil Antrian</h1>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 20 }}>
-          <Card className="border-2 border-emerald-200 bg-emerald-50">
-            <CardContent className="py-12 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 mx-auto mb-4">
-                <CheckCircle className="h-8 w-8 text-white" />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        >
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-900/30 dark:via-teal-900/30 dark:to-cyan-900/20 border border-emerald-100 dark:border-emerald-800/30 p-8">
+            {/* Decorative */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-teal-400/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-teal-400/20 to-emerald-400/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+            
+            <div className="relative text-center">
+              {/* Success Icon */}
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 mx-auto mb-5 shadow-xl shadow-emerald-500/30"
+              >
+                <CheckCircle className="h-10 w-10 text-white" />
+              </motion.div>
+
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Antrian Berhasil!</h2>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">Anda telah terdaftar dalam antrian</p>
+
+              {/* Queue Number Card */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="inline-flex flex-col items-center rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-xl shadow-emerald-100/50 dark:shadow-emerald-900/30 border border-emerald-50 dark:border-emerald-800/30"
+              >
+                <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Nomor Antrian Anda</p>
+                <p className="text-7xl font-bold bg-gradient-to-r from-teal-500 to-emerald-600 bg-clip-text text-transparent my-3">{result.queueNumber}</p>
+                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-sm">{format(new Date(), 'EEEE, dd MMMM yyyy', { locale: id })}</span>
+                </div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300 mt-2">Poli {result.poliName}</p>
+              </motion.div>
+
+              {/* Info */}
+              <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                <Clock className="h-3 w-3" />
+                <span>Silakan tunggu hingga nomor Anda dipanggil</span>
               </div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Antrian Berhasil!</h2>
-              <p className="text-slate-500 mb-6">Anda telah terdaftar dalam antrian.</p>
-              <div className="inline-flex flex-col items-center rounded-2xl bg-white p-6 shadow-sm border border-emerald-100">
-                <p className="text-sm text-slate-500">Nomor Antrian Anda</p>
-                <p className="text-6xl font-bold text-teal-600 my-2">{result.queueNumber}</p>
-                <p className="text-sm text-slate-600">{result.poliName}</p>
-              </div>
+
+              {/* Button */}
               <div className="mt-6">
-                <Button onClick={() => setResult(null)} className="gap-2">
+                <Button 
+                  onClick={() => setResult(null)} 
+                  className="gap-2 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 shadow-lg shadow-teal-500/25 rounded-xl"
+                >
                   <ListOrdered className="h-4 w-4" />
                   Ambil Antrian Lain
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       </div>
     );
   }
 
-  // Group schedules by poli for display
+  // Group schedules by poli
   const schedulesByPoli: Record<string, any[]> = {};
   todaySchedules.forEach((s) => {
     if (!schedulesByPoli[s.poli_name]) schedulesByPoli[s.poli_name] = [];
@@ -254,35 +280,68 @@ export default function TakeQueuePage() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
+      {/* Header Banner */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Ambil Antrian</h1>
-        <p className="text-slate-500 mt-1 text-sm">Pilih poli, cek jadwal dokter, dan ambil nomor antrian.</p>
-        <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
-          <Clock className="h-3 w-3" />
-          <span>Jam pendaftaran: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {CLINIC_CLOSE_HOUR.toString().padStart(2, '0')}:{CLINIC_CLOSE_MINUTE.toString().padStart(2, '0')} WIB</span>
-          <span className="text-slate-300">|</span>
-          <span>Praktek dokter: {DOCTOR_START_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00 WIB</span>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
+                <ListOrdered className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Ambil Antrian</h1>
+                <p className="text-white/60 text-xs">Pilih poli dan daftar antrian</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-white/70">
+              <div className="flex items-center gap-1.5 bg-white/10 rounded-lg px-3 py-1.5">
+                <Clock className="h-3 w-3" />
+                <span>Pendaftaran: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {CLINIC_CLOSE_HOUR.toString().padStart(2, '0')}:{CLINIC_CLOSE_MINUTE.toString().padStart(2, '0')}</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-white/10 rounded-lg px-3 py-1.5">
+                <Stethoscope className="h-3 w-3" />
+                <span>Praktek: {DOCTOR_START_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00</span>
+              </div>
+            </div>
+          </div>
         </div>
       </motion.div>
 
-      {/* Jadwal Dokter Hari Ini - Collapsible */}
-      <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
+      {/* Warning Jam */}
+      {!queueStatus.canQueue && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700/30 p-4 flex items-center gap-3"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-800/50">
+            <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">{queueStatus.message}</p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Jam operasional: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00 WIB</p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Jadwal Dokter */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <button
           onClick={() => setShowSchedule(!showSchedule)}
-          className="w-full rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50/80 to-teal-50/50 p-4 flex items-center justify-between hover:shadow-sm transition-all"
+          className="w-full rounded-2xl border border-emerald-100 dark:border-emerald-800/30 bg-gradient-to-r from-emerald-50/80 to-teal-50/50 dark:from-emerald-900/20 dark:to-teal-900/10 p-4 flex items-center justify-between hover:shadow-md transition-all duration-200"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 shadow-sm shadow-emerald-200">
-              <Stethoscope className="h-4 w-4 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-500/25">
+              <Stethoscope className="h-5 w-5 text-white" />
             </div>
             <div className="text-left">
-              <h3 className="text-sm font-bold text-emerald-800">Jadwal Dokter Hari Ini</h3>
-              <p className="text-[10px] text-emerald-600 mt-0.5">{todaySchedules.length} dokter aktif</p>
+              <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-200">Jadwal Dokter Hari Ini</h3>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{todaySchedules.length} dokter aktif</p>
             </div>
           </div>
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100">
-            {showSchedule ? <ChevronUp className="h-4 w-4 text-emerald-700" /> : <ChevronDown className="h-4 w-4 text-emerald-700" />}
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-800/50">
+            {showSchedule ? <ChevronUp className="h-4 w-4 text-emerald-700 dark:text-emerald-300" /> : <ChevronDown className="h-4 w-4 text-emerald-700 dark:text-emerald-300" />}
           </div>
         </button>
 
@@ -298,33 +357,33 @@ export default function TakeQueuePage() {
               <div className="pt-3">
                 {loading ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+                    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
                   </div>
                 ) : todaySchedules.length === 0 ? (
-                  <div className="text-center py-6 rounded-xl bg-slate-50 border border-dashed border-slate-200">
-                    <Calendar className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-sm text-slate-500">Tidak ada jadwal dokter hari ini</p>
+                  <div className="text-center py-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-dashed border-slate-200 dark:border-slate-700">
+                    <Calendar className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Tidak ada jadwal dokter hari ini</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {Object.entries(schedulesByPoli).map(([poliName, schedules]) => (
-                      <div key={poliName} className="rounded-xl bg-white border border-slate-100 p-3.5 shadow-sm">
-                        <div className="flex items-center gap-2 mb-2.5">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-100 text-[10px] font-bold text-emerald-700">
+                      <div key={poliName} className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 shadow-sm">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-[10px] font-bold text-white shadow-sm">
                             {schedules[0]?.poli_initial}
                           </span>
-                          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">{poliName}</h4>
+                          <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">{poliName}</h4>
                         </div>
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           {schedules.map((s: any) => (
-                            <div key={s.id} className="flex items-center justify-between">
+                            <div key={s.id} className="flex items-center justify-between py-1">
                               <div className="flex items-center gap-2">
-                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[9px] font-bold text-white">
+                                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-[10px] font-bold text-white shadow-sm">
                                   {s.doctor_name?.split(' ').pop()?.charAt(0) || '?'}
                                 </div>
-                                <span className="text-xs font-medium text-slate-700 truncate max-w-[120px]">{s.doctor_name}</span>
+                                <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]">{s.doctor_name}</span>
                               </div>
-                              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-full flex items-center gap-1">
                                 <Clock className="h-2.5 w-2.5" />
                                 {s.start_time?.slice(0, 5)}-{s.end_time?.slice(0, 5)}
                               </span>
@@ -342,44 +401,42 @@ export default function TakeQueuePage() {
       </motion.div>
 
       {/* Form Ambil Antrian */}
-      <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
-              <ListOrdered className="h-5 w-5 text-white" />
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+          {/* Form Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-500/25">
+              <FileText className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Ambil Antrian Baru</h3>
-              <p className="text-xs text-slate-400">Pilih poli dan isi keluhan</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Formulir Antrian</h3>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Lengkapi data di bawah ini</p>
             </div>
           </div>
 
-          {/* Warning jika di luar jam pendaftaran */}
-          {!queueStatus.canQueue && (
-            <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-amber-800">{queueStatus.message}</p>
-                <p className="text-xs text-amber-600 mt-0.5">Jam operasional klinik: {CLINIC_OPEN_HOUR.toString().padStart(2, '0')}:00 - {(CLINIC_CLOSE_HOUR + 1).toString().padStart(2, '0')}:00 WIB</p>
-              </div>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Poli Selection */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pilih Poli <span className="text-red-500">*</span></label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <Stethoscope className="h-3 w-3" />
+                Pilih Poli <span className="text-red-500">*</span>
+              </label>
               {loading ? (
-                <Skeleton className="h-11 w-full rounded-xl" />
+                <Skeleton className="h-12 w-full rounded-xl" />
               ) : (
-                <Select {...register('poli_id', { required: 'Poli wajib dipilih' })} className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20">
-                  <option value="">Pilih Poli</option>
+                <Select {...register('poli_id', { required: 'Poli wajib dipilih' })} className="h-12 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-sm">
+                  <option value="">Pilih poli yang tersedia</option>
                   {poli.map((p) => (
                     <option key={p.id} value={p.id}>{p.name}</option>
                   ))}
                 </Select>
               )}
-              {errors.poli_id && <p className="text-xs text-red-500">{errors.poli_id.message}</p>}
+              {errors.poli_id && (
+                <p className="text-xs text-red-500 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.poli_id.message}
+                </p>
+              )}
             </div>
 
             {/* Show available doctors for selected poli */}
@@ -391,24 +448,34 @@ export default function TakeQueuePage() {
                   exit={{ opacity: 0, height: 0 }}
                 >
                   {todaySchedules.filter(s => s.poli_id === selectedPoli).length > 0 ? (
-                    <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Stethoscope className="h-4 w-4 text-emerald-600" />
-                        <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Dokter Tersedia</p>
-                      </div>
-                      {todaySchedules.filter(s => s.poli_id === selectedPoli).map((d, i) => (
-                        <div key={i} className="flex items-center justify-between py-1.5 border-b border-emerald-100 last:border-0">
-                          <span className="text-sm font-semibold text-slate-700">{d.doctor_name}</span>
-                          <span className="text-xs text-emerald-600 font-medium bg-emerald-100 px-2 py-0.5 rounded-full">
-                            {d.start_time?.slice(0, 5)} - {d.end_time?.slice(0, 5)}
-                          </span>
+                    <div className="rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/10 border border-emerald-100 dark:border-emerald-800/30 p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 shadow-sm">
+                          <Stethoscope className="h-3.5 w-3.5 text-white" />
                         </div>
-                      ))}
+                        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Dokter Tersedia Hari Ini</p>
+                      </div>
+                      <div className="space-y-2">
+                        {todaySchedules.filter(s => s.poli_id === selectedPoli).map((d, i) => (
+                          <div key={i} className="flex items-center justify-between py-2 px-3 bg-white/60 dark:bg-slate-800/60 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-[9px] font-bold text-white">
+                                {d.doctor_name?.split(' ').pop()?.charAt(0) || '?'}
+                              </div>
+                              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{d.doctor_name}</span>
+                            </div>
+                            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/40 px-2.5 py-1 rounded-full flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {d.start_time?.slice(0, 5)} - {d.end_time?.slice(0, 5)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ) : (
-                    <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 flex items-center gap-3">
+                    <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 p-4 flex items-center gap-3">
                       <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
-                      <p className="text-sm text-amber-700">Tidak ada jadwal dokter di poli ini hari ini.</p>
+                      <p className="text-sm text-amber-700 dark:text-amber-300">Tidak ada jadwal dokter di poli ini hari ini</p>
                     </div>
                   )}
                 </motion.div>
@@ -416,24 +483,34 @@ export default function TakeQueuePage() {
             </AnimatePresence>
 
             {/* Complaint */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Keluhan Singkat</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <FileText className="h-3 w-3" />
+                Keluhan Singkat
+              </label>
               <textarea
                 {...register('complaint')}
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none resize-none min-h-[80px]"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all hover:border-slate-300 dark:hover:border-slate-500 focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none resize-none min-h-[100px]"
                 placeholder="Deskripsikan keluhan Anda secara singkat..."
               />
             </div>
 
-            {/* Submit */}
-            <Button type="submit" disabled={saving || !queueStatus.canQueue} className="w-full h-12 gap-2 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] shadow-lg shadow-teal-900/20 text-sm font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed">
+            {/* Submit Button */}
+            <Button 
+              type="submit" 
+              disabled={saving || !queueStatus.canQueue} 
+              className="w-full h-13 gap-2.5 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] shadow-lg shadow-teal-900/25 text-sm font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
               {saving ? (
                 <div className="flex items-center gap-2">
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Mengambil Antrian...
                 </div>
               ) : (
-                <><Send className="h-4 w-4" /> Ambil Antrian</>
+                <>
+                  <Send className="h-4 w-4" />
+                  Ambil Antrian Sekarang
+                </>
               )}
             </Button>
           </form>
