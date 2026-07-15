@@ -140,11 +140,11 @@ export default function PetugasDashboard() {
   const totalQueues = Object.values(queueByPoli).reduce((sum, q) => sum + q.length, 0);
 
   const statusConfig: Record<string, { label: string; class: string }> = {
-    menunggu: { label: 'Menunggu', class: 'bg-amber-50 text-amber-700 border border-amber-200' },
-    dipanggil: { label: 'Dipanggil', class: 'bg-blue-50 text-blue-700 border border-blue-200 animate-pulse' },
-    sedang_diperiksa: { label: 'Diperiksa', class: 'bg-teal-50 text-teal-700 border border-teal-200' },
-    selesai: { label: 'Selesai', class: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
-    dibatalkan: { label: 'Dibatalkan', class: 'bg-red-50 text-red-700 border border-red-200' },
+    menunggu: { label: 'Menunggu', class: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800' },
+    dipanggil: { label: 'Dipanggil', class: 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 animate-pulse' },
+    sedang_diperiksa: { label: 'Diperiksa', class: 'bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800' },
+    selesai: { label: 'Selesai', class: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800' },
+    dibatalkan: { label: 'Dibatalkan', class: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800' },
   };
 
   return (
@@ -186,15 +186,15 @@ export default function PetugasDashboard() {
           { label: 'Selesai Diperiksa', value: stats.selesaiDiperiksa, icon: ClipboardCheck, gradient: 'from-emerald-500 to-teal-600', bgLight: 'bg-emerald-50' },
         ].map((card, i) => (
           <motion.div key={card.label} custom={i + 1} initial="hidden" animate="visible" variants={fadeIn}>
-            <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300">
+            <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 bg-white dark:bg-slate-800">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{card.label}</p>
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{card.label}</p>
                     {loading ? (
                       <Skeleton className="h-9 w-20 mt-1" />
                     ) : (
-                      <p className="text-3xl font-bold text-slate-900">{card.value}</p>
+                      <p className="text-3xl font-bold text-slate-900 dark:text-slate-100">{card.value}</p>
                     )}
                   </div>
                   <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${card.gradient} shadow-lg shadow-slate-200`}>
@@ -211,30 +211,30 @@ export default function PetugasDashboard() {
       <motion.div custom={4} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="grid grid-cols-2 gap-4">
           <Link href="/petugas/registration">
-            <div className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 transition-all duration-300 hover:shadow-lg hover:border-blue-200 hover:-translate-y-0.5">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 hover:-translate-y-0.5">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
               <div className="relative z-10">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-200 mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/30 mb-4 group-hover:scale-110 transition-transform duration-300">
                   <UserPlus className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-1">Registrasi Pasien</h3>
-                <p className="text-xs text-slate-500">Daftar pasien baru & buat antrian</p>
-                <div className="flex items-center gap-1 text-xs font-semibold text-blue-600 mt-3 group-hover:gap-2 transition-all">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">Registrasi Pasien</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Daftar pasien baru & buat antrian</p>
+                <div className="flex items-center gap-1 text-xs font-semibold text-blue-600 dark:text-blue-400 mt-3 group-hover:gap-2 transition-all">
                   Mulai <ArrowRight className="h-3.5 w-3.5" />
                 </div>
               </div>
             </div>
           </Link>
           <Link href="/petugas/queue">
-            <div className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 transition-all duration-300 hover:shadow-lg hover:border-teal-200 hover:-translate-y-0.5">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:shadow-lg hover:border-teal-200 dark:hover:border-teal-800 hover:-translate-y-0.5">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
               <div className="relative z-10">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-200 mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg shadow-teal-200 dark:shadow-teal-900/30 mb-4 group-hover:scale-110 transition-transform duration-300">
                   <ListOrdered className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 mb-1">Kelola Antrian</h3>
-                <p className="text-xs text-slate-500">Panggil & kelola antrian hari ini</p>
-                <div className="flex items-center gap-1 text-xs font-semibold text-teal-600 mt-3 group-hover:gap-2 transition-all">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">Kelola Antrian</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Panggil & kelola antrian hari ini</p>
+                <div className="flex items-center gap-1 text-xs font-semibold text-teal-600 dark:text-teal-400 mt-3 group-hover:gap-2 transition-all">
                   Buka <ArrowRight className="h-3.5 w-3.5" />
                 </div>
               </div>
@@ -247,16 +247,16 @@ export default function PetugasDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Queue by Poli - Larger */}
         <motion.div custom={5} initial="hidden" animate="visible" variants={fadeIn} className="lg:col-span-3">
-          <Card className="border-0 shadow-sm">
+          <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
             <div className="px-6 pt-6 pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200 dark:shadow-blue-900/30">
                     <Clock className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Antrian Hari Ini</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">{totalQueues} pasien terdaftar</p>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Antrian Hari Ini</h3>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{totalQueues} pasien terdaftar</p>
                   </div>
                 </div>
                 {totalQueues > 0 && (
@@ -273,11 +273,11 @@ export default function PetugasDashboard() {
                 </div>
               ) : totalQueues === 0 ? (
                 <div className="text-center py-12">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-4">
-                    <ListOrdered className="h-7 w-7 text-slate-300" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-4">
+                    <ListOrdered className="h-7 w-7 text-slate-300 dark:text-slate-500" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Belum ada antrian hari ini</p>
-                  <p className="text-xs text-slate-400 mt-1">Antrian akan muncul di sini</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada antrian hari ini</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Antrian akan muncul di sini</p>
                 </div>
               ) : (
                 <div className="space-y-5">
@@ -285,21 +285,21 @@ export default function PetugasDashboard() {
                     <div key={poliName}>
                       <div className="flex items-center gap-2 mb-3 px-1">
                         <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500" />
-                        <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider">{poliName}</h3>
+                        <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{poliName}</h3>
                         <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-blue-100 px-2 text-[10px] font-bold text-blue-700">
                           {queues.length}
                         </span>
                       </div>
                       <div className="space-y-2 pl-1">
                         {queues.map((q: any) => (
-                          <div key={q.id} className="flex items-center justify-between rounded-xl bg-slate-50/80 border border-slate-100 p-3.5 hover:bg-white hover:shadow-sm transition-all duration-200">
+                          <div key={q.id} className="flex items-center justify-between rounded-xl bg-slate-50/80 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700 p-3.5 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200">
                             <div className="flex items-center gap-3.5">
                               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-bold text-white shadow-sm">
                                 {q.queue_number}
                               </span>
                               <div>
-                                <p className="text-sm font-semibold text-slate-900">{q.patient?.full_name || '-'}</p>
-                                <p className="text-[11px] text-slate-400 font-medium">RM: {q.patient?.medical_record_number || '-'}</p>
+                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{q.patient?.full_name || '-'}</p>
+                                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">RM: {q.patient?.medical_record_number || '-'}</p>
                               </div>
                             </div>
                             <span className={`rounded-full px-3 py-1.5 text-[11px] font-semibold ${statusConfig[q.status]?.class || ''}`}>
@@ -318,15 +318,15 @@ export default function PetugasDashboard() {
 
         {/* Today's Doctor Schedule - Smaller */}
         <motion.div custom={6} initial="hidden" animate="visible" variants={fadeIn} className="lg:col-span-2">
-          <Card className="border-0 shadow-sm h-full">
+          <Card className="border-0 shadow-sm h-full bg-white dark:bg-slate-800">
             <div className="px-6 pt-6 pb-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200 dark:shadow-emerald-900/30">
                   <Stethoscope className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Jadwal Dokter</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Hari ini</p>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Jadwal Dokter</h3>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Hari ini</p>
                 </div>
               </div>
             </div>
@@ -337,22 +337,22 @@ export default function PetugasDashboard() {
                 </div>
               ) : todaySchedules.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 mx-auto mb-4">
-                    <Calendar className="h-7 w-7 text-slate-300" />
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-4">
+                    <Calendar className="h-7 w-7 text-slate-300 dark:text-slate-500" />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Tidak ada jadwal</p>
-                  <p className="text-xs text-slate-400 mt-1">Hari ini libur</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Tidak ada jadwal</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Hari ini libur</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {todaySchedules.slice(0, 6).map((s) => (
-                    <div key={s.id} className="flex items-center gap-3 rounded-xl bg-slate-50/80 border border-slate-100 p-3.5 hover:bg-white hover:shadow-sm transition-all duration-200">
+                    <div key={s.id} className="flex items-center gap-3 rounded-xl bg-slate-50/80 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700 p-3.5 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm transition-all duration-200">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-sm font-bold text-white shadow-sm shrink-0">
                         {s.doctor_name?.split(' ').pop()?.charAt(0) || '?'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{s.doctor_name}</p>
-                        <p className="text-[11px] text-slate-400 font-medium">{s.poli_name}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">{s.doctor_name}</p>
+                        <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">{s.poli_name}</p>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg">
@@ -363,7 +363,7 @@ export default function PetugasDashboard() {
                     </div>
                   ))}
                   {todaySchedules.length > 6 && (
-                    <p className="text-center text-xs text-slate-400 font-medium">
+                    <p className="text-center text-xs text-slate-400 dark:text-slate-500 font-medium">
                       +{todaySchedules.length - 6} jadwal lainnya
                     </p>
                   )}

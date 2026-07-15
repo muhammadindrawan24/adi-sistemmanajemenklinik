@@ -418,16 +418,16 @@ export default function PatientRegistration() {
         </div>
       )}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
+        <div className="relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full -translate-y-1/2 translate-x-1/2 opacity-60" />
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200 dark:shadow-blue-900/30">
                 <Search className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Cari Pasien</h3>
-                <p className="text-xs text-slate-400">Ketik nama, No. RM, atau NIK</p>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Cari Pasien</h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500">Ketik nama, No. RM, atau NIK</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -438,7 +438,7 @@ export default function PatientRegistration() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && searchPatient()}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all hover:border-slate-300 dark:hover:border-slate-500 focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
                 />
               </div>
               <button onClick={searchPatient} disabled={searching} className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-blue-200 transition-all duration-200 disabled:opacity-60">
@@ -466,31 +466,31 @@ export default function PatientRegistration() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       onClick={() => { setSelectedPatient(p); setSearchResults([]); setSearchQuery(''); }}
-                      className="flex items-center justify-between rounded-xl border border-slate-100 p-4 cursor-pointer transition-all duration-200 hover:bg-blue-50/50 hover:border-blue-200 hover:shadow-sm"
+                      className="flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-700 p-4 cursor-pointer transition-all duration-200 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-sm"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-md shadow-blue-200">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-md shadow-blue-200 dark:shadow-blue-900/30">
                           {p.full_name?.charAt(0)?.toUpperCase()}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">{p.full_name}</p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{p.full_name}</p>
                           <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
                               <CreditCard className="h-3 w-3" /> {p.medical_record_number}
                             </span>
                             {p.nik && (
-                              <span className="text-[11px] text-slate-400">NIK: {p.nik}</span>
+                              <span className="text-[11px] text-slate-400 dark:text-slate-500">NIK: {p.nik}</span>
                             )}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
                         {p.phone && (
-                          <span className="text-xs text-slate-400 flex items-center gap-1">
+                          <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
                             <Phone className="h-3 w-3" /> {p.phone}
                           </span>
                         )}
-                        <ArrowRight className="h-4 w-4 text-slate-300" />
+                        <ArrowRight className="h-4 w-4 text-slate-300 dark:text-slate-600" />
                       </div>
                     </motion.div>
                   ))}
@@ -502,11 +502,11 @@ export default function PatientRegistration() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-4 text-center py-6 rounded-xl bg-slate-50 border border-dashed border-slate-200"
+                className="mt-4 text-center py-6 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-dashed border-slate-200 dark:border-slate-600"
               >
-                <UserCircle2 className="h-10 w-10 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm text-slate-500">Tidak ditemukan</p>
-                <button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="mt-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                <UserCircle2 className="h-10 w-10 text-slate-300 dark:text-slate-500 mx-auto mb-2" />
+                <p className="text-sm text-slate-500 dark:text-slate-400">Tidak ditemukan</p>
+                <button onClick={() => { setShowQueueForm(false); setShowNewForm(true); }} className="mt-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
                   Daftarkan pasien baru &rarr;
                 </button>
               </motion.div>
@@ -520,15 +520,15 @@ export default function PatientRegistration() {
         <motion.div custom={1.5} initial="hidden" animate="visible" variants={fadeIn}>
           <button
             onClick={() => setShowSchedule(!showSchedule)}
-            className="w-full rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50/80 to-teal-50/50 p-4 flex items-center justify-between hover:shadow-sm transition-all"
+            className="w-full rounded-2xl border border-emerald-100 dark:border-emerald-800 bg-gradient-to-r from-emerald-50/80 to-teal-50/50 dark:from-emerald-900/30 dark:to-teal-900/30 p-4 flex items-center justify-between hover:shadow-sm transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-200 dark:shadow-emerald-900/30">
                 <Stethoscope className="h-5 w-5 text-white" />
               </div>
               <div className="text-left">
-                <h3 className="text-sm font-bold text-emerald-800">Jadwal Dokter Hari Ini</h3>
-                <p className="text-[11px] text-emerald-600 mt-0.5">{todaySchedules.length} dokter aktif</p>
+                <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-200">Jadwal Dokter Hari Ini</h3>
+                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">{todaySchedules.length} dokter aktif</p>
               </div>
             </div>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100">
@@ -553,12 +553,12 @@ export default function PatientRegistration() {
                       return acc;
                     }, {})
                   ).map(([poliName, schedules]) => (
-                    <div key={poliName} className="rounded-xl bg-white border border-slate-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={poliName} className="rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 shadow-sm hover:shadow-md transition-shadow">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-[10px] font-bold text-white shadow-sm">
                           {schedules[0]?.poli_initial}
                         </span>
-                        <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">{poliName}</h4>
+                        <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{poliName}</h4>
                       </div>
                       <div className="space-y-2">
                         {schedules.map((s: any) => (
@@ -567,7 +567,7 @@ export default function PatientRegistration() {
                               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[10px] font-bold text-white shadow-sm">
                                 {s.doctor_name?.split(' ').pop()?.charAt(0) || '?'}
                               </div>
-                              <span className="text-xs font-medium text-slate-700 truncate max-w-[120px]">{s.doctor_name}</span>
+                              <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]">{s.doctor_name}</span>
                             </div>
                             <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full flex items-center gap-1">
                               <Clock className="h-2.5 w-2.5" />
@@ -594,17 +594,17 @@ export default function PatientRegistration() {
             exit={{ opacity: 0, scale: 0.95 }}
             custom={2}
           >
-            <div className="relative overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-lg shadow-blue-100/50">
+            <div className="relative overflow-hidden rounded-2xl border border-blue-100 dark:border-blue-800 bg-white dark:bg-slate-800 shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
               <div className="p-6">
                 <div className="flex items-start justify-between mb-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-xl font-bold text-white shadow-lg shadow-blue-200">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-xl font-bold text-white shadow-lg shadow-blue-200 dark:shadow-blue-900/30">
                       {selectedPatient.full_name?.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900">{selectedPatient.full_name}</h3>
-                      <p className="text-sm text-slate-500 flex items-center gap-1.5 mt-0.5">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{selectedPatient.full_name}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                         <CreditCard className="h-3.5 w-3.5" /> {selectedPatient.medical_record_number}
                       </p>
                     </div>
@@ -621,12 +621,12 @@ export default function PatientRegistration() {
                     { icon: MapPin, label: 'Alamat', value: selectedPatient.address || '-' },
                     { icon: Heart, label: 'Gol. Darah', value: selectedPatient.blood_type || '-', highlight: true },
                   ].map((item) => (
-                    <div key={item.label} className="rounded-xl bg-slate-50 p-3">
+                    <div key={item.label} className="rounded-xl bg-slate-50 dark:bg-slate-700/50 p-3">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <item.icon className="h-3 w-3 text-slate-400" />
-                        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{item.label}</span>
+                        <item.icon className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+                        <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{item.label}</span>
                       </div>
-                      <p className={`text-sm font-semibold ${item.highlight ? 'text-blue-600' : 'text-slate-900'}`}>{item.value}</p>
+                      <p className={`text-sm font-semibold ${item.highlight ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'}`}>{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -635,7 +635,7 @@ export default function PatientRegistration() {
                   <button onClick={() => { setShowNewForm(false); setShowQueueForm(true); }} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200">
                     <ClipboardList className="h-4 w-4" /> Buat Antrian
                   </button>
-                  <button onClick={() => setSelectedPatient(null)} className="px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200">
+                  <button onClick={() => setSelectedPatient(null)} className="px-4 py-3 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
                     Batal
                   </button>
                 </div>
@@ -664,26 +664,26 @@ export default function PatientRegistration() {
           <form onSubmit={handleSubmit(onSubmitNewPatient)} className="p-6 space-y-5">
             {/* Name */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5" /> Nama Lengkap <span className="text-red-500">*</span>
               </label>
               <Input
                 {...register('name', { required: 'Nama wajib diisi' })}
                 placeholder="Masukkan nama lengkap pasien"
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
               />
               {errors.name && <p className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.name.message}</p>}
             </div>
 
             {/* NIK */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <CreditCard className="h-3.5 w-3.5" /> NIK <span className="text-red-500">*</span>
               </label>
               <Input
                 {...register('nik', { required: 'NIK wajib diisi', minLength: { value: 16, message: 'NIK minimal 16 digit' } })}
                 placeholder="16 digit NIK"
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl font-mono focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl font-mono focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
               />
               {errors.nik && <p className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.nik.message}</p>}
             </div>
@@ -691,24 +691,24 @@ export default function PatientRegistration() {
             {/* Phone & Birth Date */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5" /> Telepon <span className="text-red-500">*</span>
                 </label>
                 <Input
                   {...register('phone', { required: 'Telepon wajib diisi' })}
                   placeholder="08xxxxxxxxxx"
-                  className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                  className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
                 />
                 {errors.phone && <p className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.phone.message}</p>}
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5" /> Tanggal Lahir <span className="text-red-500">*</span>
                 </label>
                 <Input
                   {...register('birth_date', { required: 'Tanggal lahir wajib diisi' })}
                   type="date"
-                  className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                  className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
                 />
                 {errors.birth_date && <p className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.birth_date.message}</p>}
               </div>
@@ -716,13 +716,13 @@ export default function PatientRegistration() {
 
             {/* Address */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5" /> Alamat <span className="text-red-500">*</span>
               </label>
               <Input
                 {...register('address', { required: 'Alamat wajib diisi' })}
                 placeholder="Alamat lengkap pasien"
-                className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
               />
               {errors.address && <p className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.address.message}</p>}
             </div>
@@ -730,10 +730,10 @@ export default function PatientRegistration() {
             {/* Gender & Blood Type */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <User className="h-3.5 w-3.5" /> Jenis Kelamin <span className="text-red-500">*</span>
                 </label>
-                <Select {...register('gender', { required: 'Jenis kelamin wajib dipilih' })} className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20">
+                <Select {...register('gender', { required: 'Jenis kelamin wajib dipilih' })} className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20">
                   <option value="">Pilih</option>
                   <option value="laki-laki">Laki-laki</option>
                   <option value="perempuan">Perempuan</option>
@@ -741,10 +741,10 @@ export default function PatientRegistration() {
                 {errors.gender && <p className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.gender.message}</p>}
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Droplets className="h-3.5 w-3.5" /> Golongan Darah
                 </label>
-                <Select {...register('blood_type')} className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20">
+                <Select {...register('blood_type')} className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20">
                   <option value="">Pilih</option>
                   <option value="A">A</option>
                   <option value="B">B</option>
@@ -755,21 +755,21 @@ export default function PatientRegistration() {
             </div>
 
             {/* Info */}
-            <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
+            <div className="rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 shrink-0">
-                  <FileText className="h-4 w-4 text-blue-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-800 shrink-0">
+                  <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-blue-800">Informasi</p>
-                  <p className="text-xs text-blue-600 mt-0.5">Nomor RM akan dibuatkan otomatis oleh sistem.</p>
+                  <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">Informasi</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">Nomor RM akan dibuatkan otomatis oleh sistem.</p>
                 </div>
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex gap-3 pt-2">
-              <button type="button" onClick={() => setShowNewForm(false)} className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200">
+              <button type="button" onClick={() => setShowNewForm(false)} className="flex-1 px-4 py-3 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
                 Batal
               </button>
               <button type="submit" disabled={saving} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] hover:from-[#0a2e28] hover:via-[#0c3b33] hover:to-[#0f4a3f] text-white text-sm font-semibold rounded-xl shadow-lg shadow-teal-900/20 transition-all duration-200 disabled:opacity-60">
@@ -817,13 +817,13 @@ export default function PatientRegistration() {
 
             {/* Patient Info */}
             {selectedPatient && (
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 mb-5">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-sm">
                   {selectedPatient.full_name?.charAt(0)}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">{selectedPatient.full_name}</p>
-                  <p className="text-xs text-slate-500">RM: {selectedPatient.medical_record_number}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{selectedPatient.full_name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">RM: {selectedPatient.medical_record_number}</p>
                 </div>
               </div>
             )}
@@ -831,8 +831,8 @@ export default function PatientRegistration() {
             <form onSubmit={handleSubmitQueue(onSubmitQueue)} className="space-y-4">
               {/* Poli */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pilih Poli</label>
-                <Select {...registerQueue('poli_id', { required: 'Poli wajib dipilih' })} className="h-11 bg-slate-50 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pilih Poli</label>
+                <Select {...registerQueue('poli_id', { required: 'Poli wajib dipilih' })} className="h-11 bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 rounded-xl focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
                   <option value="">Pilih Poli</option>
                   {poliList.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </Select>
@@ -846,16 +846,16 @@ export default function PatientRegistration() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="rounded-xl bg-emerald-50 border border-emerald-100 p-4"
+                    className="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 p-4"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Stethoscope className="h-4 w-4 text-emerald-600" />
-                      <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Dokter Hari Ini</p>
+                      <Stethoscope className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                      <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">Dokter Hari Ini</p>
                     </div>
                     {availableDoctors.map((d, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-emerald-100 last:border-0">
-                        <span className="text-sm font-semibold text-slate-700">{d.doctor_name}</span>
-                        <span className="text-xs text-emerald-600 font-medium bg-emerald-100 px-2 py-0.5 rounded-full">
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-emerald-100 dark:border-emerald-800 last:border-0">
+                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{d.doctor_name}</span>
+                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-100 dark:bg-emerald-800 px-2 py-0.5 rounded-full">
                           {d.start_time?.slice(0, 5)} - {d.end_time?.slice(0, 5)}
                         </span>
                       </div>
@@ -865,27 +865,27 @@ export default function PatientRegistration() {
               </AnimatePresence>
 
               {selectedPoliId && availableDoctors.length === 0 && (
-                <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 flex items-center gap-3">
+                <div className="rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800 p-4 flex items-center gap-3">
                   <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
-                  <p className="text-sm text-amber-700">Tidak ada jadwal dokter di poli ini hari ini.</p>
+                  <p className="text-sm text-amber-700 dark:text-amber-300">Tidak ada jadwal dokter di poli ini hari ini.</p>
                 </div>
               )}
 
               {/* Complaint */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Keluhan <span className="text-red-500">*</span></label>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Keluhan <span className="text-red-500">*</span></label>
                 <textarea
                   {...registerQueue('complaint', { required: 'Keluhan wajib diisi' })}
                   placeholder="Tuliskan keluhan pasien..."
                   rows={3}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none resize-none"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all hover:border-slate-300 dark:hover:border-slate-500 focus:bg-white dark:focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none resize-none"
                 />
                 {queueErrors.complaint && <p className="text-xs text-red-500">{queueErrors.complaint.message}</p>}
               </div>
 
               {/* Override Jam - hanya muncul saat di luar jam */}
               {!queueStatus.canQueue && (
-                <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+                <div className="rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-4">
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -894,8 +894,8 @@ export default function PatientRegistration() {
                       className="mt-1 h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
                     />
                     <div>
-                      <p className="text-sm font-medium text-amber-800">Daftarkan Pasien Offline</p>
-                      <p className="text-xs text-amber-600 mt-0.5">Centang untuk mendaftarkan pasien yang datang langsung ke klinik di luar jam operasional</p>
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-200">Daftarkan Pasien Offline</p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Centang untuk mendaftarkan pasien yang datang langsung ke klinik di luar jam operasional</p>
                     </div>
                   </label>
                 </div>
@@ -903,7 +903,7 @@ export default function PatientRegistration() {
 
               {/* Actions */}
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setShowQueueForm(false); setOverrideTime(false); }} className="flex-1 px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200">
+                <button type="button" onClick={() => { setShowQueueForm(false); setOverrideTime(false); }} className="flex-1 px-4 py-3 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
                   Batal
                 </button>
                 <button type="submit" disabled={saving || (!queueStatus.canQueue && !overrideTime)} className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
