@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, Search, Plus, Pencil, Trash2, Shield, Eye, Phone, MapPin, 
   Calendar, Droplets, AlertTriangle, Stethoscope, UserPlus, 
-  CheckCircle, X, Filter, MoreVertical, Mail, Clock
+  CheckCircle, X, Filter, MoreVertical, Mail, Clock, KeyRound
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,7 @@ export default function UserManagement() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [editUser, setEditUser] = React.useState<any>(null);
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
+  const [resetConfirm, setResetConfirm] = React.useState<{ id: string; name: string; email: string } | null>(null);
   const [saving, setSaving] = React.useState(false);
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [detailUser, setDetailUser] = React.useState<any>(null);
@@ -169,6 +170,20 @@ export default function UserManagement() {
       fetchUsers();
     }
     setDeleteConfirm(null);
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetConfirm) return;
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetConfirm.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      showToast(`Email reset password terkirim ke ${resetConfirm.email}`);
+    } catch (err: any) {
+      showToast(err.message || 'Gagal mengirim email reset password', 'error');
+    }
+    setResetConfirm(null);
   };
 
   const fetchDetailUser = async (user: any) => {
@@ -409,14 +424,21 @@ export default function UserManagement() {
                             >
                               <Eye className="h-4 w-4" />
                             </button>
-                            <button 
-                              onClick={() => openEditDialog(user)} 
+                            <button
+                              onClick={() => openEditDialog(user)}
                               className="rounded-lg p-2 text-slate-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-600 dark:hover:text-amber-400 transition-all"
                             >
                               <Pencil className="h-4 w-4" />
                             </button>
-                            <button 
-                              onClick={() => { closeAllDialogs(); setDeleteConfirm(user.id); }} 
+                            <button
+                              onClick={() => setResetConfirm({ id: user.id, name: user.profiles?.full_name || user.email, email: user.email })}
+                              className="rounded-lg p-2 text-slate-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 hover:text-teal-600 dark:hover:text-teal-400 transition-all"
+                              title="Reset Password"
+                            >
+                              <KeyRound className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => { closeAllDialogs(); setDeleteConfirm(user.id); }}
                               className="rounded-lg p-2 text-slate-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -504,6 +526,28 @@ export default function UserManagement() {
           <div className="flex justify-center gap-3 mt-6">
             <Button variant="outline" onClick={closeAllDialogs} className="rounded-xl flex-1">Batal</Button>
             <Button variant="destructive" onClick={() => deleteConfirm && handleDelete(deleteConfirm)} className="rounded-xl flex-1">Hapus</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Confirmation */}
+      <Dialog open={!!resetConfirm} onOpenChange={(open) => { if (!open) closeAllDialogs(); }}>
+        <DialogContent className="rounded-2xl">
+          <div className="text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30 mx-auto mb-4">
+              <KeyRound className="h-7 w-7 text-teal-600 dark:text-teal-400" />
+            </div>
+            <DialogTitle className="text-lg font-bold mb-2">Reset Password?</DialogTitle>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Tautan reset password akan dikirim ke:
+            </p>
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-1">{resetConfirm?.email}</p>
+          </div>
+          <div className="flex justify-center gap-3 mt-6">
+            <Button variant="outline" onClick={closeAllDialogs} className="rounded-xl flex-1">Batal</Button>
+            <Button onClick={handleResetPassword} className="rounded-xl flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700">
+              Kirim Email Reset
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
