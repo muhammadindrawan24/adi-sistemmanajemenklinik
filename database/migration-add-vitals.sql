@@ -64,13 +64,12 @@ BEGIN
   PERFORM pg_advisory_xact_lock(lock_key);
 
   SELECT COALESCE(
-    MAX(CAST(SUBSTRING(queue_number FROM 2) AS INTEGER)),
+    MAX(CAST(SUBSTRING(queue_number FROM (length(p_poli_initial) + 1)) AS INTEGER)),
     0
   ) + 1
   INTO next_num
   FROM queues
-  WHERE queue_number LIKE p_poli_initial || '%'
-    AND DATE(created_at) = CURRENT_DATE;
+  WHERE queue_number LIKE p_poli_initial || '%';
 
   new_queue_number := p_poli_initial || LPAD(next_num::TEXT, 3, '0');
 
