@@ -27,10 +27,7 @@ DECLARE
   new_queue_number TEXT;
   lock_key INTEGER;
 BEGIN
-  -- Create a unique lock key from poli initial (e.g., 'U' -> 1, 'A' -> 2, etc.)
   lock_key := hashtext(poli_initial);
-
-  -- Acquire advisory lock to prevent race condition
   PERFORM pg_advisory_xact_lock(lock_key);
 
   SELECT COALESCE(
@@ -47,5 +44,46 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Grant execute permission to authenticated users
 GRANT EXECUTE ON FUNCTION generate_queue_number(TEXT) TO authenticated;
+
+-- Atomic queue creation: generate number + insert in ONE transaction
+CREATE OR REPLACE FUNCTION create_queue(
+  p_patient_id UUID,
+  p_poli_id UUID,
+  p_doctor_schedule_id UUID,
+  p_poli_initial TEXT
+)
+RETURNS JSON AS $$
+DECLARE
+  next_num INTEGER;
+  new_queue_number TEXT;
+  lock_key INTEGER;
+  new_queue_id UUID;
+BEGIN
+  lock_key := hashtext(p_poli_initial);
+  PERFORM pg_advisory_xact_lock(lock_key);
+
+  SELECT COALESCE(
+    MAX(CAST(SUBSTRING(queue_number FROM 2) AS INTEGER)),
+    0
+  ) + 1
+  INTO next_num
+  FROM queues
+  WHERE queue_number LIKE p_poli_initial || '%'
+    AND DATE(created_at) = CURRENT_DATE;
+
+  new_queue_number := p_poli_initial || LPAD(next_num::TEXT, 3, '0');
+
+  INSERT INTO queues (patient_id, poli_id, doctor_schedule_id, queue_number, status)
+  VALUES (p_patient_id, p_poli_id, p_doctor_schedule_id, new_queue_number, 'menunggu')
+  RETURNING id INTO new_queue_id;
+
+  RETURN json_build_object(
+    'id', new_queue_id,
+    'queue_number', new_queue_number,
+    'position', next_num
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+GRANT EXECUTE ON FUNCTION create_queue(UUID, UUID, UUID, TEXT) TO authenticated;

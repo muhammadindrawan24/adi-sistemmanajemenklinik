@@ -247,12 +247,6 @@ export default function PatientRegistration() {
     setSearching(false);
   };
 
-  const generateQueueNumber = async (initial: string): Promise<string> => {
-    const { data, error } = await supabase.rpc('generate_queue_number', { poli_initial: initial });
-    if (error) throw error;
-    return data;
-  };
-
   const onSubmitNewPatient = async (data: PatientForm) => {
     setSaving(true);
     try {
@@ -316,7 +310,6 @@ export default function PatientRegistration() {
       }
 
       const poli = poliList.find(p => p.id === data.poli_id);
-      const queueNumber = await generateQueueNumber(poli?.initial || 'Q');
 
       const dayOfWeek = (new Date().getDay() + 6) % 7;
       const { data: schedule } = await supabase
@@ -334,15 +327,18 @@ export default function PatientRegistration() {
         return;
       }
 
-      const { error } = await supabase.from('queues').insert({
-        queue_number: queueNumber,
-        patient_id: selectedPatient.id,
-        doctor_schedule_id: schedule.id,
-        poli_id: data.poli_id,
-        status: 'menunggu',
-      });
+      // Create queue atomically (generate number + insert in one DB transaction)
+      const { data: queueResult, error: queueError } = await supabase
+        .rpc('create_queue', {
+          p_patient_id: selectedPatient.id,
+          p_poli_id: data.poli_id,
+          p_doctor_schedule_id: schedule.id,
+          p_poli_initial: poli?.initial || 'Q',
+        });
 
-      if (error) throw error;
+      if (queueError) throw queueError;
+
+      const queueNumber = queueResult.queue_number;
 
       await supabase.from('audit_logs').insert({
         user_id: selectedPatient.user_id || '00000000-0000-0000-0000-000000000000',

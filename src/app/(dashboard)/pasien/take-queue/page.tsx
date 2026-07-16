@@ -141,15 +141,6 @@ export default function TakeQueuePage() {
       const selectedPoliData = poli.find((p) => p.id === data.poli_id);
       if (!selectedPoliData) throw new Error('Poli tidak ditemukan');
 
-      // Generate queue number atomically via database function to prevent race condition
-      const { data: queueNumber, error: queueNumError } = await supabase
-        .rpc('generate_queue_number', { poli_initial: selectedPoliData.initial });
-
-      if (queueNumError) throw queueNumError;
-      if (!queueNumber) throw new Error('Gagal generate nomor antrian');
-
-      const queueNum = parseInt(queueNumber.replace(selectedPoliData.initial, ''), 10);
-
       const dayOfWeek = (new Date().getDay() + 6) % 7;
       const { data: schedule } = await supabase
         .from('doctor_schedules')
@@ -162,15 +153,19 @@ export default function TakeQueuePage() {
 
       if (!schedule) throw new Error('Tidak ada jadwal dokter untuk poli ini hari ini');
 
-      const { error } = await supabase.from('queues').insert({
-        patient_id: patient.id,
-        poli_id: data.poli_id,
-        doctor_schedule_id: schedule.id,
-        queue_number: queueNumber,
-        status: 'menunggu',
-      });
+      // Create queue atomically (generate number + insert in one DB transaction)
+      const { data: queueResult, error: queueError } = await supabase
+        .rpc('create_queue', {
+          p_patient_id: patient.id,
+          p_poli_id: data.poli_id,
+          p_doctor_schedule_id: schedule.id,
+          p_poli_initial: selectedPoliData.initial,
+        });
 
-      if (error) throw error;
+      if (queueError) throw queueError;
+
+      const queueNumber = queueResult.queue_number;
+      const queueNum = queueResult.position;
 
       const poliName = poli.find((p) => p.id === data.poli_id)?.name || '-';
       setResult({ queueNumber: queueNumber, position: queueNum, poliName });
