@@ -105,6 +105,7 @@ CREATE TABLE queues (
   poli_id UUID NOT NULL REFERENCES poli(id) ON DELETE CASCADE,
   status TEXT NOT NULL DEFAULT 'menunggu'
     CHECK (status IN ('menunggu', 'dipanggil', 'sedang_diperiksa', 'selesai', 'dibatalkan')),
+  visit_date DATE NOT NULL DEFAULT CURRENT_DATE,
   called_at TIMESTAMPTZ,
   examination_started_at TIMESTAMPTZ,
   examination_finished_at TIMESTAMPTZ,
@@ -170,6 +171,7 @@ CREATE INDEX idx_queues_poli_id ON queues(poli_id);
 CREATE INDEX idx_queues_status ON queues(status);
 CREATE INDEX idx_queues_queue_number ON queues(queue_number);
 CREATE INDEX idx_queues_created_at ON queues(created_at);
+CREATE INDEX idx_queues_visit_date ON queues(visit_date);
 CREATE INDEX idx_medical_records_queue_id ON medical_records(queue_id);
 CREATE INDEX idx_medical_records_doctor_id ON medical_records(doctor_id);
 CREATE INDEX idx_medical_records_patient_id ON medical_records(patient_id);

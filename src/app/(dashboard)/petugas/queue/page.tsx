@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ListOrdered, Phone, XCircle, RefreshCw, Clock, Users, AlertCircle, CheckCircle, Stethoscope, ChevronDown, ChevronUp } from 'lucide-react';
+import { ListOrdered, Phone, XCircle, RefreshCw, Clock, Users, AlertCircle, CheckCircle, Stethoscope, ChevronDown, ChevronUp, CalendarDays } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { id } from 'date-fns/locale';
 
 const fadeIn = {
@@ -20,17 +20,21 @@ export default function QueueManagement() {
   const [loading, setLoading] = React.useState(true);
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [expandedPoli, setExpandedPoli] = React.useState<Record<string, boolean>>({});
+  const [dateTab, setDateTab] = React.useState<'today' | 'tomorrow'>('today');
+
+  const targetDate = dateTab === 'today' ? new Date() : addDays(new Date(), 1);
+  const targetDateStr = format(targetDate, 'yyyy-MM-dd');
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type }); setTimeout(() => setToast(null), 4000);
   };
 
   const fetchQueues = async () => {
-    const today = new Date().toISOString().split('T')[0];
+    setLoading(true);
     const { data } = await supabase
       .from('queues')
       .select('*, patient:patients(id, user_id, medical_record_number), poli:poli(name, initial), doctor_schedule:doctor_schedules(id, doctor:doctors(id, user_id, specialty))')
-      .gte('created_at', today)
+      .eq('visit_date', targetDateStr)
       .neq('status', 'dibatalkan')
       .order('queue_number');
 
@@ -58,7 +62,7 @@ export default function QueueManagement() {
     setLoading(false);
   };
 
-  React.useEffect(() => { fetchQueues(); }, []);
+  React.useEffect(() => { fetchQueues(); }, [dateTab]);
 
   React.useEffect(() => {
     const channel = supabase
@@ -180,6 +184,30 @@ export default function QueueManagement() {
         </div>
       </motion.div>
 
+      {/* Date Tab: Hari Ini / Besok */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <div className="flex gap-3">
+          <button onClick={() => setDateTab('today')}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-all duration-200 ${
+              dateTab === 'today'
+                ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 shadow-md'
+                : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-teal-300'
+            }`}>
+            <CalendarDays className="h-4 w-4" />
+            Hari Ini
+          </button>
+          <button onClick={() => setDateTab('tomorrow')}
+            className={`flex-1 flex items-center justify-center gap-2 rounded-xl border-2 px-4 py-3 text-sm font-bold transition-all duration-200 ${
+              dateTab === 'tomorrow'
+                ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 shadow-md'
+                : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-teal-300'
+            }`}>
+            <CalendarDays className="h-4 w-4" />
+            Besok
+          </button>
+        </div>
+      </motion.div>
+
       {/* Stats */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -258,7 +286,7 @@ export default function QueueManagement() {
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-4">
               <ListOrdered className="h-8 w-8 text-slate-300 dark:text-slate-500" />
             </div>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada antrian hari ini</p>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada antrian</p>
           </div>
         ) : (
           <div className="space-y-4">

@@ -1,4 +1,4 @@
--- Migration: Add vitals columns + NIK column + RLS policies + Fix queue number race condition
+-- Migration: Add vitals columns + NIK column + RLS policies + Fix queue + H-1 booking
 -- Run this in Supabase SQL Editor
 
 -- Add vitals columns to medical_records
@@ -10,6 +10,18 @@ ALTER TABLE medical_records ADD COLUMN IF NOT EXISTS chief_complaint TEXT;
 
 -- Add NIK column to patients
 ALTER TABLE patients ADD COLUMN IF NOT EXISTS nik TEXT;
+
+-- Add visit_date column to queues for H-1 booking
+ALTER TABLE queues ADD COLUMN IF NOT EXISTS visit_date DATE DEFAULT CURRENT_DATE;
+
+-- Backfill: set visit_date = DATE(created_at) for existing rows
+UPDATE queues SET visit_date = DATE(created_at) WHERE visit_date IS NULL;
+
+-- Make visit_date NOT NULL after backfill
+ALTER TABLE queues ALTER COLUMN visit_date SET NOT NULL;
+
+-- Add index for visit_date filtering
+CREATE INDEX IF NOT EXISTS idx_queues_visit_date ON queues(visit_date);
 
 -- RLS: Allow authenticated users to insert their own user record
 CREATE POLICY "Users can insert own record" ON users
@@ -51,7 +63,8 @@ CREATE OR REPLACE FUNCTION create_queue(
   p_patient_id UUID,
   p_poli_id UUID,
   p_doctor_schedule_id UUID,
-  p_poli_initial TEXT
+  p_poli_initial TEXT,
+  p_visit_date DATE DEFAULT CURRENT_DATE
 )
 RETURNS JSON AS $$
 DECLARE
@@ -60,7 +73,7 @@ DECLARE
   lock_key INTEGER;
   new_queue_id UUID;
 BEGIN
-  lock_key := hashtext(p_poli_initial);
+  lock_key := hashtext(p_poli_initial || p_visit_date::TEXT);
   PERFORM pg_advisory_xact_lock(lock_key);
 
   SELECT COALESCE(
@@ -69,12 +82,13 @@ BEGIN
   ) + 1
   INTO next_num
   FROM queues
-  WHERE queue_number LIKE p_poli_initial || '%';
+  WHERE queue_number LIKE p_poli_initial || '%'
+    AND visit_date = p_visit_date;
 
   new_queue_number := p_poli_initial || LPAD(next_num::TEXT, 3, '0');
 
-  INSERT INTO queues (patient_id, poli_id, doctor_schedule_id, queue_number, status)
-  VALUES (p_patient_id, p_poli_id, p_doctor_schedule_id, new_queue_number, 'menunggu')
+  INSERT INTO queues (patient_id, poli_id, doctor_schedule_id, queue_number, status, visit_date)
+  VALUES (p_patient_id, p_poli_id, p_doctor_schedule_id, new_queue_number, 'menunggu', p_visit_date)
   RETURNING id INTO new_queue_id;
 
   RETURN json_build_object(
@@ -85,4 +99,30 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-GRANT EXECUTE ON FUNCTION create_queue(UUID, UUID, UUID, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION create_queue(UUID, UUID, UUID, TEXT, DATE) TO authenticated;
+
+-- Update trigger: auto-call next queue respects visit_date
+CREATE OR REPLACE FUNCTION handle_queue_selesai()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.status = 'selesai' AND OLD.status != 'selesai' THEN
+    NEW.examination_finished_at = NOW();
+
+    UPDATE queues
+    SET status = 'dipanggil',
+        called_at = NOW(),
+        updated_at = NOW()
+    WHERE id = (
+      SELECT id
+      FROM queues
+      WHERE poli_id = NEW.poli_id
+        AND status = 'menunggu'
+        AND visit_date = CURRENT_DATE
+        AND id != NEW.id
+      ORDER BY queue_number ASC
+      LIMIT 1
+    );
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;

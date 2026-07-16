@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, Clock, XCircle, RefreshCw, MapPin, AlertCircle, CheckCircle, ListOrdered, Stethoscope } from 'lucide-react';
+import { Activity, Clock, XCircle, RefreshCw, MapPin, AlertCircle, CheckCircle, ListOrdered, Stethoscope, CalendarDays } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -40,6 +40,7 @@ export default function MyQueuePage() {
       .select('*, poli:poli(name)')
       .eq('patient_id', patient.id)
       .in('status', ['menunggu', 'dipanggil', 'sedang_diperiksa'])
+      .order('visit_date', { ascending: true })
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
@@ -196,6 +197,15 @@ export default function MyQueuePage() {
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Poli</span>
                   </div>
                   <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{currentQueue.poli?.name || '-'}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Tanggal Kunjungan</span>
+                  </div>
+                  <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                    {format(new Date(currentQueue.visit_date + 'T00:00:00'), 'EEEE, dd MMM yyyy', { locale: id })}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
                   <div className="flex items-center gap-2">

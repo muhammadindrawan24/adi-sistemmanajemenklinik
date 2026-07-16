@@ -80,6 +80,7 @@ export interface Queue {
   doctor_schedule_id: string;
   poli_id: string;
   status: QueueStatus;
+  visit_date: string;
   called_at: string | null;
   examination_started_at: string | null;
   examination_finished_at: string | null;

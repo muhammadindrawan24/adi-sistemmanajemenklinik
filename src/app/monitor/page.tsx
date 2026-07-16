@@ -38,7 +38,7 @@ export default function WaitingRoomMonitor() {
       .from('queues')
       .select('*, poli:poli(name, initial)')
       .in('status', ['dipanggil', 'sedang_diperiksa'])
-      .gte('created_at', today)
+      .eq('visit_date', today)
       .order('called_at', { ascending: false });
 
     // Get waiting queues
@@ -46,7 +46,7 @@ export default function WaitingRoomMonitor() {
       .from('queues')
       .select('*, poli:poli(name, initial)')
       .eq('status', 'menunggu')
-      .gte('created_at', today)
+      .eq('visit_date', today)
       .order('queue_number');
 
     if (activePoli !== 'semua') {
