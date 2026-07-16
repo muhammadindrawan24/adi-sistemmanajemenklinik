@@ -6,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-slate-50 overflow-hidden">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden bg-gradient-to-br from-teal-800 via-teal-700 to-emerald-800">
         {/* Decorative medical cross pattern */}
@@ -189,14 +189,14 @@ export default function AuthLayout({
           </p>
         </div>
 
-        <div className="relative z-10 w-full max-w-md">
+        <div className="relative z-10 w-full max-w-md overflow-hidden">
           {/* Mobile logo — shown only on small screens */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-teal-600 to-emerald-600 rounded-2xl mb-3 shadow-lg">
-              <HeartPulse className="h-7 w-7 text-white" />
+          <div className="lg:hidden text-center mb-6">
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-600 to-emerald-600 rounded-2xl mb-2 shadow-lg">
+              <HeartPulse className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900">KlinikSehat</h1>
-            <p className="text-sm text-slate-500 mt-0.5">Sistem Manajemen Klinik</p>
+            <h1 className="text-lg font-bold text-slate-900">KlinikSehat</h1>
+            <p className="text-xs text-slate-500 mt-0.5">Sistem Manajemen Klinik</p>
           </div>
 
           {/* Card */}
