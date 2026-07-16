@@ -200,7 +200,7 @@ export default function AuthLayout({
           </div>
 
           {/* Card */}
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
             {children}
           </div>
         </div>
