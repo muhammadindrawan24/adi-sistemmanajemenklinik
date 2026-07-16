@@ -169,7 +169,7 @@ export default function AuthLayout({
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6 relative">
+      <div className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-[0.015]">
           <svg className="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">

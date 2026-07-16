@@ -297,20 +297,20 @@ export default function RegisterPage() {
         </div>
       )}
 
-      <div className="p-8 sm:p-10">
+      <div className="p-6 sm:p-8">
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl mb-3 shadow-md shadow-teal-500/20">
-            <Heart className="w-6 h-6 text-white" />
+        <div className="text-center mb-4">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl mb-2 shadow-md shadow-teal-500/20">
+            <Heart className="w-5 h-5 text-white" />
           </div>
-          <h2 className="text-xl font-bold text-foreground">Daftar Akun Baru</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <h2 className="text-lg font-bold text-foreground">Daftar Akun Baru</h2>
+          <p className="text-xs text-slate-500 mt-0.5">
             Buat akun untuk mengakses layanan klinik
           </p>
         </div>
 
         {/* Progress Indicator */}
-        <div className="flex items-center justify-between mb-8 px-2">
+        <div className="flex items-center justify-between mb-5 px-2">
           {steps.map((step, i) => (
             <div key={step.number} className="flex items-center flex-1">
               <div className="flex flex-col items-center">
@@ -361,11 +361,11 @@ export default function RegisterPage() {
               e.preventDefault();
               handleNextStep();
             }}
-            className="space-y-4 animate-fadeIn"
+            className="space-y-3 animate-fadeIn"
           >
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Email
               </label>
               <div className="relative">
@@ -389,7 +389,7 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -424,7 +424,7 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Konfirmasi Password
               </label>
               <div className="relative">
@@ -463,11 +463,11 @@ export default function RegisterPage() {
               e.preventDefault();
               handleNextStep();
             }}
-            className="space-y-4 animate-fadeIn"
+            className="space-y-3 animate-fadeIn"
           >
             {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Nama Lengkap
               </label>
               <div className="relative">
@@ -491,7 +491,7 @@ export default function RegisterPage() {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Nomor Telepon
               </label>
               <div className="relative">
@@ -515,7 +515,7 @@ export default function RegisterPage() {
 
             {/* Address */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Alamat Lengkap
               </label>
               <div className="relative">
@@ -524,7 +524,7 @@ export default function RegisterPage() {
                 </div>
                 <textarea
                   placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota"
-                  rows={3}
+                  rows={2}
                   {...step2Form.register("address")}
                   className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all resize-none hover:border-slate-300 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
                 />
@@ -562,11 +562,11 @@ export default function RegisterPage() {
         {currentStep === 3 && (
           <form
             onSubmit={step3Form.handleSubmit(onSubmitStep3)}
-            className="space-y-4 animate-fadeIn"
+            className="space-y-3 animate-fadeIn"
           >
             {/* NIK */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 NIK (Nomor Induk Kependudukan)
               </label>
               <div className="relative">
@@ -591,7 +591,7 @@ export default function RegisterPage() {
 
             {/* Birth Date */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Tanggal Lahir
               </label>
               <div className="relative">
@@ -614,7 +614,7 @@ export default function RegisterPage() {
 
             {/* Gender */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Jenis Kelamin
               </label>
               <div className="relative">
@@ -643,7 +643,7 @@ export default function RegisterPage() {
 
             {/* Blood Type */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Golongan Darah
               </label>
               <div className="relative">
@@ -702,7 +702,7 @@ export default function RegisterPage() {
         )}
 
         {/* Login Link */}
-        <div className="text-center mt-6">
+        <div className="text-center mt-4">
           <p className="text-sm text-slate-500">
             Sudah punya akun?{" "}
             <Link
