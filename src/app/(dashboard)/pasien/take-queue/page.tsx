@@ -141,15 +141,14 @@ export default function TakeQueuePage() {
       const selectedPoliData = poli.find((p) => p.id === data.poli_id);
       if (!selectedPoliData) throw new Error('Poli tidak ditemukan');
 
-      const today = new Date().toISOString().split('T')[0];
-      const { count } = await supabase
-        .from('queues')
-        .select('*', { count: 'exact', head: true })
-        .eq('poli_id', data.poli_id)
-        .gte('created_at', today);
+      // Generate queue number atomically via database function to prevent race condition
+      const { data: queueNumber, error: queueNumError } = await supabase
+        .rpc('generate_queue_number', { poli_initial: selectedPoliData.initial });
 
-      const queueNum = (count || 0) + 1;
-      const queueNumber = `${selectedPoliData.initial}${String(queueNum).padStart(3, '0')}`;
+      if (queueNumError) throw queueNumError;
+      if (!queueNumber) throw new Error('Gagal generate nomor antrian');
+
+      const queueNum = parseInt(queueNumber.replace(selectedPoliData.initial, ''), 10);
 
       const dayOfWeek = (new Date().getDay() + 6) % 7;
       const { data: schedule } = await supabase

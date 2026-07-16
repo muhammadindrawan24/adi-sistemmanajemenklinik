@@ -247,9 +247,10 @@ export default function PatientRegistration() {
     setSearching(false);
   };
 
-  const generateQueueNumber = (initial: string) => {
-    const seq = Math.floor(Math.random() * 999 + 1).toString().padStart(3, '0');
-    return `${initial}${seq}`;
+  const generateQueueNumber = async (initial: string): Promise<string> => {
+    const { data, error } = await supabase.rpc('generate_queue_number', { poli_initial: initial });
+    if (error) throw error;
+    return data;
   };
 
   const onSubmitNewPatient = async (data: PatientForm) => {
@@ -315,7 +316,7 @@ export default function PatientRegistration() {
       }
 
       const poli = poliList.find(p => p.id === data.poli_id);
-      const queueNumber = generateQueueNumber(poli?.initial || 'Q');
+      const queueNumber = await generateQueueNumber(poli?.initial || 'Q');
 
       const dayOfWeek = (new Date().getDay() + 6) % 7;
       const { data: schedule } = await supabase
