@@ -117,7 +117,22 @@ export default function HistoryPage() {
     addLine('Tinggi:', record.height ? `${record.height} cm` : '-');
     addLine('Suhu:', record.temperature ? `${record.temperature}°C` : '-');
     addLine('Tindakan:', record.treatment || '-');
-    addLine('Resep:', record.prescription || '-');
+
+    // Resep obat dari prescription_items
+    if (record.prescription_items && record.prescription_items.length > 0) {
+      const resepList = record.prescription_items.map((p: any) => {
+        const medName = p.medicine?.name || p.medicine_name || '-';
+        return `${medName} ${p.dosage || ''} ${p.frequency || ''} ${p.duration || ''} (${p.quantity} ${p.unit || ''})`;
+      }).join('\n');
+      doc.setFont('helvetica', 'bold');
+      doc.text('Resep:', 20, y);
+      doc.setFont('helvetica', 'normal');
+      const lines = doc.splitTextToSize(resepList, 120);
+      doc.text(lines, 65, y);
+      y += lines.length * 8;
+    } else {
+      addLine('Resep:', record.prescription || '-');
+    }
 
     doc.save(`riwayat-${format(new Date(record.created_at), 'yyyyMMdd')}.pdf`);
     showToast('PDF berhasil diunduh');
