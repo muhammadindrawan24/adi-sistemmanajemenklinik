@@ -146,28 +146,92 @@ export default function LoginPage() {
         >
           <div className="flex items-center gap-3 mb-1">
             <div className="relative">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 shadow-lg shadow-teal-500/30">
-                <LogIn className="h-5 w-5 text-white" />
-              </div>
+              {/* Pulse ring animation */}
+              <motion.div
+                className="absolute inset-0 rounded-xl bg-teal-400"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 0, 0.5],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div
+                className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 via-emerald-500 to-teal-600 shadow-lg shadow-teal-500/30"
+                whileHover={{ rotate: -10, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <LogIn className="h-5 w-5 text-white" />
+                </motion.div>
+              </motion.div>
             </div>
             <div>
               <h2 className="text-xl font-extrabold tracking-tight">
-                <span className="text-slate-800">Selamat</span>{" "}
-                <span className="text-teal-600">Datang</span>
+                <motion.span
+                  className="text-slate-800"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.4 }}
+                >
+                  Selamat
+                </motion.span>{" "}
+                <motion.span
+                  className="text-teal-600"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4, duration: 0.4 }}
+                >
+                  Datang
+                </motion.span>
               </h2>
-              <p className="text-xs text-slate-500">
+              <motion.p
+                className="text-xs text-slate-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
                 Masuk ke akun Anda untuk melanjutkan
-              </p>
+              </motion.p>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-3">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+            <motion.div
+              className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            />
             <div className="flex gap-1">
-              <div className="w-1 h-1 rounded-full bg-teal-400" />
-              <div className="w-1 h-1 rounded-full bg-emerald-400" />
-              <div className="w-1 h-1 rounded-full bg-teal-400" />
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-1 h-1 rounded-full bg-teal-400"
+                  animate={{
+                    y: [0, -4, 0],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                    ease: "easeInOut",
+                  }}
+                />
+              ))}
             </div>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+            <motion.div
+              className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            />
           </div>
         </motion.div>
 
