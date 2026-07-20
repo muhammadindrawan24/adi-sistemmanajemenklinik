@@ -160,12 +160,21 @@ export default function PasienDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.5, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.02, y: -3 }}
+        >
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 shadow-sm hover:shadow-lg transition-shadow duration-300">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200">
+              <motion.div
+                className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md shadow-blue-200"
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <History className="h-5 w-5 text-white" />
-              </div>
+              </motion.div>
               <div>
                 {loading ? <div className="h-7 w-12 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" /> : <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.totalKunjungan}</p>}
                 <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kunjungan</p>
@@ -173,12 +182,21 @@ export default function PasienDashboard() {
             </div>
           </div>
         </motion.div>
-        <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.02, y: -3 }}
+        >
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 shadow-sm hover:shadow-lg transition-shadow duration-300">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-200">
+              <motion.div
+                className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-md shadow-amber-200"
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <ListOrdered className="h-5 w-5 text-white" />
-              </div>
+              </motion.div>
               <div>
                 {loading ? <div className="h-7 w-12 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" /> : <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{stats.antrianAktif}</p>}
                 <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Antrian Aktif</p>
@@ -189,7 +207,11 @@ export default function PasienDashboard() {
       </div>
 
       {/* Current Queue Status */}
-      <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6, type: "spring" }}
+      >
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-6">
@@ -197,27 +219,40 @@ export default function PasienDashboard() {
             </div>
           ) : !currentQueue ? (
             <div className="text-center py-8 px-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-3">
+              <motion.div
+                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-700 mx-auto mb-3"
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
                 <ListOrdered className="h-6 w-6 text-slate-400 dark:text-slate-500" />
-              </div>
+              </motion.div>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-3">Tidak ada antrian aktif</p>
               <Link href="/pasien/take-queue">
-                <button className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] text-white text-sm font-semibold rounded-xl shadow-lg shadow-teal-900/20 transition-all mx-auto">
+                <motion.button
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#0c3b33] to-[#0f4a3f] hover:from-[#0a2e28] hover:to-[#0c3b33] text-white text-sm font-semibold rounded-xl shadow-lg shadow-teal-900/20 mx-auto"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
                   <ListOrdered className="h-4 w-4" /> Ambil Antrian Sekarang
-                </button>
+                </motion.button>
               </Link>
             </div>
           ) : (
             <div className="p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <span className={`flex h-16 w-16 items-center justify-center rounded-2xl text-lg font-bold shadow-lg ${
-                    currentQueue.status === 'dipanggil' ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-blue-200 animate-pulse' :
-                    currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-teal-200' :
-                    'bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-amber-200'
-                  }`}>
+                  <motion.span
+                    className={`flex h-16 w-16 items-center justify-center rounded-2xl text-lg font-bold shadow-lg ${
+                      currentQueue.status === 'dipanggil' ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-blue-200 animate-pulse' :
+                      currentQueue.status === 'sedang_diperiksa' ? 'bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-teal-200' :
+                      'bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-amber-200'
+                    }`}
+                    animate={currentQueue.status === 'dipanggil' ? { scale: [1, 1.05, 1] } : {}}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
                     {currentQueue.queue_number}
-                  </span>
+                  </motion.span>
                   <div>
                     <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Antrian Anda</p>
                     <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{currentQueue.poli?.name || '-'}</p>
@@ -227,15 +262,30 @@ export default function PasienDashboard() {
                     </p>
                   </div>
                 </div>
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border ${statusConfig[currentQueue.status]?.bg || ''} ${statusConfig[currentQueue.status]?.text || ''}`}>
+                <motion.span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border ${statusConfig[currentQueue.status]?.bg || ''} ${statusConfig[currentQueue.status]?.text || ''}`}
+                  animate={currentQueue.status === 'dipanggil' ? { scale: [1, 1.05, 1] } : {}}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
                   <span className={`h-1.5 w-1.5 rounded-full ${statusConfig[currentQueue.status]?.dot || ''}`} />
                   {statusConfig[currentQueue.status]?.label || currentQueue.status}
-                </span>
+                </motion.span>
               </div>
               {currentQueue.status === 'dipanggil' && (
-                <div className="mt-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/30 text-center">
-                  <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Silakan menuju ruang periksa!</p>
-                </div>
+                <motion.div
+                  className="mt-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/30 text-center"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <motion.p
+                    className="text-sm font-bold text-blue-700 dark:text-blue-300"
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    Silakan menuju ruang periksa!
+                  </motion.p>
+                </motion.div>
               )}
             </div>
           )}
@@ -243,29 +293,38 @@ export default function PasienDashboard() {
       </motion.div>
 
       {/* Quick Actions */}
-      <motion.div custom={4} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            { href: '/pasien/take-queue', label: 'Ambil Antrian', icon: ListOrdered, gradient: 'from-blue-500 to-indigo-600' },
-            { href: '/pasien/my-queue', label: 'Cek Antrian', icon: Clock, gradient: 'from-amber-500 to-orange-600' },
-            { href: '/pasien/history', label: 'Riwayat', icon: ClipboardCheck, gradient: 'from-emerald-500 to-teal-600' },
-          ].map((action) => (
-            <Link key={action.href} href={action.href}>
-              <div className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all duration-300 hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 hover:-translate-y-0.5">
-                <div className="flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${action.gradient} shadow-md`}>
-                    <action.icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{action.label}</span>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {[
+          { href: '/pasien/take-queue', label: 'Ambil Antrian', icon: ListOrdered, gradient: 'from-blue-500 to-indigo-600' },
+          { href: '/pasien/my-queue', label: 'Cek Antrian', icon: Clock, gradient: 'from-amber-500 to-orange-600' },
+          { href: '/pasien/history', label: 'Riwayat', icon: ClipboardCheck, gradient: 'from-emerald-500 to-teal-600' },
+        ].map((action, index) => (
+          <Link key={action.href} href={action.href}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + index * 0.1, duration: 0.5, type: "spring" }}
+              whileHover={{ scale: 1.03, y: -4 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${action.gradient} shadow-md`}
+                  whileHover={{ rotate: 10, scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <action.icon className="h-5 w-5 text-white" />
+                </motion.div>
+                <div className="flex-1">
+                  <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">{action.label}</span>
                 </div>
+                <ArrowRight className="h-4 w-4 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 group-hover:translate-x-1 transition-all" />
               </div>
-            </Link>
-          ))}
-        </div>
-      </motion.div>
+            </motion.div>
+          </Link>
+        ))}
+      </div>
 
       {/* Jadwal Dokter Hari Ini */}
       <motion.div custom={5} initial="hidden" animate="visible" variants={fadeIn}>
