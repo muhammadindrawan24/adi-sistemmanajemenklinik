@@ -88,7 +88,7 @@ export default function PetugasPaymentPage() {
     total: filteredPayments.length,
     paid: filteredPayments.filter(p => p.status === 'dibayar').length,
     unpaid: filteredPayments.filter(p => p.status === 'belum_bayar').length,
-    totalRevenue: filteredPayments.filter(p => p.status === 'dibayar').reduce((a, b) => a + b.total_amount, 0),
+    totalRevenue: filteredPayments.filter(p => p.status === 'dibayar').reduce((a, b) => a + (b.total_amount || 0), 0),
   };
 
   const handleViewDetail = (payment: any) => {
@@ -282,7 +282,7 @@ export default function PetugasPaymentPage() {
                         <td className="px-4 py-3 text-sm font-medium">{payment.queue?.queue_number || '-'}</td>
                         <td className="px-4 py-3 text-sm">{payment.patient_name}</td>
                         <td className="px-4 py-3 text-sm">{payment.queue?.poli?.name || '-'}</td>
-                        <td className="px-4 py-3 text-sm font-semibold">Rp {payment.total_amount.toLocaleString('id-ID')}</td>
+                        <td className="px-4 py-3 text-sm font-semibold">Rp {(payment.total_amount || 0).toLocaleString('id-ID')}</td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             payment.status === 'dibayar' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
@@ -349,15 +349,15 @@ export default function PetugasPaymentPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-600">Biaya Pemeriksaan</span>
-                    <span className="text-sm">Rp {selectedPayment.examination_fee.toLocaleString('id-ID')}</span>
+                    <span className="text-sm">Rp {(selectedPayment.examination_fee || 0).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-600">Biaya Administrasi</span>
-                    <span className="text-sm">Rp {selectedPayment.admin_fee.toLocaleString('id-ID')}</span>
+                    <span className="text-sm">Rp {(selectedPayment.admin_fee || 0).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-slate-600">Biaya Obat</span>
-                    <span className="text-sm">Rp {selectedPayment.medicine_total.toLocaleString('id-ID')}</span>
+                    <span className="text-sm">Rp {(selectedPayment.medicine_total || 0).toLocaleString('id-ID')}</span>
                   </div>
                   <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
                     <span className="text-sm font-semibold text-slate-900">Total</span>
