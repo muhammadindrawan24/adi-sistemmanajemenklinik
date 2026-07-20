@@ -60,6 +60,29 @@ const fadeIn = {
   }),
 };
 
+// Animated counter component
+function AnimatedNumber({ value, duration = 1000 }: { value: number; duration?: number }) {
+  const [displayValue, setDisplayValue] = React.useState(0);
+
+  React.useEffect(() => {
+    if (value === 0) { setDisplayValue(0); return; }
+    let start = 0;
+    const increment = value / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= value) {
+        setDisplayValue(value);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(Math.floor(start));
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [value, duration]);
+
+  return <>{displayValue}</>;
+}
+
 export default function AdminDashboard() {
   const supabase = createClient();
   const [userName, setUserName] = React.useState('');
@@ -232,25 +255,50 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
-          {statCards.map((card) => (
-            <div key={card.label} className={`${card.bg} rounded-xl p-3 border border-slate-100 dark:border-slate-700`}>
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${card.color} shadow-sm`}>
-                  <card.icon className="h-4 w-4 text-white" />
-                </div>
-              </div>
-              {loading ? (
-                <Skeleton className="h-7 w-12 rounded-lg" />
-              ) : (
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{card.value}</p>
-              )}
-              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{card.label}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
+        {statCards.map((card, index) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              delay: index * 0.08,
+              duration: 0.5,
+              type: "spring",
+              stiffness: 100,
+            }}
+            whileHover={{
+              scale: 1.03,
+              y: -4,
+              transition: { duration: 0.2 },
+            }}
+            className={`${card.bg} rounded-xl p-3 border border-slate-100 dark:border-slate-700 cursor-pointer shadow-sm hover:shadow-lg transition-shadow duration-300`}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <motion.div
+                className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${card.color} shadow-sm`}
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <card.icon className="h-4 w-4 text-white" />
+              </motion.div>
             </div>
-          ))}
-        </div>
-      </motion.div>
+            {loading ? (
+              <Skeleton className="h-7 w-12 rounded-lg" />
+            ) : (
+              <motion.p
+                className="text-2xl font-bold text-slate-900 dark:text-slate-100"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: index * 0.08 + 0.3 }}
+              >
+                <AnimatedNumber value={card.value} />
+              </motion.p>
+            )}
+            <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{card.label}</p>
+          </motion.div>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Chart */}
