@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
+import { generateVisitReportPDF } from '@/lib/pdf-report';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -121,35 +122,14 @@ export default function ReportsPage() {
   };
 
   const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text('Laporan Kunjungan Klinik', 20, 20);
-    doc.setFontSize(10);
-    doc.text(`Periode: ${dateFrom} s/d ${dateTo}`, 20, 30);
-    doc.text(`Total Kunjungan: ${stats.totalKunjungan}`, 20, 38);
-    doc.text(`Selesai: ${stats.totalSelesai} | Dibatalkan: ${stats.totalDibatalkan}`, 20, 46);
-    doc.text(`Rata-rata/Hari: ${stats.rataHarian}`, 20, 54);
-
-    let y = 70;
-    doc.setFontSize(9);
-    doc.text('No', 20, y);
-    doc.text('Tanggal', 35, y);
-    doc.text('Pasien', 70, y);
-    doc.text('Poli', 115, y);
-    doc.text('Status', 155, y);
-    y += 8;
-
-    reportData.slice(0, 30).forEach((row, i) => {
-      if (y > 280) { doc.addPage(); y = 20; }
-      doc.text(String(i + 1), 20, y);
-      doc.text(format(new Date(row.created_at), 'dd/MM/yyyy'), 35, y);
-      doc.text(row.patient_name?.substring(0, 20) || '-', 70, y);
-      doc.text(row.poli?.name?.substring(0, 15) || '-', 115, y);
-      doc.text(row.status, 155, y);
-      y += 7;
-    });
-
-    doc.save(`laporan-klinik-${dateFrom}.pdf`);
+    generateVisitReportPDF(
+      reportData,
+      stats,
+      dateFrom,
+      dateTo,
+      doctorFilter ? doctors.find(d => d.id === doctorFilter)?.full_name : undefined,
+      poliFilter ? poli.find(p => p.id === poliFilter)?.name : undefined
+    );
     showToast('PDF berhasil diunduh');
   };
 

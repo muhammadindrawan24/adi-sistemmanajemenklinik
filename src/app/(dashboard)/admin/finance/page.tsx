@@ -17,6 +17,7 @@ import { id } from 'date-fns/locale';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
+import { generateFinanceReportPDF } from '@/lib/pdf-report';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -120,38 +121,12 @@ export default function FinancePage() {
   };
 
   const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text('Laporan Keuangan - KlinikSehat', 20, 20);
-    doc.setFontSize(10);
-    doc.text(`Periode: ${dateFrom} s/d ${dateTo}`, 20, 30);
-    doc.text(`Total: ${stats.total} | Dibayar: ${stats.paid} | Belum Bayar: ${stats.unpaid}`, 20, 38);
-    doc.text(`Total Pendapatan: Rp ${stats.totalRevenue.toLocaleString('id-ID')}`, 20, 46);
-
-    let y = 60;
-    doc.setFontSize(9);
-    doc.text('No', 20, y);
-    doc.text('Tanggal', 35, y);
-    doc.text('No. Antrian', 70, y);
-    doc.text('Pasien', 100, y);
-    doc.text('Poli', 140, y);
-    doc.text('Total', 165, y);
-    doc.text('Status', 190, y);
-    y += 8;
-
-    filteredPayments.slice(0, 30).forEach((row, i) => {
-      if (y > 280) { doc.addPage(); y = 20; }
-      doc.text(String(i + 1), 20, y);
-      doc.text(format(new Date(row.created_at), 'dd/MM/yyyy'), 35, y);
-      doc.text(row.queue?.queue_number || '-', 70, y);
-      doc.text(row.patient_name?.substring(0, 15) || '-', 100, y);
-      doc.text(row.queue?.poli?.name?.substring(0, 12) || '-', 140, y);
-      doc.text(`Rp ${(row.total_amount || 0).toLocaleString('id-ID')}`, 165, y);
-      doc.text(row.status === 'dibayar' ? 'Dibayar' : 'Belum', 190, y);
-      y += 7;
-    });
-
-    doc.save(`laporan-keuangan-${dateFrom}.pdf`);
+    generateFinanceReportPDF(
+      filteredPayments,
+      stats,
+      dateFrom,
+      dateTo
+    );
     showToast('PDF berhasil diunduh');
   };
 
