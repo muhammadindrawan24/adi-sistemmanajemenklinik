@@ -56,7 +56,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: 'Tarif Poli', href: '/admin/poly-fees', icon: Wallet },
     { label: 'Fitur Pembayaran', href: '/admin/payment', icon: CreditCard },
     { label: 'Laporan Keuangan', href: '/admin/finance', icon: FileText },
-    { label: 'Laporan', href: '/admin/reports', icon: ClipboardList },
+    { label: 'Laporan Kunjungan', href: '/admin/reports', icon: ClipboardList },
     { label: 'Audit Log', href: '/admin/audit-log', icon: ClipboardList },
   ],
   petugas: [
