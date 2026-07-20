@@ -128,7 +128,7 @@ export default function AuthLayout({
               <span className="text-teal-300">dengan lebih mudah</span>
             </h2>
             <p className="text-teal-100/70 text-sm leading-relaxed">
-              Sistem manajemen klinik terintegrasi untuk mengelola antrian, rekam medis, jadwal dokter, dan laporan — semuanya dalam satu platform.
+              Sistem manajemen klinik terintegrasi untuk mengelola antrian, rekam medis, jadwal dokter, manajemen obat, dan laporan — semuanya dalam satu platform.
             </p>
 
             {/* Feature pills */}
