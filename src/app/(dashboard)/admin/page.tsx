@@ -20,6 +20,10 @@ import {
   Sparkles,
   ArrowUpRight,
   LayoutDashboard,
+  Pill,
+  CreditCard,
+  Wallet,
+  AlertTriangle,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createClient } from '@/lib/supabase/client';
@@ -43,6 +47,8 @@ interface Stats {
   totalPoli: number;
   pasienHariIni: number;
   antrianAktif: number;
+  totalObat: number;
+  stokMenipis: number;
 }
 
 const fadeIn = {
@@ -58,7 +64,7 @@ export default function AdminDashboard() {
   const supabase = createClient();
   const [userName, setUserName] = React.useState('');
   const [stats, setStats] = React.useState<Stats>({
-    totalPasien: 0, totalDokter: 0, totalPetugas: 0, totalPoli: 0, pasienHariIni: 0, antrianAktif: 0,
+    totalPasien: 0, totalDokter: 0, totalPetugas: 0, totalPoli: 0, pasienHariIni: 0, antrianAktif: 0, totalObat: 0, stokMenipis: 0,
   });
   const [chartData, setChartData] = React.useState<{ name: string; kunjungan: number }[]>([]);
   const [recentActivity, setRecentActivity] = React.useState<any[]>([]);
@@ -102,9 +108,18 @@ export default function AdminDashboard() {
         .from('queues').select('*', { count: 'exact', head: true })
         .in('status', ['menunggu', 'dipanggil', 'sedang_diperiksa']);
 
+      // Fetch medicine stats
+      const { count: totalObat } = await supabase
+        .from('medicines').select('*', { count: 'exact', head: true }).eq('is_active', true);
+
+      const { data: lowStockMedicines } = await supabase
+        .from('medicines').select('id, stock_qty, min_stock').eq('is_active', true);
+      const stokMenipis = lowStockMedicines?.filter(m => m.stock_qty <= m.min_stock).length || 0;
+
       setStats({
         totalPasien: pasien || 0, totalDokter: dokter || 0, totalPetugas: petugas || 0,
         totalPoli: poli || 0, pasienHariIni: pasienHariIni || 0, antrianAktif: antrianAktif || 0,
+        totalObat: totalObat || 0, stokMenipis,
       });
 
       // Chart data - last 7 days
@@ -155,6 +170,8 @@ export default function AdminDashboard() {
     { label: 'Total Dokter', value: stats.totalDokter, icon: Stethoscope, color: 'from-teal-500 to-emerald-600', bg: 'bg-teal-50 dark:bg-teal-900/20' },
     { label: 'Total Petugas', value: stats.totalPetugas, icon: UserCheck, color: 'from-violet-500 to-purple-600', bg: 'bg-violet-50 dark:bg-violet-900/20' },
     { label: 'Total Poli', value: stats.totalPoli, icon: Building2, color: 'from-amber-500 to-orange-600', bg: 'bg-amber-50 dark:bg-amber-900/20' },
+    { label: 'Total Obat', value: stats.totalObat, icon: Pill, color: 'from-emerald-500 to-teal-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+    { label: 'Stok Menipis', value: stats.stokMenipis, icon: AlertTriangle, color: 'from-red-500 to-rose-600', bg: 'bg-red-50 dark:bg-red-900/20' },
     { label: 'Pasien Hari Ini', value: stats.pasienHariIni, icon: CalendarDays, color: 'from-green-500 to-emerald-600', bg: 'bg-green-50 dark:bg-green-900/20' },
     { label: 'Antrian Aktif', value: stats.antrianAktif, icon: ListOrdered, color: 'from-rose-500 to-pink-600', bg: 'bg-rose-50 dark:bg-rose-900/20' },
   ];
@@ -164,7 +181,11 @@ export default function AdminDashboard() {
     { label: 'Kelola Dokter', href: '/admin/doctors', icon: Stethoscope, color: 'from-teal-500 to-emerald-600' },
     { label: 'Kelola Poli', href: '/admin/poli', icon: Building2, color: 'from-amber-500 to-orange-600' },
     { label: 'Jadwal Dokter', href: '/admin/schedules', icon: CalendarDays, color: 'from-violet-500 to-purple-600' },
-    { label: 'Laporan', href: '/admin/reports', icon: FileText, color: 'from-green-500 to-emerald-600' },
+    { label: 'Stok Obat', href: '/admin/medicines', icon: Pill, color: 'from-emerald-500 to-teal-600' },
+    { label: 'Tarif Poli', href: '/admin/poly-fees', icon: Wallet, color: 'from-cyan-500 to-blue-600' },
+    { label: 'Pembayaran', href: '/admin/payment', icon: CreditCard, color: 'from-indigo-500 to-violet-600' },
+    { label: 'Laporan Keuangan', href: '/admin/finance', icon: FileText, color: 'from-green-500 to-emerald-600' },
+    { label: 'Laporan', href: '/admin/reports', icon: FileText, color: 'from-amber-500 to-orange-600' },
     { label: 'Audit Log', href: '/admin/audit-log', icon: Settings, color: 'from-slate-500 to-slate-600' },
   ];
 
@@ -212,7 +233,7 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3">
           {statCards.map((card) => (
             <div key={card.label} className={`${card.bg} rounded-xl p-3 border border-slate-100 dark:border-slate-700`}>
               <div className="flex items-center gap-2 mb-2">

@@ -28,6 +28,10 @@ import {
   Moon,
   Sun,
   BedDouble,
+  Pill,
+  CreditCard,
+  Wallet,
+  Package,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
@@ -48,19 +52,26 @@ const navByRole: Record<UserRole, NavItem[]> = {
     { label: 'Manajemen Dokter', href: '/admin/doctors', icon: Stethoscope },
     { label: 'Manajemen Poli', href: '/admin/poli', icon: Building2 },
     { label: 'Jadwal Dokter', href: '/admin/schedules', icon: Calendar },
-    { label: 'Laporan', href: '/admin/reports', icon: FileText },
+    { label: 'Manajemen Stok Obat', href: '/admin/medicines', icon: Pill },
+    { label: 'Tarif Poli', href: '/admin/poly-fees', icon: Wallet },
+    { label: 'Fitur Pembayaran', href: '/admin/payment', icon: CreditCard },
+    { label: 'Laporan Keuangan', href: '/admin/finance', icon: FileText },
+    { label: 'Laporan', href: '/admin/reports', icon: ClipboardList },
     { label: 'Audit Log', href: '/admin/audit-log', icon: ClipboardList },
   ],
   petugas: [
     { label: 'Dashboard', href: '/petugas', icon: LayoutDashboard },
     { label: 'Registrasi Pasien', href: '/petugas/registration', icon: UserPlus },
     { label: 'Kelola Antrian', href: '/petugas/queue', icon: ListOrdered },
+    { label: 'Fitur Pembayaran', href: '/petugas/payment', icon: CreditCard },
+    { label: 'Stok Obat', href: '/petugas/stock', icon: Package },
   ],
   dokter: [
     { label: 'Dashboard', href: '/dokter', icon: LayoutDashboard },
     { label: 'Jadwal Saya', href: '/dokter/my-schedule', icon: Calendar },
     { label: 'Pemeriksaan', href: '/dokter/examination', icon: ClipboardCheck },
     { label: 'Rekam Medis', href: '/dokter/medical-records', icon: FileText },
+    { label: 'Resep Favorit', href: '/dokter/favorite-prescriptions', icon: Stethoscope },
   ],
   pasien: [
     { label: 'Dashboard', href: '/pasien', icon: LayoutDashboard },

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { History, Calendar, Stethoscope, Download, Eye, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { History, Calendar, Stethoscope, Download, Eye, AlertCircle, CheckCircle, Clock, Wallet, CreditCard } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -60,7 +60,32 @@ export default function HistoryPage() {
         doctor: doctorMap[r.doctor_id] || { name: '-', specialization: '-' },
       }));
 
-      setRecords(enriched);
+      // Fetch payment data for each record
+      const queueIds = enriched.map(r => r.queue_id).filter(Boolean);
+      let paymentMap: Record<string, any> = {};
+      if (queueIds.length > 0) {
+        const { data: payments } = await supabase.from('payments').select('*').in('queue_id', queueIds);
+        payments?.forEach((p: any) => { paymentMap[p.queue_id] = p; });
+      }
+
+      // Fetch prescription items for each record
+      const recordIds = enriched.map(r => r.id).filter(Boolean);
+      let prescriptionMap: Record<string, any[]> = {};
+      if (recordIds.length > 0) {
+        const { data: prescriptions } = await supabase.from('prescription_items').select('*, medicine:medicines(name)').in('medical_record_id', recordIds);
+        prescriptions?.forEach((p: any) => {
+          if (!prescriptionMap[p.medical_record_id]) prescriptionMap[p.medical_record_id] = [];
+          prescriptionMap[p.medical_record_id].push(p);
+        });
+      }
+
+      const enrichedWithPayments = enriched.map(r => ({
+        ...r,
+        payment: paymentMap[r.queue_id] || null,
+        prescription_items: prescriptionMap[r.id] || [],
+      }));
+
+      setRecords(enrichedWithPayments);
       setLoading(false);
     };
 
@@ -261,6 +286,64 @@ export default function HistoryPage() {
                     </div>
                   ))}
                 </div>
+
+                {/* Prescription Items */}
+                {selectedRecord.prescription_items && selectedRecord.prescription_items.length > 0 && (
+                  <div className="space-y-3 mt-5">
+                    <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Stethoscope className="h-3.5 w-3.5" /> Resep Obat
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedRecord.prescription_items.map((item: any, idx: number) => (
+                        <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{item.medicine?.name || '-'}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{item.frequency} | {item.duration}</p>
+                          </div>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Rp {(item.subtotal || 0).toLocaleString('id-ID')}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Payment Info */}
+                {selectedRecord.payment && (
+                  <div className="space-y-3 mt-5">
+                    <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <Wallet className="h-3.5 w-3.5" /> Rincian Biaya
+                    </h4>
+                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500 dark:text-slate-400">Biaya Pemeriksaan</span>
+                        <span className="font-medium text-slate-900 dark:text-slate-100">Rp {(selectedRecord.payment.examination_fee || 0).toLocaleString('id-ID')}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500 dark:text-slate-400">Biaya Administrasi</span>
+                        <span className="font-medium text-slate-900 dark:text-slate-100">Rp {(selectedRecord.payment.admin_fee || 0).toLocaleString('id-ID')}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500 dark:text-slate-400">Biaya Obat</span>
+                        <span className="font-medium text-slate-900 dark:text-slate-100">Rp {(selectedRecord.payment.medicine_total || 0).toLocaleString('id-ID')}</span>
+                      </div>
+                      <div className="border-t border-slate-200 dark:border-slate-600 pt-2 flex justify-between">
+                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">Total</span>
+                        <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Rp {(selectedRecord.payment.total_amount || 0).toLocaleString('id-ID')}</span>
+                      </div>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-xs text-slate-500 dark:text-slate-400">Status</span>
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          selectedRecord.payment.status === 'dibayar'
+                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                            : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                        }`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${selectedRecord.payment.status === 'dibayar' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          {selectedRecord.payment.status === 'dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-3 pt-5">

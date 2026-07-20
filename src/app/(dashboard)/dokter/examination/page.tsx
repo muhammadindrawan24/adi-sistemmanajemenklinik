@@ -2,11 +2,16 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ClipboardCheck, User, Activity, Save, History, ArrowRight, AlertCircle, CheckCircle, Stethoscope, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  ClipboardCheck, User, Activity, Save, History, ArrowRight, AlertCircle, CheckCircle,
+  Stethoscope, Clock, ChevronDown, ChevronUp, Pill, Search, X, Plus, Trash2, Star,
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface ExamForm {
   symptoms: string;
@@ -18,6 +23,18 @@ interface ExamForm {
   treatment: string;
   prescription: string;
   notes: string;
+}
+
+interface PrescriptionItem {
+  medicine_id: string;
+  medicine_name: string;
+  category: string;
+  unit: string;
+  price: number;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  quantity: number;
 }
 
 const fadeIn = {
@@ -33,6 +50,24 @@ export default function ExaminationPage() {
   const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [patientHistory, setPatientHistory] = React.useState<any[]>([]);
   const [showHistory, setShowHistory] = React.useState(false);
+
+  // Medicine/Prescription state
+  const [medicines, setMedicines] = React.useState<any[]>([]);
+  const [prescriptionItems, setPrescriptionItems] = React.useState<PrescriptionItem[]>([]);
+  const [medicineSearch, setMedicineSearch] = React.useState('');
+  const [showMedicineDropdown, setShowMedicineDropdown] = React.useState(false);
+  const [selectedMedicine, setSelectedMedicine] = React.useState<any>(null);
+  const [dosage, setDosage] = React.useState('');
+  const [frequency, setFrequency] = React.useState('');
+  const [duration, setDuration] = React.useState('');
+  const [quantity, setQuantity] = React.useState(1);
+
+  // Favorite prescriptions
+  const [favoritePrescriptions, setFavoritePrescriptions] = React.useState<any[]>([]);
+  const [showFavorites, setShowFavorites] = React.useState(false);
+  const [favoriteName, setFavoriteName] = React.useState('');
+  const [showSaveFavorite, setShowSaveFavorite] = React.useState(false);
+
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ExamForm>();
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
@@ -52,6 +87,23 @@ export default function ExaminationPage() {
 
       if (!doctor) return;
       setDoctorId(doctor.id);
+
+      // Fetch medicines
+      const { data: meds } = await supabase
+        .from('medicines')
+        .select('*')
+        .eq('is_active', true)
+        .gt('stock_qty', 0)
+        .order('name');
+      setMedicines(meds || []);
+
+      // Fetch favorite prescriptions
+      const { data: favs } = await supabase
+        .from('favorite_prescriptions')
+        .select('*')
+        .eq('doctor_id', doctor.id)
+        .order('created_at', { ascending: false });
+      setFavoritePrescriptions(favs || []);
 
       const { data: schedules } = await supabase.from('doctor_schedules').select('poli_id').eq('doctor_id', doctor.id);
       const poliIds = schedules?.map((s: any) => s.poli_id) || [];
@@ -102,29 +154,156 @@ export default function ExaminationPage() {
     setShowHistory(true);
   };
 
+  // Filter medicines based on search
+  const filteredMedicines = medicines.filter(med =>
+    med.name.toLowerCase().includes(medicineSearch.toLowerCase())
+  );
+
+  // Add medicine to prescription
+  const addMedicineToPrescription = () => {
+    if (!selectedMedicine || !dosage || !frequency || !duration || quantity < 1) {
+      showToast('Lengkapi data obat', 'error');
+      return;
+    }
+
+    const newItem: PrescriptionItem = {
+      medicine_id: selectedMedicine.id,
+      medicine_name: selectedMedicine.name,
+      category: selectedMedicine.category,
+      unit: selectedMedicine.unit,
+      price: selectedMedicine.sell_price,
+      dosage,
+      frequency,
+      duration,
+      quantity,
+    };
+
+    setPrescriptionItems([...prescriptionItems, newItem]);
+    setSelectedMedicine(null);
+    setMedicineSearch('');
+    setDosage('');
+    setFrequency('');
+    setDuration('');
+    setQuantity(1);
+    setShowMedicineDropdown(false);
+  };
+
+  // Remove medicine from prescription
+  const removeMedicineFromPrescription = (index: number) => {
+    setPrescriptionItems(prescriptionItems.filter((_, i) => i !== index));
+  };
+
+  // Calculate total cost
+  const totalBiayaObat = prescriptionItems.reduce((a, b) => a + (b.price * b.quantity), 0);
+
+  // Save as favorite
+  const saveAsFavorite = async () => {
+    if (!doctorId || !favoriteName || prescriptionItems.length === 0) return;
+    try {
+      const { error } = await supabase.from('favorite_prescriptions').insert({
+        doctor_id: doctorId,
+        name: favoriteName,
+        items: prescriptionItems.map(item => ({
+          medicine_id: item.medicine_id,
+          medicine_name: item.medicine_name,
+          dosage: item.dosage,
+          frequency: item.frequency,
+          duration: item.duration,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      });
+      if (error) throw error;
+      showToast('Resep favorit berhasil disimpan');
+      setShowSaveFavorite(false);
+      setFavoriteName('');
+
+      // Refresh favorites
+      const { data: favs } = await supabase
+        .from('favorite_prescriptions')
+        .select('*')
+        .eq('doctor_id', doctorId)
+        .order('created_at', { ascending: false });
+      setFavoritePrescriptions(favs || []);
+    } catch (error) {
+      showToast('Gagal menyimpan resep favorit', 'error');
+    }
+  };
+
+  // Load favorite prescription
+  const loadFavorite = (fav: any) => {
+    const items: PrescriptionItem[] = fav.items.map((item: any) => {
+      const med = medicines.find(m => m.id === item.medicine_id);
+      return {
+        medicine_id: item.medicine_id,
+        medicine_name: item.medicine_name,
+        category: med?.category || '-',
+        unit: med?.unit || '-',
+        price: item.price,
+        dosage: item.dosage,
+        frequency: item.frequency,
+        duration: item.duration,
+        quantity: item.quantity,
+      };
+    });
+    setPrescriptionItems(items);
+    setShowFavorites(false);
+    showToast('Resep favorit dimuat');
+  };
+
+  // Delete favorite
+  const deleteFavorite = async (id: string) => {
+    try {
+      const { error } = await supabase.from('favorite_prescriptions').delete().eq('id', id);
+      if (error) throw error;
+      setFavoritePrescriptions(favoritePrescriptions.filter(f => f.id !== id));
+      showToast('Resep favorit dihapus');
+    } catch (error) {
+      showToast('Gagal menghapus resep favorit', 'error');
+    }
+  };
+
   const onSubmit = async (data: ExamForm) => {
     if (!currentQueue || !doctorId) return;
     setSaving(true);
 
     try {
-      const { error: recordError } = await supabase.from('medical_records').insert({
+      // Insert medical record
+      const { data: record, error: recordError } = await supabase.from('medical_records').insert({
         patient_id: currentQueue.patient_id,
         doctor_id: doctorId,
         queue_id: currentQueue.id,
         symptoms: data.symptoms,
         diagnosis: data.diagnosis,
         treatment: data.treatment,
-        prescription: data.prescription,
+        prescription: data.prescription || prescriptionItems.map(p => `${p.medicine_name} ${p.dosage} ${p.frequency} ${p.duration}`).join(', '),
         notes: data.notes,
         blood_pressure: data.blood_pressure || null,
         weight: data.weight ? parseFloat(data.weight) : null,
         height: data.height ? parseFloat(data.height) : null,
         temperature: data.temperature ? parseFloat(data.temperature) : null,
         chief_complaint: data.symptoms,
-      });
+      }).select('id').single();
 
       if (recordError) throw recordError;
 
+      // Insert prescription items
+      if (prescriptionItems.length > 0 && record) {
+        const prescriptionData = prescriptionItems.map(item => ({
+          medical_record_id: record.id,
+          medicine_id: item.medicine_id,
+          dosage: item.dosage,
+          frequency: item.frequency,
+          duration: item.duration,
+          quantity: item.quantity,
+          subtotal: item.price * item.quantity,
+        }));
+
+        const { error: prescriptionError } = await supabase.from('prescription_items').insert(prescriptionData);
+        if (prescriptionError) throw prescriptionError;
+      }
+
+      // Update queue status
       const { error: queueError } = await supabase
         .from('queues')
         .update({ status: 'selesai' })
@@ -135,7 +314,9 @@ export default function ExaminationPage() {
       showToast('Pemeriksaan berhasil disimpan!');
       reset();
       setCurrentQueue(null);
+      setPrescriptionItems([]);
 
+      // Load next queue
       const { data: schedules } = await supabase.from('doctor_schedules').select('poli_id').eq('doctor_id', doctorId);
       const poliIds = schedules?.map((s: any) => s.poli_id) || [];
 
@@ -416,17 +597,251 @@ export default function ExaminationPage() {
                     />
                   </div>
 
-                  {/* Resep */}
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                      <Save className="h-3.5 w-3.5" /> Resep Obat
-                    </label>
-                    <textarea
-                      {...register('prescription')}
-                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 transition-all hover:border-slate-300 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none resize-none min-h-[60px]"
-                      placeholder="Obat yang diresepkan..."
-                    />
+                  {/* Resep Obat Section */}
+                  <div className="space-y-3 p-4 bg-gradient-to-r from-teal-50 to-emerald-50 rounded-xl border border-teal-100">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-teal-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <Pill className="h-3.5 w-3.5" /> Resep Obat
+                      </label>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowFavorites(!showFavorites)}
+                          className="text-xs h-7 bg-white"
+                        >
+                          <Star className="h-3 w-3 mr-1" /> Favorit
+                        </Button>
+                        {prescriptionItems.length > 0 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowSaveFavorite(true)}
+                            className="text-xs h-7 bg-white"
+                          >
+                            <Star className="h-3 w-3 mr-1" /> Simpan Favorit
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Favorite Prescriptions Dropdown */}
+                    <AnimatePresence>
+                      {showFavorites && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="bg-white rounded-xl border border-teal-200 overflow-hidden"
+                        >
+                          <div className="p-3 border-b border-teal-100">
+                            <p className="text-xs font-semibold text-teal-700">Resep Favorit</p>
+                          </div>
+                          <div className="p-2 max-h-40 overflow-y-auto">
+                            {favoritePrescriptions.length === 0 ? (
+                              <p className="text-xs text-slate-500 text-center py-4">Belum ada resep favorit</p>
+                            ) : (
+                              favoritePrescriptions.map((fav) => (
+                                <div key={fav.id} className="flex items-center justify-between p-2 hover:bg-teal-50 rounded-lg">
+                                  <button
+                                    type="button"
+                                    onClick={() => loadFavorite(fav)}
+                                    className="flex-1 text-left"
+                                  >
+                                    <p className="text-xs font-semibold text-slate-700">{fav.name}</p>
+                                    <p className="text-[10px] text-slate-500">{fav.items?.length || 0} obat</p>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteFavorite(fav.id)}
+                                    className="p-1 text-red-400 hover:text-red-600"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Medicine Search */}
+                    <div className="relative">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input
+                          placeholder="Cari nama obat..."
+                          value={medicineSearch}
+                          onChange={(e) => {
+                            setMedicineSearch(e.target.value);
+                            setShowMedicineDropdown(true);
+                            setSelectedMedicine(null);
+                          }}
+                          onFocus={() => setShowMedicineDropdown(true)}
+                          className="pl-10 bg-white"
+                        />
+                      </div>
+
+                      {/* Medicine Dropdown */}
+                      <AnimatePresence>
+                        {showMedicineDropdown && medicineSearch && !selectedMedicine && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto"
+                          >
+                            {filteredMedicines.length === 0 ? (
+                              <div className="p-3 text-center text-xs text-slate-500">Obat tidak ditemukan</div>
+                            ) : (
+                              filteredMedicines.map((med) => (
+                                <button
+                                  key={med.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedMedicine(med);
+                                    setMedicineSearch(med.name);
+                                    setShowMedicineDropdown(false);
+                                  }}
+                                  className="w-full px-3 py-2 text-left hover:bg-slate-50 border-b border-slate-50 last:border-0"
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <p className="text-xs font-semibold text-slate-700">{med.name}</p>
+                                      <p className="text-[10px] text-slate-500">{med.category} | Stok: {med.stock_qty} {med.unit}</p>
+                                    </div>
+                                    <span className="text-xs font-bold text-teal-600">Rp {med.sell_price.toLocaleString('id-ID')}</span>
+                                  </div>
+                                </button>
+                              ))
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Medicine Details Form */}
+                    {selectedMedicine && (
+                      <div className="bg-white rounded-xl p-3 border border-teal-200 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-bold text-slate-700">{selectedMedicine.name}</p>
+                          <button type="button" onClick={() => { setSelectedMedicine(null); setMedicineSearch(''); }} className="text-slate-400 hover:text-slate-600">
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                          <div>
+                            <label className="text-[10px] font-semibold text-slate-500 uppercase">Dosis *</label>
+                            <Input
+                              value={dosage}
+                              onChange={(e) => setDosage(e.target.value)}
+                              placeholder="500mg"
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold text-slate-500 uppercase">Frekuensi *</label>
+                            <Input
+                              value={frequency}
+                              onChange={(e) => setFrequency(e.target.value)}
+                              placeholder="3x1"
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold text-slate-500 uppercase">Durasi *</label>
+                            <Input
+                              value={duration}
+                              onChange={(e) => setDuration(e.target.value)}
+                              placeholder="5 hari"
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold text-slate-500 uppercase">Jumlah *</label>
+                            <Input
+                              type="number"
+                              value={quantity}
+                              onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                              min={1}
+                              className="h-8 text-xs"
+                            />
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={addMedicineToPrescription}
+                          className="w-full bg-teal-500 hover:bg-teal-600 text-xs"
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> Tambah ke Resep
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Prescription Items List */}
+                    {prescriptionItems.length > 0 && (
+                      <div className="space-y-2">
+                        {prescriptionItems.map((item, index) => (
+                          <div key={index} className="flex items-center justify-between bg-white p-3 rounded-xl border border-teal-100">
+                            <div className="flex-1">
+                              <p className="text-xs font-semibold text-slate-700">{item.medicine_name}</p>
+                              <p className="text-[10px] text-slate-500">
+                                {item.dosage} | {item.frequency} | {item.duration} | {item.quantity} {item.unit}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-teal-600">
+                                Rp {(item.price * item.quantity).toLocaleString('id-ID')}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeMedicineFromPrescription(index)}
+                                className="p-1 text-red-400 hover:text-red-600"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        <div className="flex items-center justify-between p-3 bg-teal-500 text-white rounded-xl">
+                          <span className="text-xs font-semibold">Total Biaya Obat</span>
+                          <span className="text-sm font-bold">Rp {totalBiayaObat.toLocaleString('id-ID')}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Save Favorite Dialog */}
+                  <AnimatePresence>
+                    {showSaveFavorite && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="bg-amber-50 rounded-xl p-3 border border-amber-200"
+                      >
+                        <p className="text-xs font-semibold text-amber-700 mb-2">Simpan sebagai Resep Favorit</p>
+                        <div className="flex gap-2">
+                          <Input
+                            value={favoriteName}
+                            onChange={(e) => setFavoriteName(e.target.value)}
+                            placeholder="Nama favorit (contoh: Flu dewasa)"
+                            className="flex-1 h-8 text-xs bg-white"
+                          />
+                          <Button type="button" size="sm" onClick={saveAsFavorite} className="h-8 bg-amber-500 hover:bg-amber-600 text-xs">
+                            Simpan
+                          </Button>
+                          <Button type="button" size="sm" variant="outline" onClick={() => setShowSaveFavorite(false)} className="h-8 text-xs">
+                            Batal
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Catatan */}
                   <div className="space-y-1.5">
@@ -442,7 +857,7 @@ export default function ExaminationPage() {
                   <div className="flex gap-3 pt-3">
                     <button
                       type="button"
-                      onClick={() => reset()}
+                      onClick={() => { reset(); setPrescriptionItems([]); }}
                       className="px-4 py-3 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-all duration-200"
                     >
                       Reset

@@ -23,6 +23,10 @@ import {
   Heart,
   Menu,
   X,
+  Pill,
+  CreditCard,
+  Wallet,
+  Package,
 } from 'lucide-react';
 
 type UserRole = 'admin' | 'petugas' | 'dokter' | 'pasien';
@@ -47,7 +51,11 @@ const navigationConfig: Record<UserRole, NavLink[]> = {
     { href: '/doctors', label: 'Dokter', icon: <Stethoscope className="h-5 w-5" /> },
     { href: '/poli', label: 'Poli', icon: <Building2 className="h-5 w-5" /> },
     { href: '/schedules', label: 'Jadwal', icon: <Calendar className="h-5 w-5" /> },
-    { href: '/reports', label: 'Laporan', icon: <BarChart3 className="h-5 w-5" /> },
+    { href: '/medicines', label: 'Manajemen Stok Obat', icon: <Pill className="h-5 w-5" /> },
+    { href: '/poly-fees', label: 'Tarif Poli', icon: <Wallet className="h-5 w-5" /> },
+    { href: '/payment', label: 'Fitur Pembayaran', icon: <CreditCard className="h-5 w-5" /> },
+    { href: '/finance', label: 'Laporan Keuangan', icon: <BarChart3 className="h-5 w-5" /> },
+    { href: '/reports', label: 'Laporan', icon: <FileText className="h-5 w-5" /> },
     { href: '/audit-log', label: 'Audit Log', icon: <ClipboardList className="h-5 w-5" /> },
   ],
   petugas: [
@@ -55,12 +63,15 @@ const navigationConfig: Record<UserRole, NavLink[]> = {
     { href: '/registration', label: 'Pendaftaran', icon: <FileText className="h-5 w-5" /> },
     { href: '/queue-management', label: 'Manajemen Antrian', icon: <Activity className="h-5 w-5" /> },
     { href: '/waiting-room', label: 'Ruang Tunggu', icon: <Clock className="h-5 w-5" /> },
+    { href: '/payment', label: 'Fitur Pembayaran', icon: <CreditCard className="h-5 w-5" /> },
+    { href: '/stock', label: 'Stok Obat', icon: <Package className="h-5 w-5" /> },
   ],
   dokter: [
     { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
     { href: '/my-schedule', label: 'Jadwal Saya', icon: <Calendar className="h-5 w-5" /> },
     { href: '/patients', label: 'Pasien', icon: <Users className="h-5 w-5" /> },
     { href: '/medical-records', label: 'Rekam Medis', icon: <FileText className="h-5 w-5" /> },
+    { href: '/favorite-prescriptions', label: 'Resep Favorit', icon: <Stethoscope className="h-5 w-5" /> },
   ],
   pasien: [
     { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },

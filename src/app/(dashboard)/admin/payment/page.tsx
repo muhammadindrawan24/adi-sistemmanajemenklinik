@@ -1,0 +1,434 @@
+'use client';
+
+import * as React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  CreditCard,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  CheckCircle2,
+  Clock,
+  X,
+  FileText,
+} from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { createClient } from '@/lib/supabase/client';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.4 } }),
+};
+
+export default function AdminPaymentPage() {
+  const supabase = createClient();
+  const [payments, setPayments] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [statusFilter, setStatusFilter] = React.useState('');
+  const [dateFrom, setDateFrom] = React.useState(format(new Date(), 'yyyy-MM-dd'));
+  const [dateTo, setDateTo] = React.useState(format(new Date(), 'yyyy-MM-dd'));
+  const [showDetail, setShowDetail] = React.useState(false);
+  const [selectedPayment, setSelectedPayment] = React.useState<any>(null);
+  const [toast, setToast] = React.useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  React.useEffect(() => {
+    fetchPayments();
+  }, [supabase]);
+
+  const fetchPayments = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('payments')
+      .select(`
+        *,
+        queue:queues(queue_number, poli:poli(name)),
+        patient:patients(medical_record_number, user_id),
+        users:user_id(full_name)
+      `)
+      .order('created_at', { ascending: false });
+
+    // Enrich with patient names
+    const patientUserIds = data?.map((p: any) => p.patient?.user_id).filter(Boolean) || [];
+    const uniqueUserIds = [...new Set(patientUserIds)];
+    let profileMap: Record<string, string> = {};
+
+    if (uniqueUserIds.length > 0) {
+      const { data: profiles } = await supabase.from('profiles').select('user_id, full_name').in('user_id', uniqueUserIds);
+      profiles?.forEach((p: any) => { profileMap[p.user_id] = p.full_name; });
+    }
+
+    const enrichedData = data?.map((payment: any) => ({
+      ...payment,
+      patient_name: payment.patient?.user_id ? profileMap[payment.patient.user_id] || '-' : '-',
+    })) || [];
+
+    setPayments(enrichedData);
+    setLoading(false);
+  };
+
+  const filteredPayments = payments.filter((p) => {
+    const matchesSearch = p.patient_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.queue?.queue_number?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = !statusFilter || p.status === statusFilter;
+    const paymentDate = new Date(p.created_at).toISOString().split('T')[0];
+    const matchesDate = paymentDate >= dateFrom && paymentDate <= dateTo;
+    return matchesSearch && matchesStatus && matchesDate;
+  });
+
+  const stats = {
+    total: filteredPayments.length,
+    paid: filteredPayments.filter(p => p.status === 'dibayar').length,
+    unpaid: filteredPayments.filter(p => p.status === 'belum_bayar').length,
+    totalRevenue: filteredPayments.filter(p => p.status === 'dibayar').reduce((a, b) => a + b.total_amount, 0),
+  };
+
+  const handleViewDetail = (payment: any) => {
+    setSelectedPayment(payment);
+    setShowDetail(true);
+  };
+
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Laporan Pembayaran Klinik', 20, 20);
+    doc.setFontSize(10);
+    doc.text(`Periode: ${dateFrom} s/d ${dateTo}`, 20, 30);
+    doc.text(`Total: ${stats.total} | Dibayar: ${stats.paid} | Belum Bayar: ${stats.unpaid}`, 20, 38);
+    doc.text(`Total Pendapatan: Rp ${stats.totalRevenue.toLocaleString('id-ID')}`, 20, 46);
+
+    let y = 60;
+    doc.setFontSize(9);
+    doc.text('No', 20, y);
+    doc.text('Tanggal', 35, y);
+    doc.text('No. Antrian', 70, y);
+    doc.text('Pasien', 100, y);
+    doc.text('Total', 140, y);
+    doc.text('Status', 165, y);
+    y += 8;
+
+    filteredPayments.slice(0, 30).forEach((row, i) => {
+      if (y > 280) { doc.addPage(); y = 20; }
+      doc.text(String(i + 1), 20, y);
+      doc.text(format(new Date(row.created_at), 'dd/MM/yyyy'), 35, y);
+      doc.text(row.queue?.queue_number || '-', 70, y);
+      doc.text(row.patient_name?.substring(0, 20) || '-', 100, y);
+      doc.text(`Rp ${row.total_amount.toLocaleString('id-ID')}`, 140, y);
+      doc.text(row.status, 165, y);
+      y += 7;
+    });
+
+    doc.save(`laporan-pembayaran-${dateFrom}.pdf`);
+    showToast('PDF berhasil diunduh');
+  };
+
+  const exportExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(filteredPayments.map((r, i) => ({
+      No: i + 1,
+      Tanggal: format(new Date(r.created_at), 'dd/MM/yyyy HH:mm'),
+      'No. Antrian': r.queue?.queue_number || '-',
+      Pasien: r.patient_name || '-',
+      'Biaya Periksa': r.examination_fee,
+      'Biaya Admin': r.admin_fee,
+      'Biaya Obat': r.medicine_total,
+      Total: r.total_amount,
+      Metode: r.payment_method || '-',
+      Status: r.status,
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pembayaran');
+    XLSX.writeFile(wb, `laporan-pembayaran-${dateFrom}.xlsx`);
+    showToast('Excel berhasil diunduh');
+  };
+
+  return (
+    <div className="space-y-6">
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: 20 }}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-4 right-4 z-[100] rounded-2xl px-5 py-3.5 text-sm font-semibold text-white shadow-xl backdrop-blur-sm ${
+              toast.type === 'success' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-red-500 to-rose-500'
+            }`}
+          >
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Header Banner */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c3b33] via-[#0f4a3f] to-[#1a5c4f] p-6 text-white shadow-xl shadow-teal-900/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-400/10 to-teal-400/5 rounded-full -translate-y-1/2 translate-x-1/3" />
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+              <CreditCard className="h-7 w-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Fitur Pembayaran</h1>
+              <p className="text-white/60 text-xs mt-0.5">Riwayat dan status pembayaran pasien</p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div custom={1} initial="hidden" animate="visible" variants={fadeIn}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.total}</p>
+                  <p className="text-xs text-slate-500">Total Transaksi</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600">
+                  <CheckCircle2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.paid}</p>
+                  <p className="text-xs text-slate-500">Sudah Dibayar</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-100 text-yellow-600">
+                  <Clock className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stats.unpaid}</p>
+                  <p className="text-xs text-slate-500">Belum Dibayar</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-lg">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600">
+                  <CreditCard className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">Rp {stats.totalRevenue.toLocaleString('id-ID')}</p>
+                  <p className="text-xs text-slate-500">Total Pendapatan</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </motion.div>
+
+      {/* Filters */}
+      <motion.div custom={2} initial="hidden" animate="visible" variants={fadeIn}>
+        <Card className="border-0 shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Cari nama pasien atau no. antrian..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-full sm:w-40">
+                <option value="">Semua Status</option>
+                <option value="dibayar">Dibayar</option>
+                <option value="belum_bayar">Belum Bayar</option>
+              </Select>
+              <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full sm:w-40" />
+              <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full sm:w-40" />
+            </div>
+            <div className="flex gap-2 mt-3">
+              <Button onClick={exportPDF} variant="outline" size="sm" disabled={filteredPayments.length === 0}>
+                <Download className="h-4 w-4 mr-1" /> PDF
+              </Button>
+              <Button onClick={exportExcel} variant="outline" size="sm" disabled={filteredPayments.length === 0}>
+                <Download className="h-4 w-4 mr-1" /> Excel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Table */}
+      <motion.div custom={3} initial="hidden" animate="visible" variants={fadeIn}>
+        <Card className="border-0 shadow-lg overflow-hidden">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">No</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Tanggal</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">No. Antrian</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Pasien</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Poli</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Total</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <tr key={i} className="border-b border-slate-100">
+                        {Array.from({ length: 8 }).map((_, j) => (
+                          <td key={j} className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : filteredPayments.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-12 text-center text-slate-500">
+                        Tidak ada data pembayaran
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredPayments.map((payment, i) => (
+                      <tr key={payment.id} className="border-b border-slate-100 hover:bg-slate-50">
+                        <td className="px-4 py-3 text-sm">{i + 1}</td>
+                        <td className="px-4 py-3 text-sm">{format(new Date(payment.created_at), 'dd MMM yyyy, HH:mm', { locale: id })}</td>
+                        <td className="px-4 py-3 text-sm font-medium">{payment.queue?.queue_number || '-'}</td>
+                        <td className="px-4 py-3 text-sm">{payment.patient_name}</td>
+                        <td className="px-4 py-3 text-sm">{payment.queue?.poli?.name || '-'}</td>
+                        <td className="px-4 py-3 text-sm font-semibold">Rp {payment.total_amount.toLocaleString('id-ID')}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            payment.status === 'dibayar' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {payment.status === 'dibayar' ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                            {payment.status === 'dibayar' ? 'Dibayar' : 'Belum Bayar'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <button onClick={() => handleViewDetail(payment)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500">
+                            <Eye className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Detail Dialog */}
+      <AnimatePresence>
+        {showDetail && selectedPayment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setShowDetail(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-bold">Rincian Pembayaran</h2>
+                <button onClick={() => setShowDetail(false)} className="p-2 rounded-lg hover:bg-slate-100">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-4 bg-slate-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-slate-600">No. Antrian</span>
+                    <span className="text-sm font-semibold">{selectedPayment.queue?.queue_number || '-'}</span>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-slate-600">Pasien</span>
+                    <span className="text-sm font-semibold">{selectedPayment.patient_name}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600">Poli</span>
+                    <span className="text-sm font-semibold">{selectedPayment.queue?.poli?.name || '-'}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600">Biaya Pemeriksaan</span>
+                    <span className="text-sm">Rp {selectedPayment.examination_fee.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600">Biaya Administrasi</span>
+                    <span className="text-sm">Rp {selectedPayment.admin_fee.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-600">Biaya Obat</span>
+                    <span className="text-sm">Rp {selectedPayment.medicine_total.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-900">Total</span>
+                    <span className="text-xl font-bold text-teal-600">Rp {selectedPayment.total_amount.toLocaleString('id-ID')}</span>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-slate-600">Status</span>
+                    <span className={`text-sm font-semibold ${selectedPayment.status === 'dibayar' ? 'text-green-600' : 'text-yellow-600'}`}>
+                      {selectedPayment.status === 'dibayar' ? 'Dibayar' : 'Belum Bayar'}
+                    </span>
+                  </div>
+                  {selectedPayment.payment_method && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-600">Metode Bayar</span>
+                      <span className="text-sm font-semibold capitalize">{selectedPayment.payment_method}</span>
+                    </div>
+                  )}
+                  {selectedPayment.paid_at && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-600">Dibayar Pada</span>
+                      <span className="text-sm">{format(new Date(selectedPayment.paid_at), 'dd MMM yyyy, HH:mm', { locale: id })}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

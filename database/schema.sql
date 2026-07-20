@@ -154,6 +154,95 @@ CREATE TABLE audit_logs (
 );
 
 -- ============================================================
+-- 10. MEDICINES TABLE
+-- ============================================================
+CREATE TABLE medicines (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('tablet', 'kapsul', 'sirup', 'salep', 'tetes', 'gel', 'krim', 'injeksi', 'sachet')),
+  poli_id UUID REFERENCES poli(id),
+  unit TEXT NOT NULL,
+  buy_price NUMERIC(10,2) NOT NULL,
+  sell_price NUMERIC(10,2) NOT NULL,
+  stock_qty INTEGER NOT NULL DEFAULT 0,
+  min_stock INTEGER NOT NULL DEFAULT 10,
+  expiry_date DATE,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- 11. STOCK_MUTATIONS TABLE
+-- ============================================================
+CREATE TABLE stock_mutations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  medicine_id UUID NOT NULL REFERENCES medicines(id) ON DELETE CASCADE,
+  mutation_type TEXT NOT NULL CHECK (mutation_type IN ('masuk', 'keluar', 'penyesuaian')),
+  quantity INTEGER NOT NULL,
+  notes TEXT,
+  user_id UUID NOT NULL REFERENCES users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- 12. POLY_FEES TABLE
+-- ============================================================
+CREATE TABLE poly_fees (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  poli_id UUID UNIQUE NOT NULL REFERENCES poli(id),
+  examination_fee NUMERIC(10,2) NOT NULL DEFAULT 0,
+  admin_fee NUMERIC(10,2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- 13. PRESCRIPTION_ITEMS TABLE
+-- ============================================================
+CREATE TABLE prescription_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  medical_record_id UUID NOT NULL REFERENCES medical_records(id) ON DELETE CASCADE,
+  medicine_id UUID NOT NULL REFERENCES medicines(id),
+  dosage TEXT NOT NULL,
+  frequency TEXT NOT NULL,
+  duration TEXT NOT NULL,
+  quantity INTEGER NOT NULL,
+  subtotal NUMERIC(10,2) NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- 14. FAVORITE_PRESCRIPTIONS TABLE
+-- ============================================================
+CREATE TABLE favorite_prescriptions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  doctor_id UUID NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  items JSONB NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- 15. PAYMENTS TABLE
+-- ============================================================
+CREATE TABLE payments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  queue_id UUID UNIQUE NOT NULL REFERENCES queues(id),
+  patient_id UUID NOT NULL REFERENCES patients(id),
+  examination_fee NUMERIC(10,2) NOT NULL DEFAULT 0,
+  admin_fee NUMERIC(10,2) NOT NULL DEFAULT 0,
+  medicine_total NUMERIC(10,2) NOT NULL DEFAULT 0,
+  total_amount NUMERIC(10,2) NOT NULL DEFAULT 0,
+  payment_method TEXT CHECK (payment_method IN ('tunai', 'transfer')),
+  status TEXT NOT NULL DEFAULT 'belum_bayar' CHECK (status IN ('belum_bayar', 'dibayar')),
+  paid_at TIMESTAMPTZ,
+  created_by UUID REFERENCES users(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
 -- INDEXES
 -- ============================================================
 CREATE INDEX idx_users_email ON users(email);
@@ -178,6 +267,20 @@ CREATE INDEX idx_medical_records_patient_id ON medical_records(patient_id);
 CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
 CREATE INDEX idx_audit_logs_table_name ON audit_logs(table_name);
 CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
+CREATE INDEX idx_medicines_name ON medicines(name);
+CREATE INDEX idx_medicines_category ON medicines(category);
+CREATE INDEX idx_medicines_poli_id ON medicines(poli_id);
+CREATE INDEX idx_medicines_is_active ON medicines(is_active);
+CREATE INDEX idx_stock_mutations_medicine_id ON stock_mutations(medicine_id);
+CREATE INDEX idx_stock_mutations_created_at ON stock_mutations(created_at);
+CREATE INDEX idx_poly_fees_poli_id ON poly_fees(poli_id);
+CREATE INDEX idx_prescription_items_medical_record_id ON prescription_items(medical_record_id);
+CREATE INDEX idx_prescription_items_medicine_id ON prescription_items(medicine_id);
+CREATE INDEX idx_favorite_prescriptions_doctor_id ON favorite_prescriptions(doctor_id);
+CREATE INDEX idx_payments_queue_id ON payments(queue_id);
+CREATE INDEX idx_payments_patient_id ON payments(patient_id);
+CREATE INDEX idx_payments_status ON payments(status);
+CREATE INDEX idx_payments_created_at ON payments(created_at);
 
 -- ============================================================
 -- FUNCTIONS
@@ -295,6 +398,18 @@ CREATE TRIGGER set_medical_records_updated_at
   BEFORE UPDATE ON medical_records
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER set_medicines_updated_at
+  BEFORE UPDATE ON medicines
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_poly_fees_updated_at
+  BEFORE UPDATE ON poly_fees
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER set_payments_updated_at
+  BEFORE UPDATE ON payments
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Auto-create profile on user signup
 CREATE TRIGGER on_user_created
   AFTER INSERT ON users
@@ -304,6 +419,52 @@ CREATE TRIGGER on_user_created
 CREATE TRIGGER on_queue_selesai
   BEFORE UPDATE ON queues
   FOR EACH ROW EXECUTE FUNCTION handle_queue_selesai();
+
+-- Function to auto-create payment when queue status changes to 'selesai'
+CREATE OR REPLACE FUNCTION handle_queue_payment()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.status = 'selesai' AND OLD.status != 'selesai' THEN
+    INSERT INTO payments (queue_id, patient_id, examination_fee, admin_fee, medicine_total, total_amount, status)
+    SELECT
+      NEW.id,
+      NEW.patient_id,
+      COALESCE(pf.examination_fee, 0),
+      COALESCE(pf.admin_fee, 0),
+      0,
+      COALESCE(pf.examination_fee, 0) + COALESCE(pf.admin_fee, 0),
+      'belum_bayar'
+    FROM poly_fees pf
+    WHERE pf.poli_id = NEW.poli_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to auto-update medicine stock when prescription is created
+CREATE OR REPLACE FUNCTION handle_prescription_stock()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE medicines
+  SET stock_qty = stock_qty - NEW.quantity
+  WHERE id = NEW.medicine_id;
+  
+  INSERT INTO stock_mutations (medicine_id, mutation_type, quantity, notes, user_id)
+  VALUES (NEW.medicine_id, 'keluar', NEW.quantity, 'Resep dokter', '00000000-0000-0000-0000-000000000000');
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger for auto-create payment
+CREATE TRIGGER on_queue_selesai_payment
+  AFTER UPDATE ON queues
+  FOR EACH ROW EXECUTE FUNCTION handle_queue_payment();
+
+-- Trigger for auto-update stock
+CREATE TRIGGER on_prescription_stock
+  AFTER INSERT ON prescription_items
+  FOR EACH ROW EXECUTE FUNCTION handle_prescription_stock();
 
 -- ============================================================
 -- ROW LEVEL SECURITY (RLS)
@@ -318,6 +479,12 @@ ALTER TABLE doctor_schedules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE queues ENABLE ROW LEVEL SECURITY;
 ALTER TABLE medical_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medicines ENABLE ROW LEVEL SECURITY;
+ALTER TABLE stock_mutations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE poly_fees ENABLE ROW LEVEL SECURITY;
+ALTER TABLE prescription_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favorite_prescriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================
 -- RLS POLICIES
@@ -771,6 +938,285 @@ CREATE POLICY "System can insert audit logs"
   ON audit_logs FOR INSERT
   WITH CHECK (true);
 
+-- MEDICINES TABLE
+CREATE POLICY "Everyone can view active medicines"
+  ON medicines FOR SELECT
+  USING (is_active = true);
+
+CREATE POLICY "Admin can view all medicines"
+  ON medicines FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Admin can insert medicines"
+  ON medicines FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Admin can update medicines"
+  ON medicines FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Admin can delete medicines"
+  ON medicines FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Petugas can view all medicines"
+  ON medicines FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'petugas'
+    )
+  );
+
+CREATE POLICY "Dokter can view all medicines"
+  ON medicines FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'dokter'
+    )
+  );
+
+-- STOCK_MUTATIONS TABLE
+CREATE POLICY "Admin can view all stock mutations"
+  ON stock_mutations FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Petugas can view all stock mutations"
+  ON stock_mutations FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'petugas'
+    )
+  );
+
+CREATE POLICY "Admin can insert stock mutations"
+  ON stock_mutations FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Petugas can insert stock mutations"
+  ON stock_mutations FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'petugas'
+    )
+  );
+
+CREATE POLICY "System can insert stock mutations"
+  ON stock_mutations FOR INSERT
+  WITH CHECK (true);
+
+-- POLY_FEES TABLE
+CREATE POLICY "Everyone can view poly fees"
+  ON poly_fees FOR SELECT
+  USING (true);
+
+CREATE POLICY "Admin can insert poly fees"
+  ON poly_fees FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Admin can update poly fees"
+  ON poly_fees FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Admin can delete poly fees"
+  ON poly_fees FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+-- PRESCRIPTION_ITEMS TABLE
+CREATE POLICY "Pasien can view own prescription items"
+  ON prescription_items FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM medical_records mr
+      JOIN patients p ON p.id = mr.patient_id
+      WHERE mr.id = medical_record_id AND p.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Admin can view all prescription items"
+  ON prescription_items FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Petugas can view all prescription items"
+  ON prescription_items FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'petugas'
+    )
+  );
+
+CREATE POLICY "Dokter can view own prescription items"
+  ON prescription_items FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM medical_records mr
+      JOIN doctors d ON d.id = mr.doctor_id
+      WHERE mr.id = medical_record_id AND d.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Dokter can insert prescription items"
+  ON prescription_items FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM medical_records mr
+      JOIN doctors d ON d.id = mr.doctor_id
+      WHERE mr.id = medical_record_id AND d.user_id = auth.uid()
+    )
+  );
+
+-- FAVORITE_PRESCRIPTIONS TABLE
+CREATE POLICY "Dokter can view own favorite prescriptions"
+  ON favorite_prescriptions FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM doctors
+      WHERE id = doctor_id AND user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Dokter can insert own favorite prescriptions"
+  ON favorite_prescriptions FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM doctors
+      WHERE id = doctor_id AND user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Dokter can update own favorite prescriptions"
+  ON favorite_prescriptions FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM doctors
+      WHERE id = doctor_id AND user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Dokter can delete own favorite prescriptions"
+  ON favorite_prescriptions FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM doctors
+      WHERE id = doctor_id AND user_id = auth.uid()
+    )
+  );
+
+-- PAYMENTS TABLE
+CREATE POLICY "Pasien can view own payments"
+  ON payments FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM patients
+      WHERE id = patient_id AND user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Admin can view all payments"
+  ON payments FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
+CREATE POLICY "Petugas can view all payments"
+  ON payments FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'petugas'
+    )
+  );
+
+CREATE POLICY "Dokter can view payments for own patients"
+  ON payments FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM queues q
+      JOIN doctor_schedules ds ON ds.id = q.doctor_schedule_id
+      JOIN doctors d ON d.id = ds.doctor_id
+      WHERE q.id = queue_id AND d.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "System can insert payments"
+  ON payments FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Petugas can update payments"
+  ON payments FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'petugas'
+    )
+  );
+
+CREATE POLICY "Admin can update payments"
+  ON payments FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid() AND role = 'admin'
+    )
+  );
+
 -- ============================================================
 -- GRANT PERMISSIONS
 -- ============================================================
@@ -786,6 +1232,12 @@ GRANT SELECT ON doctor_schedules TO authenticated;
 GRANT SELECT ON queues TO authenticated;
 GRANT SELECT ON medical_records TO authenticated;
 GRANT SELECT ON audit_logs TO authenticated;
+GRANT SELECT ON medicines TO authenticated;
+GRANT SELECT ON stock_mutations TO authenticated;
+GRANT SELECT ON poly_fees TO authenticated;
+GRANT SELECT ON prescription_items TO authenticated;
+GRANT SELECT ON favorite_prescriptions TO authenticated;
+GRANT SELECT ON payments TO authenticated;
 
 GRANT INSERT, UPDATE, DELETE ON users TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON profiles TO authenticated;
@@ -796,6 +1248,12 @@ GRANT INSERT, UPDATE, DELETE ON doctor_schedules TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON queues TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON medical_records TO authenticated;
 GRANT INSERT ON audit_logs TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON medicines TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON stock_mutations TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON poly_fees TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON prescription_items TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON favorite_prescriptions TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON payments TO authenticated;
 
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 
