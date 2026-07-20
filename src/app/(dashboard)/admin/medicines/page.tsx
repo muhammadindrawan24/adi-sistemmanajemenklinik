@@ -89,11 +89,25 @@ export default function MedicinesPage() {
   const fetchStockMutations = async (medicineId: string) => {
     const { data } = await supabase
       .from('stock_mutations')
-      .select('*, users:user_id(full_name)')
+      .select('*')
       .eq('medicine_id', medicineId)
       .order('created_at', { ascending: false })
       .limit(10);
-    setStockMutations(data || []);
+
+    // Enrich with user names from profiles
+    const userIds = [...new Set((data || []).map((m: any) => m.user_id).filter(Boolean))];
+    let profileMap: Record<string, string> = {};
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase.from('profiles').select('user_id, full_name').in('user_id', userIds);
+      profiles?.forEach((p: any) => { profileMap[p.user_id] = p.full_name; });
+    }
+
+    const enriched = (data || []).map((m: any) => ({
+      ...m,
+      user_name: profileMap[m.user_id] || '-',
+    }));
+
+    setStockMutations(enriched);
   };
 
   const filteredMedicines = medicines.filter((med) => {
