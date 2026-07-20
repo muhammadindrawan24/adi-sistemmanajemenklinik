@@ -122,7 +122,7 @@ export default function HistoryPage() {
     if (record.prescription_items && record.prescription_items.length > 0) {
       const resepList = record.prescription_items.map((p: any) => {
         const medName = p.medicine?.name || p.medicine_name || '-';
-        return `${medName} ${p.dosage || ''} ${p.frequency || ''} ${p.duration || ''} (${p.quantity} ${p.unit || ''})`;
+        return `${medName} ${p.dosage || ''} ${p.frequency || ''} ${p.duration || ''} (${p.quantity})`;
       }).join('\n');
       doc.setFont('helvetica', 'bold');
       doc.text('Resep:', 20, y);
@@ -132,6 +132,27 @@ export default function HistoryPage() {
       y += lines.length * 8;
     } else {
       addLine('Resep:', record.prescription || '-');
+    }
+
+    // Info Pembayaran
+    y += 5;
+    doc.setFontSize(12);
+    doc.text('Pembayaran', 20, y); y += 10;
+    if (record.payment) {
+      addLine('Status:', record.payment.status === 'dibayar' ? 'Sudah Dibayar' : 'Belum Dibayar');
+      if (record.payment.status === 'dibayar') {
+        addLine('Tanggal Bayar:', record.payment.paid_at ? format(new Date(record.payment.paid_at), 'dd MMMM yyyy HH:mm', { locale: id }) : '-');
+        addLine('Metode:', record.payment.payment_method === 'tunai' ? 'Tunai' : 'Transfer');
+      }
+      addLine('Biaya Pemeriksaan:', `Rp ${(record.payment.examination_fee || 0).toLocaleString('id-ID')}`);
+      addLine('Biaya Admin:', `Rp ${(record.payment.admin_fee || 0).toLocaleString('id-ID')}`);
+      addLine('Biaya Obat:', `Rp ${(record.payment.medicine_total || 0).toLocaleString('id-ID')}`);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Total:', 20, y);
+      doc.text(`Rp ${(record.payment.total_amount || 0).toLocaleString('id-ID')}`, 65, y);
+      y += 8;
+    } else {
+      addLine('Status:', '-');
     }
 
     doc.save(`riwayat-${format(new Date(record.created_at), 'yyyyMMdd')}.pdf`);
