@@ -57,8 +57,7 @@ export default function AdminPaymentPage() {
       .select(`
         *,
         queue:queues(queue_number, poli:poli(name)),
-        patient:patients(medical_record_number, user_id),
-        users:user_id(full_name)
+        patient:patients(medical_record_number, user_id)
       `)
       .order('created_at', { ascending: false });
 
