@@ -298,7 +298,7 @@ export default function PatientRegistration() {
         .from('queues')
         .select('id, queue_number, status, poli:poli(name)')
         .eq('patient_id', selectedPatient.id)
-        .gte('created_at', today)
+        .eq('visit_date', today)
         .in('status', ['menunggu', 'dipanggil', 'sedang_diperiksa'])
         .limit(1)
         .single();

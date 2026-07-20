@@ -129,6 +129,7 @@ export default function TakeQueuePage() {
         .from('queues')
         .select('id')
         .eq('patient_id', patient.id)
+        .eq('visit_date', targetDateStr)
         .in('status', ['menunggu', 'dipanggil', 'sedang_diperiksa'])
         .limit(1);
 
