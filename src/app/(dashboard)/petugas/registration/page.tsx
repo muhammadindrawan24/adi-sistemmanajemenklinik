@@ -334,6 +334,7 @@ export default function PatientRegistration() {
           p_poli_id: data.poli_id,
           p_doctor_schedule_id: schedule.id,
           p_poli_initial: poli?.initial || 'Q',
+          p_visit_date: today,
         });
 
       if (queueError) throw queueError;
