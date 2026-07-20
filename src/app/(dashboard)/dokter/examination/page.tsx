@@ -268,8 +268,15 @@ export default function ExaminationPage() {
     setSaving(true);
 
     try {
-      // Insert medical record
-      const { data: record, error: recordError } = await supabase.from('medical_records').insert({
+      // Check if medical record already exists for this queue
+      const { data: existingRecord } = await supabase
+        .from('medical_records')
+        .select('id')
+        .eq('queue_id', currentQueue.id)
+        .single();
+
+      let record;
+      const medicalData = {
         patient_id: currentQueue.patient_id,
         doctor_id: doctorId,
         queue_id: currentQueue.id,
@@ -283,9 +290,28 @@ export default function ExaminationPage() {
         height: data.height ? parseFloat(data.height) : null,
         temperature: data.temperature ? parseFloat(data.temperature) : null,
         chief_complaint: data.symptoms,
-      }).select('id').single();
+      };
 
-      if (recordError) throw recordError;
+      if (existingRecord) {
+        // Update existing record
+        const { data: updatedRecord, error: recordError } = await supabase
+          .from('medical_records')
+          .update(medicalData)
+          .eq('id', existingRecord.id)
+          .select('id')
+          .single();
+        if (recordError) throw recordError;
+        record = updatedRecord;
+      } else {
+        // Insert new record
+        const { data: newRecord, error: recordError } = await supabase
+          .from('medical_records')
+          .insert(medicalData)
+          .select('id')
+          .single();
+        if (recordError) throw recordError;
+        record = newRecord;
+      }
 
       // Insert prescription items
       if (prescriptionItems.length > 0 && record) {
