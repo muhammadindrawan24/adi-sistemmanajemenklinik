@@ -99,7 +99,7 @@ CREATE TABLE doctor_schedules (
 -- ============================================================
 CREATE TABLE queues (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  queue_number TEXT UNIQUE NOT NULL,
+  queue_number TEXT NOT NULL,
   patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
   doctor_schedule_id UUID NOT NULL REFERENCES doctor_schedules(id) ON DELETE CASCADE,
   poli_id UUID NOT NULL REFERENCES poli(id) ON DELETE CASCADE,
@@ -112,7 +112,8 @@ CREATE TABLE queues (
   cancelled_at TIMESTAMPTZ,
   cancel_reason TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (queue_number, visit_date)
 );
 
 -- ============================================================

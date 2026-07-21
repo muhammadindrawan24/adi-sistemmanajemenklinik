@@ -126,3 +126,7 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Fix: Ubah unique constraint queue_number dari single column ke composite (queue_number, visit_date)
+ALTER TABLE queues DROP CONSTRAINT IF EXISTS queues_queue_number_key;
+ALTER TABLE queues ADD CONSTRAINT queues_queue_number_visit_date_key UNIQUE (queue_number, visit_date);
