@@ -118,16 +118,25 @@ CREATE TRIGGER set_payments_updated_at
 -- ============================================================
 CREATE OR REPLACE FUNCTION handle_queue_payment()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_medicine_total NUMERIC(10,2);
 BEGIN
   IF NEW.status = 'selesai' AND OLD.status != 'selesai' THEN
+    -- Hitung total biaya obat dari resep
+    SELECT COALESCE(SUM(pi.subtotal), 0)
+    INTO v_medicine_total
+    FROM prescription_items pi
+    JOIN medical_records mr ON pi.medical_record_id = mr.id
+    WHERE mr.queue_id = NEW.id;
+
     INSERT INTO payments (queue_id, patient_id, examination_fee, admin_fee, medicine_total, total_amount, status)
     SELECT
       NEW.id,
       NEW.patient_id,
       COALESCE(pf.examination_fee, 0),
       COALESCE(pf.admin_fee, 0),
-      0,
-      COALESCE(pf.examination_fee, 0) + COALESCE(pf.admin_fee, 0),
+      v_medicine_total,
+      COALESCE(pf.examination_fee, 0) + COALESCE(pf.admin_fee, 0) + v_medicine_total,
       'belum_bayar'
     FROM poly_fees pf
     WHERE pf.poli_id = NEW.poli_id;
